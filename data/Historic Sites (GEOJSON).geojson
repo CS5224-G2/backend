@@ -1,0 +1,2481 @@
+{
+	"type" : "FeatureCollection",
+	"name" : "HISTORICSITES",
+	"features" : [
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84992999914961, 1.2949785634380742 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1933,
+				"LANDYADDRESSPOINT" : 30817.67501,
+				"LANDXADDRESSPOINT" : 29848.70573,
+				"ADDRESSBLOCKHOUSENUMBER" : "50",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/068-raffles-girls-school/068rafflesgirlsschool.png",
+				"NAME" : "Raffles Girls' School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/raffles-girls-school",
+				"DESCRIPTION" : "Raffles Girlsâ€™ School began in 1844 as a girlsâ€™ department in Singapore Institution (today Raffles Institution), and became independent in 1879. It was located here from 1928 to 1979.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Stamford Road",
+				"ADDRESSBUILDINGNAME" : "Junction of Stamdord Road and Armenian Street, beside Lee Kong Chian School of Business, Singapore Management University",
+				"ADDRESSPOSTALCODE" : "178899",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "40AEFD2866BC2206",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.83906699971091, 1.3025369996324456 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1934,
+				"LANDYADDRESSPOINT" : 31653.44264,
+				"LANDXADDRESSPOINT" : 28639.74703,
+				"ADDRESSBLOCKHOUSENUMBER" : "37",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/080-singapore-chinese-girls-school/080singaporechinesegirlsschool.png",
+				"NAME" : "Singapore Chinese Girls' School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/singapore-chinese-girls-school",
+				"DESCRIPTION" : "Singapore Chinese Girlsâ€™ School began in 1899 at Hill Street. It was founded by Straits Chinese pioneers to provide quality education for girls. The school was located here from 1925 to 1994.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Emerald Hill Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "229313",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "B8DA0DB13DB21A72",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85685691089812, 1.3147219199364975 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1935,
+				"LANDYADDRESSPOINT" : 33000.8,
+				"LANDXADDRESSPOINT" : 30619.59,
+				"ADDRESSBLOCKHOUSENUMBER" : "366",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/073-sakya-muni-buddha-gaya-temple/073-sakya-muni-buddha-gaya-temple.png",
+				"NAME" : "Sakya Muni Buddha Gaya Temple",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sakya-muni-buddha-gaya-temple",
+				"DESCRIPTION" : "Vutthisara, a monk from Thailand, founded the temple in 1927. This site is selected as both Indians and Chinese in an area predominantly settled it. It houses a Buddha statue of 15m talls and weighing 300 tonnes.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Race Course Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "218636",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "58CAF750CFF84DF4",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85371393787803, 1.2893309131338315 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1936,
+				"LANDYADDRESSPOINT" : 30193.19,
+				"LANDXADDRESSPOINT" : 30269.83,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/indian_national_army-76-Indian-National-Army-Memorial.jpg",
+				"NAME" : "Indian National Army Memorial",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/indian-national-army-memorial",
+				"DESCRIPTION" : "The local INA, influenced by Subhas Chandra Bose, was formed in 1942 with Japanese support, with the aim of liberating India from British.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Queen Elizabeth Walk Esplanade Park, near Cenotaph",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "923BDF01F4BA7FB8",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85364199966249, 1.288977000486736 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1937,
+				"LANDYADDRESSPOINT" : 30154.05605,
+				"LANDXADDRESSPOINT" : 30261.82424,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/queen_elizabeth-77-Queen-Elizabeth-Walk.jpg",
+				"NAME" : "Queen Elizabeth Walk",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/queen-elizabeth-walk",
+				"DESCRIPTION" : "This was the site of sporting activities in the early days and became popular with families. In 1953, as part of the Coronation Celebrations, the seafront promenade was refurbished and renamed Queen Elizabeth Walk.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction of Promenade Linking Esplanade Theatres and Queen Elizabeth Walk, Esplanade Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "6BB48C683AAF5AE5",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84756100047206, 1.299110000291459 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1938,
+				"LANDYADDRESSPOINT" : 31274.50637,
+				"LANDXADDRESSPOINT" : 29585.05425,
+				"ADDRESSBLOCKHOUSENUMBER" : "2",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/033-japanese-propaganda-department/033-japanese-propaganda-department.png",
+				"NAME" : "Japanese Propaganda Department",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/japanese-propaganda-department",
+				"DESCRIPTION" : "Formerly housing the British Malaya Broadcasting Corporations before WWII, it was turned into a Japanese propaganda office during the Japanese Occupation. It was later also used by Lord Louis Mountbatten as the headquarters for the Japanese Surrender in 1945.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Handy Road",
+				"ADDRESSBUILDINGNAME" : "Handy Road open space, beside The Cathay",
+				"ADDRESSPOSTALCODE" : "220233",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "CBA5A905FC5EDEC6",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.6992540002198, 1.4367890001352168 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1939,
+				"LANDYADDRESSPOINT" : 46498.78259,
+				"LANDXADDRESSPOINT" : 13080.64648,
+				"ADDRESSBLOCKHOUSENUMBER" : "69",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/074-sarimbun-beach-landing/001-sarimbun-beach-landing.png",
+				"NAME" : "Sarimbun Beach Landing",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sarimbun-beach-landing",
+				"DESCRIPTION" : "On 8 February 1942, Japanese forces first landed in Singapore on this beach.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Jalan Bahtera",
+				"ADDRESSBUILDINGNAME" : "Beside Ministry of Education of Jalan Bahtera Adventure Centre",
+				"ADDRESSPOSTALCODE" : "719920",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "6557A988C7A706D1",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.73798999977869, 1.4391810000717746 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1940,
+				"LANDYADDRESSPOINT" : 46763.06189,
+				"LANDXADDRESSPOINT" : 17391.39142,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/045-kranji-beach-battle/002-kranji-beach-battle.png",
+				"NAME" : "Kranji Beach Battle",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/kranji-beach-battle",
+				"DESCRIPTION" : "It was here on 9 February 1942 that the Japanese forces suffered a major loss, fighting against the valiant 27th Australian Brigade and the Dalforce.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Kranji Reservoir Park, Kranji Way, near Pavilion area",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "1533A56C2046B8C6",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.79081141583606, 1.283584006461262 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1941,
+				"LANDYADDRESSPOINT" : 29557.75695,
+				"LANDXADDRESSPOINT" : 23269.30317,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/058-pasir-panjang-battle/058-pasir-panjang-battle.png",
+				"NAME" : "Pasir Panjang Battle",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/pasir-panjang-battle",
+				"DESCRIPTION" : "The Battle for Pasir Panjang, where the harbour and British military depots were the coveted gains, marked one of the last battles for Singapore. It lasted from 12 to 14 February 1942.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Vigilante Drive",
+				"ADDRESSBUILDINGNAME" : "Kent Ridge Park, beside Car Park B",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "EF615DD8D12019F8",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8017970000535, 1.26698299979616 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1942,
+				"LANDYADDRESSPOINT" : 27722.08562,
+				"LANDXADDRESSPOINT" : 24491.88579,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/047-labrador-battery/047-labrador-battery.png",
+				"NAME" : "Labrador Battery",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/labrador-battery",
+				"DESCRIPTION" : "This is one of the surviving gun emplacements in Singapore today. The battery has two 6â€� 16-ton guns facing south, which aided the Malay Regiment in the Battle for Pasir Panjang by firing high explosive shells at the advancing Japanese troops along the coastals.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Labrador Villa Road",
+				"ADDRESSBUILDINGNAME" : "Near History Walk, Labrador Nature Reserve",
+				"ADDRESSPOSTALCODE" : "119187",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "AD07A1D11D23E09F",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84607300002385, 1.2838340001045256 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1943,
+				"LANDYADDRESSPOINT" : 29585.36419,
+				"LANDXADDRESSPOINT" : 29419.4616,
+				"ADDRESSBLOCKHOUSENUMBER" : "Beside Block 532",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/083-sook-ching-inspection-centre/083-sook-ching-inspection-centre.png",
+				"NAME" : "Sook Ching Inspection Centre",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sook-ching-inspection-centre",
+				"DESCRIPTION" : "This site marks one of many temporary registration centres set up by the Kempeitai(Japanese Military Police) to screen anti-Japanese Chinese.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Upper Cross Street",
+				"ADDRESSBUILDINGNAME" : "Junction of Upper Cross Street and South Bridge Road",
+				"ADDRESSPOSTALCODE" : "50532",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "B862327ADE42DD9A",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8466752925647, 1.3011937466105288 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1955,
+				"LANDYADDRESSPOINT" : 31504.91583,
+				"LANDXADDRESSPOINT" : 29486.48173,
+				"ADDRESSBLOCKHOUSENUMBER" : "7",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/090-trinity-theological-college/090-trinity-theological-college.png",
+				"NAME" : "Trinity Theological College",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/trinity-theological-college",
+				"DESCRIPTION" : "Trinity Theological College was born out of the camaraderie and spirit of Christianity experienced by the heads of the Anglican, Methodist and Presbyterian Churches when they were interned at Changi Prison during the Japanese Occupation. Founded on 4th October in 1948, it was the first theological college set up to nurture leadership for the churches in Singapore and Malaya.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Mount Sophia",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "228458",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "E73DCE3974A1D713",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.851815000425, 1.2883330000103161 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1956,
+				"LANDYADDRESSPOINT" : 30082.8443,
+				"LANDXADDRESSPOINT" : 30058.49515,
+				"ADDRESSBLOCKHOUSENUMBER" : "11",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/096-victoria-memorial-hall/096-victoria-memorial-hall.png",
+				"NAME" : "Victoria Memorial Hall",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/victoria-memorial-hall",
+				"DESCRIPTION" : "Designed by colonial engineer, John Bennett, the theatre portion of the Victoria Theatre and Concert Hall was built as a Town Hall in 1862 which housed the Municipal Offices.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Empress Place",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "179558",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "921245456E3811D1",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85239700029375, 1.2938390002142037 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1957,
+				"LANDYADDRESSPOINT" : 30691.66988,
+				"LANDXADDRESSPOINT" : 30123.26227,
+				"ADDRESSBLOCKHOUSENUMBER" : "252",
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/raffles_institution-Raffles-Institution.jpg",
+				"NAME" : "Raffles Institution",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/raffles-institution",
+				"DESCRIPTION" : "The first school in Singapore, it was founded by Sir Stamford Raffles on 5 June 1823. It was originallly known as â€œThe Institutionâ€�.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "North Bridge Road",
+				"ADDRESSBUILDINGNAME" : "Junction of North Bridge Road and Stamford Road, beside Raffles City",
+				"ADDRESSPOSTALCODE" : "179103",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "2E0415C87DAB647E",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8524830003488, 1.3123510001106955 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1958,
+				"LANDYADDRESSPOINT" : 32738.63169,
+				"LANDXADDRESSPOINT" : 30132.81776,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/021-farrer-park/021-farrer-park.png",
+				"NAME" : "Farrer Park",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/farrer-park",
+				"DESCRIPTION" : "Farrer Park was the site of the first race course in Singapore, and continued to be a venue for numerous sporting events. It was a site for political gatherings and demonstrations in the 1940s and 1950s.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Walkway to Block 11, Gloucester Road, near Farrer Park MRT Station Exit D",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "F6E3AD9EFBF8A6A7",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84055907283167, 1.2792670005908242 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1959,
+				"LANDYADDRESSPOINT" : 29080.36655,
+				"LANDXADDRESSPOINT" : 28805.80853,
+				"ADDRESSBLOCKHOUSENUMBER" : "27",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/081-singapore-chin-kang-huay-kuan/081-singapore-chin-kang-huay-kuan.png",
+				"NAME" : "Singapore Chin Kang Huay Kuan",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/singapore-chin-kang-huay-kuan",
+				"DESCRIPTION" : "Established in 1918 by Chinese Immigrants from the Jin Jiang County of southern Fujian Province, it was the headquarters of the Overseas Chinese Mobilisation Council, formed in 1941 to help Singaporeâ€™s defence against the Japanese.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Bukit Pasoh Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "89841",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "1737750C50AEA0C8",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.90263500041611, 1.3056880004018756 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1960,
+				"LANDYADDRESSPOINT" : 32001.96956,
+				"LANDXADDRESSPOINT" : 35714.28045,
+				"ADDRESSBLOCKHOUSENUMBER" : "19",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/085-sri-senpaga-vinyagar-temple/085-sri-senpaga-vinayagar-temple.png",
+				"NAME" : "Sri Senpaga Vinayagar Temple",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sri-senpaga-vinayagar-temple",
+				"DESCRIPTION" : "This temple was built by Ceylon Tamils. It began in an attap shed under a champak (â€œsenpagaâ€� in Tamil) tree in 1875, located near the discovery site of a statue of Vinayagar (the deity Ganesha).",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Ceylon Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "429613",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "E8A9DCD705EC1738",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.79801094451967, 1.30011712774136 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1961,
+				"LANDYADDRESSPOINT" : 31385.89238,
+				"LANDXADDRESSPOINT" : 24070.57688,
+				"ADDRESSBLOCKHOUSENUMBER" : "Between Blocks 46-2 and 46-3",
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/queenstown-48-Queenstown.jpg",
+				"NAME" : "Queenstown Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/queenstown",
+				"DESCRIPTION" : "Queenstown was built in 1960s to meet housing shortage in Singapore after the Second World War. It is Singaporeâ€™s first satellite town â€“ an estate with amenities to meet residentsâ€™ needs.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Commonwealth Drive",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "140462",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C9D6485E06070A45",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85290999974112, 1.3004780004613996 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1962,
+				"LANDYADDRESSPOINT" : 31425.77675,
+				"LANDXADDRESSPOINT" : 30180.34903,
+				"ADDRESSBLOCKHOUSENUMBER" : "152",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/084-sri-krishnan-temple/084-sri-krishnan-temple.png",
+				"NAME" : "Sri Krishnan Temple",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sri-krishnan-temple",
+				"DESCRIPTION" : "This temple was built in 1870 and is one of the oldest Hindu temples in Singapore.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Waterloo Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "187961",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "AFEB564942DB0285",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.99055800021728, 1.3916009999143866 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1963,
+				"LANDYADDRESSPOINT" : 41502.26691,
+				"LANDXADDRESSPOINT" : 45498.70638,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/064-pulau-sejahat/064-pulau-sejahat.png",
+				"NAME" : "Pulau Sejahat",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/pulau-sejahat",
+				"DESCRIPTION" : "Pulau Sejahat was designated as a British defence outpost. The military encampment on the island included gun emplacements, water tanks and observation towers.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Changi Beach Park Lamp Post A2-13 (113), near Car Park 2",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C92BC1A560364DE5",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85301099996255, 1.3007300000028565 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1964,
+				"LANDYADDRESSPOINT" : 31453.6417,
+				"LANDXADDRESSPOINT" : 30191.5892,
+				"ADDRESSBLOCKHOUSENUMBER" : "178",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/046-kwan-im-thong-hood-cho-temple/046-kwan-im-thong-hood-cho-temple.png",
+				"NAME" : "Kwan Im Thong Hood Cho Temple",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/kwan-im-thong-hood-cho-temple",
+				"DESCRIPTION" : "This temple was built in 1884, showcasing a fine example of Chinese temple architecture and traditional craftsmanship. The temple played an important role in providing refuge for the sick, the wounded and the homeless during the Japanese Occupation.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Waterloo Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "187964",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "B05024F7D0EDFD9D",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.83893158534937, 1.281649183322679 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1965,
+				"LANDYADDRESSPOINT" : 29343.7756,
+				"LANDXADDRESSPOINT" : 28624.68173,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/056-outram-road-prison/056-outram-road-prison.png",
+				"NAME" : "Outram Road Prison",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/outram-road-prison",
+				"DESCRIPTION" : "Outram Road Prison was the main jail in Singapore until Changi Prison opened in 1937. Thereafter, it became a remand prison, housing opium addicts, juvenile delinquents, and political detainees.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Outram Park MRT Station, Exit B",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "440AB597E635B4ED",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.80524899966795, 1.2624089997281343 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1966,
+				"LANDYADDRESSPOINT" : 27216.31193,
+				"LANDXADDRESSPOINT" : 24876.06194,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/Batu%20Berlayar-23-Batu-Berlayar.jpg",
+				"NAME" : "Batu Berlayar",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/batu-berlayar",
+				"DESCRIPTION" : "Batu Berlayar (â€œSailing Rockâ€�), together with a rock on the opposite shore of Tanjong Rimau, formed a gateway to the west of Keppel Harbour. It was blown up in 1848 to widen the harbourâ€™s entrance.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Labrador Villa Road",
+				"ADDRESSBUILDINGNAME" : "Batu Berlayar Point, near Car Park B, Labrador Nature Reserve",
+				"ADDRESSPOSTALCODE" : "119187",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "68912A29A2597F31",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84488288377734, 1.320937188260775 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1967,
+				"LANDYADDRESSPOINT" : 33688.04308,
+				"LANDXADDRESSPOINT" : 29286.99274,
+				"ADDRESSBLOCKHOUSENUMBER" : "11",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/088-tan-tock-seng-hospital/088-tan-tock-seng-hospital.png",
+				"NAME" : "Tan Tock Seng Hospital",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/tan-tock-seng-hospital",
+				"DESCRIPTION" : "This hospital was founded in 1844 by Tan Tock Seng, a philanthropic Hokkien Chinese pioneer, for the poor and destitute. Here, several firsts in Singapore's medical history were achieved.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Jalan Tan Tock Seng",
+				"ADDRESSBUILDINGNAME" : "Sinaran Drive entrance of Tan Tock Seng Hospital",
+				"ADDRESSPOSTALCODE" : "308433",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "BBE3B031C524004C",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.89834107253199, 1.316586001210321 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1968,
+				"LANDYADDRESSPOINT" : 33207.0025,
+				"LANDXADDRESSPOINT" : 35236.37429,
+				"ADDRESSBLOCKHOUSENUMBER" : "Blk 1",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/027-geylang-serai/027-geylang-serai.png",
+				"NAME" : "Geylang Serai",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/geylang-serai",
+				"DESCRIPTION" : "Geylang Serai is a social centre for the Malay community in Singapore. It was originally filled with lemongrass (â€œseraiâ€� in Malay) plantations between the 1890s to early 1900s.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Geylang Serai",
+				"ADDRESSBUILDINGNAME" : "Main entrance of Geylanf Serai Market and Food Centre",
+				"ADDRESSPOSTALCODE" : "402001",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C39637443263CC37",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.97401099989376, 1.3624069996849284 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1969,
+				"LANDYADDRESSPOINT" : 38274.01673,
+				"LANDXADDRESSPOINT" : 43657.42661,
+				"ADDRESSBLOCKHOUSENUMBER" : "1000",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/013-changi-murals/013-changi-murals.png",
+				"NAME" : "Changi Murals",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/changi-murals",
+				"DESCRIPTION" : "The Changi Murals was a symbol of hope and faith for prisoners during the Japanese Occupation. It depicted scenes from the Bible, and were painted by Stanley Warren, a Prisoner-of-War.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Upper Changi Road North",
+				"ADDRESSBUILDINGNAME" : "Side Entrance of Changi Museum",
+				"ADDRESSPOSTALCODE" : "507707",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "1F8DA60046EDF4C5",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.76270400046293, 1.2927689997158711 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1970,
+				"LANDYADDRESSPOINT" : 30573.45613,
+				"LANDXADDRESSPOINT" : 20141.20645,
+				"ADDRESSBLOCKHOUSENUMBER" : "52",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/071-republic-of-singapore-yacht-club/071-republic-of-singapore-yacht-club.png",
+				"NAME" : "Republic of Singapore Yacht Club",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/republic-of-singapore-yacht-club",
+				"DESCRIPTION" : "Founded in 1826, this club became the Royal Singapore Yacht Club in 1922 under the patronage of the Prince of Wales, and was renamed the Republic of Singapore Yacht Club in 1967 with the first president of Singapore, Yusof bin Ishak as it patrons.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "West Coast Ferry Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "126887",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "BA46120F1EFD1901",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84605489783948, 1.2816077902258725 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1971,
+				"LANDYADDRESSPOINT" : 29339.20143,
+				"LANDXADDRESSPOINT" : 29417.44816,
+				"ADDRESSBLOCKHOUSENUMBER" : "64",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/063-pondok-peranakan-club/063-pondok-perankan-club.png",
+				"NAME" : "Pondok Peranakan Gelam Club",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/pondok-peranakan-gelam-club",
+				"DESCRIPTION" : "Singaporeâ€™s last pondok (communal lodging house) was located here from 1932 to 2000. It served the welfare of Baweanese immigrants from the Gelam province of Indonesiaâ€™s Bawean Island.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Club Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "69438",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "DAA40402D27211A4",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85219899954589, 1.29971099969317 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1972,
+				"LANDYADDRESSPOINT" : 31340.96523,
+				"LANDXADDRESSPOINT" : 30101.22175,
+				"ADDRESSBLOCKHOUSENUMBER" : "155",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/053-middle-road-church/053-middle-road-church.png",
+				"NAME" : "Middle Road Church",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/middle-road-church",
+				"DESCRIPTION" : "Built between 1870-75, the Middle Road Church was first known as the Christian Institute. When it was officially inaugurated as the Malay Church in 1894, it became the first Straits Chinese Methodist Church in Singapore.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Middle Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "188977",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "4499E7608A37929C",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85121285492443, 1.3016659993309097 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1973,
+				"LANDYADDRESSPOINT" : 31557.1382,
+				"LANDXADDRESSPOINT" : 29991.47106,
+				"ADDRESSBLOCKHOUSENUMBER" : "77",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/008-boys-brigade/008boys-brigade.png",
+				"NAME" : "The Founding of Boys' Brigade in Singapore",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/the-founding-of-boys-brigade-in-singapore",
+				"DESCRIPTION" : "Singaporeâ€™s first company of the Boysâ€™ Brigade was formed here on 12 January 1930. From a small company of 12, the Boysâ€™ Brigade in Singapore has since grown to a strength of more than 100 companies.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Prinsep Street",
+				"ADDRESSBUILDINGNAME" : "Prinsep Street Presbyterian Church",
+				"ADDRESSPOSTALCODE" : "188649",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "DB4E1272DEBF70D0",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.81820699429996, 1.3355549280016765 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1974,
+				"LANDYADDRESSPOINT" : 35304.4,
+				"LANDXADDRESSPOINT" : 26318.24,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/087-syonan-jinja/087-syonan-jinja.png",
+				"NAME" : "Syonan Jinja",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/syonan-jinja",
+				"DESCRIPTION" : "Syonan Jinja was built in 1942 in memory of the Japanese soldiers who died fighting in the invasion of Singapore. Ceremonies for significant events were held here until it was destroyed after the war.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction between Adam Road and Sime Road, near Bus Stop No. 41141",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "F2E27D5BBE38EDE8",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84037800037724, 1.2795860004568531 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1975,
+				"LANDYADDRESSPOINT" : 29115.63985,
+				"LANDXADDRESSPOINT" : 28785.65646,
+				"ADDRESSBLOCKHOUSENUMBER" : "43",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/019-ee-hoe-hean-club/019-ee-hoe-hean-club.png",
+				"NAME" : "Ee Hoe Hean Club",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/ee-hoe-hean-club",
+				"DESCRIPTION" : "Founded in 1895, it is one of the oldest millionaires club in Singapore. The club was the centre of the Chinese Salvation Movement in Southeast Asia from 1937-1942. Originally located at Duxton Hill, it moved to Club Street before settling at this location in 1952.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Bukit Pasoh Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "89846",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "828292A998EC9FED",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84889700132213, 1.2829556986577448 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1976,
+				"LANDYADDRESSPOINT" : 29488.24787,
+				"LANDXADDRESSPOINT" : 29733.75015,
+				"ADDRESSBLOCKHOUSENUMBER" : "76",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/024-fuk-tak-chi/024-fuk-tak-chi.png",
+				"NAME" : "Fuk Tak Chi",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/fuk-tak-chi",
+				"DESCRIPTION" : "This building housed Fuk Tak Chi (â€œFu De Ciâ€� in Mandarin), one of the Singaporeâ€™s oldest Chinese temples, from the 1820s to 1994. It was later converted into a museum.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Telok Ayer Street",
+				"ADDRESSBUILDINGNAME" : "Far East Square",
+				"ADDRESSPOSTALCODE" : "48464",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "ABB4B83F059D3AEE",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84912892704423, 1.2853349193494434 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1977,
+				"LANDYADDRESSPOINT" : 29751.33,
+				"LANDXADDRESSPOINT" : 29759.56,
+				"ADDRESSBLOCKHOUSENUMBER" : "65",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/057-oversea-chinese-banking-corporation/057-oversea-chinese-banking-corporation.png",
+				"NAME" : "Oversea-Chinese Banking Corporation",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/oversea-chinese-banking-coporation",
+				"DESCRIPTION" : "OCBC Bank was formed in 1932 through the merger of three Hokkien banks. It was originally located at China Building which featured a prominent Chinese-style roof and classical elements on its faÃ§ade.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Chulia Street",
+				"ADDRESSBUILDINGNAME" : "North Tower OCBC Headquarters",
+				"ADDRESSPOSTALCODE" : "49513",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C423145212EC607A",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.99040599990961, 1.3916820001271044 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1944,
+				"LANDYADDRESSPOINT" : 41511.22239,
+				"LANDXADDRESSPOINT" : 45481.79011,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/012-changi-beach-massacre/012-changi-beach-massacre.png",
+				"NAME" : "Changi Beach Massacre",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/changi-beach-massacre",
+				"DESCRIPTION" : "Changi Beach was a massacre site of Sook Ching. The Hojo Kempei (Japanese auxiliary military police) machine-gunned many male civilians on this shore on 20 February 1942.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Changi Beach Park Lamp Post A2-13 (113), Near Car Park 2",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "403FF9993C32FA6A",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.81414985588445, 1.3289690005656036 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1945,
+				"LANDYADDRESSPOINT" : 34576.16502,
+				"LANDXADDRESSPOINT" : 25866.71756,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/001-adam-park-battle/001-adam-park-battle.png",
+				"NAME" : "Adam Park",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/adam-park-battle",
+				"DESCRIPTION" : "Adam park estate was the site of intense fighting between British forces and the invading Japanese army in February 1942, in the last days before the British surrendered Singapore.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction of Adam Road and Adam Park, near 7 Adam Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "B31F88FD8F2FAFEA",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8023132733711, 1.2860026957181472 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1946,
+				"LANDYADDRESSPOINT" : 29825.18484,
+				"LANDXADDRESSPOINT" : 24549.36849,
+				"ADDRESSBLOCKHOUSENUMBER" : "378",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/002-alexandra-hospital/002-alexandra-hospital.png",
+				"NAME" : "Alexandra Hospital",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/alexandra-hospital",
+				"DESCRIPTION" : "Opened in 1940, the Alexandra Hospital (former British Military Hospital) served as the principal hospital for Britainâ€™s Far East Command during World War II. The hospital was the most-advanced and best-equipped medical institution in Singapore and Malaya.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Alexandra Road",
+				"ADDRESSBUILDINGNAME" : "Garden Valley at Alexandra Hospital",
+				"ADDRESSPOSTALCODE" : "159964",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "735F8BF172CDD432",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84664700018199, 1.2801360002217328 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1947,
+				"LANDYADDRESSPOINT" : 29176.45878,
+				"LANDXADDRESSPOINT" : 29483.34518,
+				"ADDRESSBLOCKHOUSENUMBER" : "70",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/003-anglo-chinese-school/003-ango-chinese-school.png",
+				"NAME" : "Anglo-Chinese School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/anglo-chinese-school",
+				"DESCRIPTION" : "The Anglo-Chinese School (ACS) was founded by Rev. William Fitzjames Oldham in 1886 at a shophouse in Amoy Street. Starting with 13 students, the school aimed to provide an education for the many boys Bishop Fitzjames saw wandering aimlessly in the streets.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Amoy Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "69889",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "10CD73A186BEC9B4",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85495899863439, 1.3182711270029797 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1948,
+				"LANDYADDRESSPOINT" : 33393.25121,
+				"LANDXADDRESSPOINT" : 30408.36718,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/004-balestier-plain/004-balestier-plain.png",
+				"NAME" : "Balestier Plain",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/balestier-plain",
+				"DESCRIPTION" : "Balestier Road, from which Balestier Plain takes its name, was named after Joseph Balestier, a keen botanist and agriculturist who arrived in Singapore in 1834. He was appointed as the first U.S Consul in Singapore in 1836 by then President of the United States, Andrew Jackson.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Balestier Road, Beside Bus Stop No. 50239, Near Ceylon Sports Club",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "5493CC002368EA74",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.7770219955364, 1.3486898726687462 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1949,
+				"LANDYADDRESSPOINT" : 36756.86231,
+				"LANDXADDRESSPOINT" : 21734.81653,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/010-bukit-timah-battle/010-bukit-timah-battle.png",
+				"NAME" : "Battle of Bukit Timah",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/bukit-timah-battle",
+				"DESCRIPTION" : "One of the fiercest military encounters during WWII took place here as the Bukit Timah area held strategic and tactical importance to the Japanese and the British. This site marks Percival's final defence of southern Singapore against the Japanese invaders from the north on 8 February 1942.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Bukit Timah Nature Reserve, near visitor centre, Bukit Timah Hill",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "35A9C35EAD6A6F09",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.76678599971721, 1.3509199999778845 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1950,
+				"LANDYADDRESSPOINT" : 37003.4873,
+				"LANDXADDRESSPOINT" : 20595.67033,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/009-bukit-batok-memorial/009-bukit-batok-memorial.png",
+				"NAME" : "Bukit Batok Memorials",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/bukit-batok-memorials",
+				"DESCRIPTION" : "Two memorials, one for the Japanese soldiers and the other for Allied Soldiers sat on top on this hill-top. The former was Syonan Chureito, built by 500 Allied Prisoners of War while the latter was a wooden cross that stood behind.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Lorong Sesuai End",
+				"ADDRESSBUILDINGNAME" : "Bukit Batok Nature Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "6DF3F0447680EBA0",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85387708618971, 1.3001815636693737 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1951,
+				"LANDYADDRESSPOINT" : 31392.99923,
+				"LANDXADDRESSPOINT" : 30287.97734,
+				"ADDRESSBLOCKHOUSENUMBER" : "Block 269",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/011-central-sikh-temple/011-central-sikh-temple.png",
+				"NAME" : "Central Sikh Temple",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/central-sikh-temple",
+				"DESCRIPTION" : "Also known as the Wadda Gurdwara, this Sikh temple was the first set up in a bungalow at Queen Street in 1912. The temple is now relocated at Towner Road.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Queen Street",
+				"ADDRESSBUILDINGNAME" : "In front of #01-234",
+				"ADDRESSPOSTALCODE" : "180269",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "EAF7A7409038A0F5",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85163500044112, 1.2867249999258847 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1952,
+				"LANDYADDRESSPOINT" : 29905.03981,
+				"LANDXADDRESSPOINT" : 30038.46395,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/018-deng-xiao-ping/018-deng-xiao-ping.png",
+				"NAME" : "Deng Xiaoping Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/deng-xiaoping",
+				"DESCRIPTION" : "Originally known as Deng Xiansheng and his school name Deng Xixian, Deng Xiaoping was born on 22 August 1904 in Guang'an County, Sichuan Province. In 1920, Deng left forÂ studies in France. His six-year stay in France proved to be a turning point in his life.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside Anderson Bridge, on the grounds of the Asian Civilisations Museum",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C76E2534DCAD5980",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84907371053082, 1.3071078720290799 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1953,
+				"LANDYADDRESSPOINT" : 32158.87088,
+				"LANDXADDRESSPOINT" : 29753.39991,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/041-kandang-kerbau-hospital/041-kandang-kerbau-hospital.png",
+				"NAME" : "Kandang Kerbau Hospital",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/kandang-kerbau-hospital",
+				"DESCRIPTION" : "Kandang Kerbau Hospital, the birthplace of over 1.2 million Singaporeans, was the largest maternity hospital in the world from the early 1950s to the early 1970s. It was named after the district where it was located. The district around the crossroads formed by Serangoon Road, Selegie Road, Bukit Timah Road and Rochor Road was known in Malay as Kerdang Kerbau\".\"",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction of Bukit Timah Road and Tekka Lane",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "BEEA037FE82D7668",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84853500040512, 1.2974509997900696 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1954,
+				"LANDYADDRESSPOINT" : 31091.06332,
+				"LANDXADDRESSPOINT" : 29693.45285,
+				"ADDRESSBLOCKHOUSENUMBER" : "1",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/043-kempeitai-east-district-branch/015-ymca-kempeitai-east-district-branch.png",
+				"NAME" : "Kempeitai East District Branch",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/kempeitai-east-district-branch",
+				"DESCRIPTION" : "The original building, the YMCA, was used by the East Branch of the Kempeitai (Japanese Military Police) during the Japanese Occupation. Local anti-Japanese suspects were imprisoned and tortured for information here. The building was pulled down in 1981.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Orchard Road",
+				"ADDRESSBUILDINGNAME" : "Junction of Fort Canning Road and Orchard Road, beside YMCA",
+				"ADDRESSPOSTALCODE" : "238824",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "E98BCFD233C142ED",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8261330001179, 1.3704189998036014 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1921,
+				"LANDYADDRESSPOINT" : 39159.48712,
+				"LANDXADDRESSPOINT" : 27200.33229,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/049-lower-peirce-reservoir/049-lower-peirce-reservoir.png",
+				"NAME" : "Lower Peirce Reservoir",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/lower-peirce-reservoir",
+				"DESCRIPTION" : "This is Singaporeâ€™s second reservoir, constructed after water demand outgrew the capacity of MacRitchie Reservoir. It was known as Kalang River Reservoir when it opened in 1912.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Old Upper Thomson Road",
+				"ADDRESSBUILDINGNAME" : "Beside Jetty, Lower Peirce Reservoir Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "6535E46F998C855F",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.83246299970939, 1.3419759998556622 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1922,
+				"LANDYADDRESSPOINT" : 36014.40412,
+				"LANDXADDRESSPOINT" : 27904.78333,
+				"ADDRESSBLOCKHOUSENUMBER" : "181",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/050-macritchie-reservoir/050-macritchie-reservoir.png",
+				"NAME" : "MacRitchie Reservoir",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/macritchie-reservoir",
+				"DESCRIPTION" : "Singaporeâ€™s first reservoir was officially opened in 1878 as the Impounding Reservoir, to supply freshwater for the growing population. It has also been a popular place for recreation over the years.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Lornie Road",
+				"ADDRESSBUILDINGNAME" : "At the foot of Hilltop, Macritchie Reservoir Park",
+				"ADDRESSPOSTALCODE" : "297732",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "774E9CD52186B904",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85036600083835, 1.2853514368074688 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1923,
+				"LANDYADDRESSPOINT" : 29753.15726,
+				"LANDXADDRESSPOINT" : 29897.23597,
+				"ADDRESSBLOCKHOUSENUMBER" : "80",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/093-united-overseas-bank/093-united-overseas-bank.png",
+				"NAME" : "United Overseas Bank",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/united-overseas-bank",
+				"DESCRIPTION" : "On 1 October 1935, UOB opened for business at the Bonham Building in Raffles Place. Over the years, it grew to become one of Singaporeâ€™s leading banks.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Raffles Place",
+				"ADDRESSBUILDINGNAME" : "UOB Plaza One",
+				"ADDRESSPOSTALCODE" : "48624",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "7230C867D3A5311E",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.81820699377411, 1.3356409330667287 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1924,
+				"LANDYADDRESSPOINT" : 35313.91,
+				"LANDXADDRESSPOINT" : 26318.24,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/sime_rd_camp-43_Sime_Road_Camp.jpg",
+				"NAME" : "Sime Road Camp",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sime-road-camp",
+				"DESCRIPTION" : "Sime Road Camp was the Combined Headquarters of the British Army and Air Force during the Second World War, until the headquarters relocated to Fort Canning Command Centre.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction between Adam Road and Sime Road, near Bus Stop No. 41141",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C23539FDC1DE79A6",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.87276900017902, 1.3087319998071474 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1925,
+				"LANDYADDRESSPOINT" : 32338.48762,
+				"LANDXADDRESSPOINT" : 32390.46318,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/039-kallang-airport/039-kallang-airport.png",
+				"NAME" : "Kallang Airport",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/kallang-airport",
+				"DESCRIPTION" : "This is Singaporeâ€™s first purpose-built civil airport. Completed in 1937, the modern-style terminal building symbolised the rapid civil aviation progress then. The airport ceased operations in 1955.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction of Kallang Airport Way and Stadium Link, beside gate to Former Kallang Airport",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "726A3D5259BA7A5E",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.82666600048258, 1.2932738001762734 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1926,
+				"LANDYADDRESSPOINT" : 30629.16598,
+				"LANDXADDRESSPOINT" : 27259.62565,
+				"ADDRESSBLOCKHOUSENUMBER" : "491",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/028-havelock-road/028-havelock-road.png",
+				"NAME" : "Havelock Road Camp / River Valley Road Camp",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/havelock-road-camp-river-valley-road-camp",
+				"DESCRIPTION" : "The area bounded by River Valley Road and Havelock Road was occupied by Prisoner-of-War (POW) camps during the Japanese Occupation. Five thousand POWs lived in dilapidated attap huts here.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "River Valley Road",
+				"ADDRESSBUILDINGNAME" : "Beside bus stop no. 13059, Valley Point Shopping Centre",
+				"ADDRESSPOSTALCODE" : "248371",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "7C9E0E5E2220AE38",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8531950004163, 1.2839520002536406 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1927,
+				"LANDYADDRESSPOINT" : 29598.41707,
+				"LANDXADDRESSPOINT" : 30212.08125,
+				"ADDRESSBLOCKHOUSENUMBER" : "80",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/016-clifford-pier/016-clifford-pier.png",
+				"NAME" : "Clifford Pier",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/clifford-pier",
+				"DESCRIPTION" : "Clifford Pier was the landing point for sea passengers and immigrants who came to seek a new life in Singapore. It is also known as â€œRed Lantern Pierâ€� for the red lamps that hung here.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Collyer Quay",
+				"ADDRESSBUILDINGNAME" : "The Fullerton Bay Hotel",
+				"ADDRESSPOSTALCODE" : "49326",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "BEF3D4138483ED44",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.88175499964794, 1.3101299996630773 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1928,
+				"LANDYADDRESSPOINT" : 32493.08884,
+				"LANDXADDRESSPOINT" : 33390.51824,
+				"ADDRESSBLOCKHOUSENUMBER" : "100",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/079-singapore-badminton-hall/079-singapore-badminton-hall.png",
+				"NAME" : "Singapore Badminton Hall",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/singapore-badminton-hall",
+				"DESCRIPTION" : "Singapore Badminton Hall was built to host international badminton tournaments. In 1962, it was a vote-counting station for the Referendum on Singaporeâ€™s merger with Malaya, Sabah and Sarawak.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Guillemard Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "399718",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "8E7ED4729F4E9B99",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.88611910319297, 1.2968502631265257 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1929,
+				"LANDYADDRESSPOINT" : 31024.69311,
+				"LANDXADDRESSPOINT" : 33876.23279,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/042-katong-park/042-katong-park.png",
+				"NAME" : "Katong Park",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/katong-park",
+				"DESCRIPTION" : "This is one of the oldest parks in Singapore. Built in the 1930s, it was a favourite place for families and couples, with facilities such as swimming bays which extended into the sea and food outlets.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Meyer Road",
+				"ADDRESSBUILDINGNAME" : "Beside Amphitheatre at Katong Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "E05A1C8D8A2435CC",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84174000021251, 1.2866699997422921 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1930,
+				"LANDYADDRESSPOINT" : 29898.95243,
+				"LANDXADDRESSPOINT" : 28937.23348,
+				"ADDRESSBLOCKHOUSENUMBER" : "5",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/060-pearls-hill-school/060pearlshillschool.png",
+				"NAME" : "Pearl's Hill School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/pearls-hill-school",
+				"DESCRIPTION" : "Pearlâ€™s Hill School began in 1876 at Cross Street as the Singapore Chinese Branch School. It was among the first English elementary schools established by the colonial government.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Pearl's Hill Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "168996",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "2F02DCB2A41D7B79",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8574035605348, 1.2971076879302303 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1931,
+				"LANDYADDRESSPOINT" : 31053.10931,
+				"LANDXADDRESSPOINT" : 30680.44551,
+				"ADDRESSBLOCKHOUSENUMBER" : "99",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/006-beach-road-police-station/006-beach-road-police-station.png",
+				"NAME" : "Beach Road Police Station",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/beach-road-police-station",
+				"DESCRIPTION" : "In the early 1900s, Singapore grew rapidly and the crime rate rose with the city's expansion. Harold Fariburn - the Inspector - General of Police from 1925 to 1935 - realised that the Police needed a programme of modernisation and expansion. As a result, police stations like the Beach Road Police Station were built around 1930s.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Beach Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "189701",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "A8221E15CA353491",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85957700034771, 1.310171999899942 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1932,
+				"LANDYADDRESSPOINT" : 32497.69621,
+				"LANDXADDRESSPOINT" : 30922.31506,
+				"ADDRESSBLOCKHOUSENUMBER" : "100",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/032-jalan-besar-stadium/032-jalan-besar-stadium.png",
+				"NAME" : "Jalan Besar Stadium",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/jalan-besar-stadium",
+				"DESCRIPTION" : "Jalan Besar Stadium was Singaporeâ€™s main football arena until the National Stadium opened. It also hosted various national events, such as Singapore Youth Festival and National Day Parade.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Tyrwhitt Road",
+				"ADDRESSBUILDINGNAME" : "North entrance of Jalan Besar Stadium",
+				"ADDRESSPOSTALCODE" : "207542",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "DC06E8F21F645501",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8066569997877, 1.400914999719964 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1978,
+				"LANDYADDRESSPOINT" : 42531.59573,
+				"LANDXADDRESSPOINT" : 25032.92772,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/095-upper-seletar-reservoir/095-upper-seletar-reservoir.png",
+				"NAME" : "Upper Seletar Reservoir",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/upper-seletar-reservoir",
+				"DESCRIPTION" : "Singaporeâ€™s third reservoir was constructed in 1920 to meet the increased demand for freshwater in Singapore. The iconic lookout tower was added to the reservoir in the 1960s.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside Lookout Tower, Upper Seletar Reservoir Park, Mandai Road Track 7",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "49E9DAC0BE334E3E",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84401299999587, 1.2879879998976114 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1979,
+				"LANDYADDRESSPOINT" : 30044.69101,
+				"LANDXADDRESSPOINT" : 29190.1987,
+				"ADDRESSBLOCKHOUSENUMBER" : "10",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/055-omar-kampong-malacca-mosque/055-omar-kampong-malacca-mosque.png",
+				"NAME" : "Omar Kampong Malacca Mosque",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/omar-kampong-malacca-mosque",
+				"DESCRIPTION" : "Established in 1820, Omar Kampong Malacca Mosque is Singaporeâ€™s oldest mosque. In the 1850s, the original timber structure made way for the current building to accommodate the mosqueâ€™s growing needs.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Keng Cheow Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "59607",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "51011449FCC6C1F4",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84835199964891, 1.2831039996906066 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1980,
+				"LANDYADDRESSPOINT" : 29504.64593,
+				"LANDXADDRESSPOINT" : 29673.09594,
+				"ADDRESSBLOCKHOUSENUMBER" : "130",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/015-chui-eng-free-school/015-chui-eng-free-school.png",
+				"NAME" : "Chui Eng Free School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/chui-eng-free-school",
+				"DESCRIPTION" : "Chui Eng Free School was established here in 1854 by the Singapore Hokkien Huay Kuan. It was the second-oldest private Chinese school and also one of the first free educational institutions in Singapore.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Amoy Street",
+				"ADDRESSBUILDINGNAME" : "Far East Square",
+				"ADDRESSPOSTALCODE" : "49959",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "A633330BED99345B",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.83733100021739, 1.2526630001034242 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1981,
+				"LANDYADDRESSPOINT" : 26138.63329,
+				"LANDXADDRESSPOINT" : 28446.55458,
+				"ADDRESSBLOCKHOUSENUMBER" : "27",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/076-sentosa-beach/076-sentosa-beach.png",
+				"NAME" : "Sentosa Beach Massacre Site",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sentosa-beach",
+				"DESCRIPTION" : "Surrendered British Gunners awaiting Japanese internment buried some 300 bullet-ridden corpses washed ashore on Pulau Blakang Mati, now known as Sentosa.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Bukit Manis Road",
+				"ADDRESSBUILDINGNAME" : "Former Berhala Reping Artillery Post, Serapong Course Road, Course 4, Sentosa Golf Club",
+				"ADDRESSPOSTALCODE" : "99892",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "842CED2BDBB1E953",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.82371496797644, 1.2899689159157999 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1982,
+				"LANDYADDRESSPOINT" : 30263.73,
+				"LANDXADDRESSPOINT" : 26931.2,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/025-gan-eng-seng-school/025-gan-eng-seng-school.png",
+				"NAME" : "Gan Eng Seng School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/gan-eng-seng-school",
+				"DESCRIPTION" : "In 1885, Gan Eng Seng founded a free school for poor boys in Singapore. Initially named the Anglo-Chinese Free School, it was among the earliest schools to offer a bilingual education. The school moved to its first new building about 50 metres behind Telok Ayer Chinese Methodist Church in 1893. It became known as Gan Eng Seng School in 1923.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Junction of Telok Ayer Street and Cecil Street",
+				"ADDRESSBUILDINGNAME" : "Landscape Plaza",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "5A942426AA3BF6AE",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85628519088301, 1.2960477051184573 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1983,
+				"LANDYADDRESSPOINT" : 30935.90074,
+				"LANDXADDRESSPOINT" : 30555.98193,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/061-peoples-defence-force/061peoplesdefenceforce.png",
+				"NAME" : "Peoplesâ€™ Defence Force Headquarters",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/peoples-defence-force-headquarters",
+				"DESCRIPTION" : "In the early days of the SAF and Singaporeâ€™s independence, the Singapore Infantry Regiment and the PDF shouldered the duties of national defence. The Beach Road Army Camp played a significant role in the transformation.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Beach Road",
+				"ADDRESSBUILDINGNAME" : "Former Beach Road Camp, South Beach Development",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "4A91531E18037662",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.81149399984494, 1.3403439997918907 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1984,
+				"LANDYADDRESSPOINT" : 35833.95672,
+				"LANDXADDRESSPOINT" : 25571.15922,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/sime_pillbox-Sime-Road-Machine-Gun-Pillbox.jpg",
+				"NAME" : "Sime Road Machine-Gun Pillbox",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/sime-road-machine-gun-pillbox",
+				"DESCRIPTION" : "This pillbox was located inland to provide fire cover and defence for key installations in Bukit Timah during the Second World War.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Sime Road",
+				"ADDRESSBUILDINGNAME" : "Lamp Post 32, near Singapore Island Country Club (Island Location) Entrance",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "FCE70A710390BCD6",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.77810000047803, 1.288811000420241 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1985,
+				"LANDYADDRESSPOINT" : 30135.75825,
+				"LANDXADDRESSPOINT" : 21854.63955,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/059-pasir-panjang-machine-gun-pillbox/059-pasir-panjang-machine-gun-pillbox.png",
+				"NAME" : "Pasir Panjang Machine-Gun Pillbox",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/pasir-panjang-machine-gun-pillbox",
+				"DESCRIPTION" : "This pillbox lay within the area guarded by the 1st Battalion of the Malay Regiment during the Second World War, to protect key installations in the Southern area, such as Alexandra Military Hospital.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction of Pasir Panjang Road and Science Park Road, Beside Shell Petrol Station",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "A552ED466B39BF10",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84459700019143, 1.2934820002755216 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1986,
+				"LANDYADDRESSPOINT" : 30652.18947,
+				"LANDXADDRESSPOINT" : 29255.19028,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/054-national-theatre/054-national-theatre.png",
+				"NAME" : "National Theatre",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/national-theatre",
+				"DESCRIPTION" : "Officially opened on 8 August 1963, this theatre was built to commemorate the attainment of Singaporeâ€™s self-government in 1959. It was demolished in 1986 due to structural reasons.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Junction of River Valley Road and Clemnceau Avenue, Beside Fort Canning Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "F43318D5E66862D5",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84826100024168, 1.2742609997199636 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1987,
+				"LANDYADDRESSPOINT" : 28526.83263,
+				"LANDXADDRESSPOINT" : 29662.97407,
+				"ADDRESSBLOCKHOUSENUMBER" : "12",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/082-singapore-polytechnic/082-singapore-polytechnic.png",
+				"NAME" : "Singapore Polytechnic",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/singapore-polytechnic",
+				"DESCRIPTION" : "Established in 1954, Singapore Polytechnic is the first technical institution in Singapore to train skilled labour. The Prince Edward Campus began operations on 3 November 1958 with 2,800 students.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Prince Edward Road",
+				"ADDRESSBUILDINGNAME" : "Bestway Building",
+				"ADDRESSPOSTALCODE" : "79212",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "F25E0F7EA21E395D",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84945599967683, 1.2945579998035905 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1988,
+				"LANDYADDRESSPOINT" : 30771.17092,
+				"LANDXADDRESSPOINT" : 29795.95404,
+				"ADDRESSBLOCKHOUSENUMBER" : "51",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/091-united-chinese-library/091-united-chinese-library.png",
+				"NAME" : "United Chinese Library",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/united-chinese-library",
+				"DESCRIPTION" : "United Chinese Library was founded by Dr Sun Yat Sen on 8 August 1910 at North Boat Quay, to spread revolutionary ideas and garner support for Dr Sunâ€™s revolution in China.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Armenian Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "179939",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "C64B13CFC947B1E7",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.71702599576997, 1.3530804359138728 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1989,
+				"LANDYADDRESSPOINT" : 37242.58614,
+				"LANDXADDRESSPOINT" : 15057.94549,
+				"ADDRESSBLOCKHOUSENUMBER" : "Between Blocks 550 and 551",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/038-jurong-kranji-defence-line/038-jurong-kranji-defence-line.png",
+				"NAME" : "Jurong-Kranji Defence Line",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/jurong-kranji-defence-line",
+				"DESCRIPTION" : "This is an arbitrary defence line from Kranji River to Jurong River, placed to check Japanese advance towards the city from the west.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Jurong West Street 42",
+				"ADDRESSBUILDINGNAME" : "Jurong West Neighbourhood Park",
+				"ADDRESSPOSTALCODE" : "640551",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "B69D171C3971C629",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.91063100011318, 1.421433000158767 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1990,
+				"LANDYADDRESSPOINT" : 44800.49958,
+				"LANDXADDRESSPOINT" : 36603.75139,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/065-punggol-beach-massacre/065-punggol-beach-massacre.png",
+				"NAME" : "Punggol Beach Massacre",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/punggol-beach-massacre",
+				"DESCRIPTION" : "Punggol Beach was a massacre site of Sook Ching. Several men were killed by the Hojo Kempei (Japanese auxiliary military police) on this beach on 28 February 1942.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Punggol Road End",
+				"ADDRESSBUILDINGNAME" : "Beside Jetty at Punggol Point Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "0830349651E2F0D9",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85522556618324, 1.294459962027357 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1991,
+				"LANDYADDRESSPOINT" : 30760.33518,
+				"LANDXADDRESSPOINT" : 30438.05652,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/072-saf-warrant-officers-and-specialist-club/072-saf-warrant-officers-and-specialist-club.png",
+				"NAME" : "Singapore Armed Forces Warrant Officers' and Specialists' Club",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/singapore-armed-forces-warrant-officers-and-specialists-club",
+				"DESCRIPTION" : "The British Government built the clubhouse in 1951 for British non-commissioned officers. It was handed over to Singapore Government when the British pulled out in 1969.The SAF WOSE club was formed in 1974 and was formerly known as the SAF NCO Club until it was renamed in 1994.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Beach Road",
+				"ADDRESSBUILDINGNAME" : "Former NCO Buildings, South Beach Development",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "9BB83355ABEE9D25",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.9794940003157, 1.3652139997814545 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1992,
+				"LANDYADDRESSPOINT" : 38584.43782,
+				"LANDXADDRESSPOINT" : 44267.60306,
+				"ADDRESSBLOCKHOUSENUMBER" : "27",
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/johore_battery-37-Johore-Battery.jpg",
+				"NAME" : "Johore Battery",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/johore-battery",
+				"DESCRIPTION" : "Completed in the late 1930s, Johore Battery was part of Singaporeâ€™s coastal defence system. It comprised three 15-inch guns known as â€œmonster gunsâ€�.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Cosford Road, Off Upper Changi Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "499549",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "472CFE260F6BA873",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.86741970990924, 1.3036672155249718 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1993,
+				"LANDYADDRESSPOINT" : 31778.44103,
+				"LANDXADDRESSPOINT" : 31795.14469,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/051-merdeka-bridge/051-merdeka-bridge.png",
+				"NAME" : "Merdeka Bridge",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/merdeka-bridge",
+				"DESCRIPTION" : "Merdeka Bridge, declared open on 17 August 1956, was constructed to ease traffic congestion. Its name reflects Singaporeâ€™s aspirations for independence (â€œmerdekaâ€� in Malay) then.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Merdeka Bridge, Nicoll Highway, beside lamp post 88F",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "79E6586FC0B1C346",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8325620004035, 1.2771830002424929 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1994,
+				"LANDYADDRESSPOINT" : 28849.92747,
+				"LANDXADDRESSPOINT" : 27915.79876,
+				"ADDRESSBLOCKHOUSENUMBER" : "8",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/077-silat-road-sikh-temple/077-silat-road-sikh-temple.png",
+				"NAME" : "Silat Road Sikh Temple",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/silat-road-sikh-temple",
+				"DESCRIPTION" : "This temple was built in 1924 on Silat Road (today Jalan Bukit Merah). It was also known as the Police Gurdwara (a Sikh place of worship) as its congregation was mostly made up of Sikh policemen.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Jalan Bukit Merah",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "169543",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "5B240837252B495D",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.83797499997097, 1.2794733890156516 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1995,
+				"LANDYADDRESSPOINT" : 29103.18729,
+				"LANDXADDRESSPOINT" : 28518.22198,
+				"ADDRESSBLOCKHOUSENUMBER" : "5",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/089-the-first-public-dental-school-and-clinic/089-the-first-public-dental-school-and-clinic.png",
+				"NAME" : "The First Public Dental School and Public Clinic",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/the-first-public-dental-clinic-and-school",
+				"DESCRIPTION" : "Dental Education and modern dentistry in Singapore began here in 1929. The original Clinic and Dental School of the King Edward VII college of Medicine had its beginnings on this site in the Norris Block of the General Hospital. In 1938, the clinic expanded into a purpose-built facility adjacent to Norris Block. The Japanese military occupied the clinic from 1942 to 1945.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Second Hospital Ave",
+				"ADDRESSBUILDINGNAME" : "Link Bridge between National Dental Centre Singapore and Health Promotion Board",
+				"ADDRESSPOSTALCODE" : "168938",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "401634D90E2A62D9",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8045289998193, 1.3192669997839075 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1996,
+				"LANDYADDRESSPOINT" : 33503.37782,
+				"LANDXADDRESSPOINT" : 24796.00242,
+				"ADDRESSBLOCKHOUSENUMBER" : "5",
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/Former%20Residence%20of%20Chen%20Wen%20His-Chen-Wen-Hsi.jpg",
+				"NAME" : "Chen Wen Hsi Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/chen-wen-hsi",
+				"DESCRIPTION" : "This was formerly the home of Chen Wen Hsi, one of Singaporeâ€™s pioneer artists. Chenâ€™s works mixed Western and Chinese traditions, and continued to influence local artists after his demise in 1991.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Kingsmead Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "267960",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "9844D2A429E2DD58",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85275993374239, 1.286300936686944 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1997,
+				"LANDYADDRESSPOINT" : 29858.15,
+				"LANDXADDRESSPOINT" : 30163.66,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/joseph_conrad-100-Joseph-Conrad.jpg",
+				"NAME" : "Joseph Conrad Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/joseph-conrad",
+				"DESCRIPTION" : "Joseph Conrad, the renowned English master writer, was of Polish origin and travelled to Singapore and south east asia during his seafaring days. He made Singapore and Southeast asia better known to the world through his writings.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside Anderson Bridge, on the grounds of the Fullerton Hotel",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "DB192CB2D8890523",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85016885449585, 1.3020559993907526 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1998,
+				"LANDYADDRESSPOINT" : 31600.2616,
+				"LANDXADDRESSPOINT" : 29875.28301,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/052-methodist-girls-school/052methodistgirlsschool.png",
+				"NAME" : "Methodist Girls' School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/methodist-girls-school",
+				"DESCRIPTION" : "Methodist Girlsâ€™ School began in 1887 as Tamil Girlsâ€™ School in a shophouse at Short Street with nine Indian girls.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Junction of Selegie Road and Short Stree, Beside 100 Selegie Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "188308",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "DC0A65527F362812",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84627000041034, 1.3040810001560554 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 1999,
+				"LANDYADDRESSPOINT" : 31824.17318,
+				"LANDXADDRESSPOINT" : 29441.37465,
+				"ADDRESSBLOCKHOUSENUMBER" : "99",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/086-st-margarets-school/086stmargaretsschool.png",
+				"NAME" : "St. Margaret's School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/st-margarets-school",
+				"DESCRIPTION" : "St. Margaretâ€™s School began as a girlsâ€™ home at North Bridge Road in 1842, to rescue girls who were homeless or being sold to slavery.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Wilkie Road",
+				"ADDRESSBUILDINGNAME" : "St. Margaret's Primary School",
+				"ADDRESSPOSTALCODE" : "228091",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "76DD9957B4BD6B50",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.86698600028487, 1.3062840003949618 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2000,
+				"LANDYADDRESSPOINT" : 32067.79096,
+				"LANDXADDRESSPOINT" : 31746.87287,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/040-kallang-gasworks/040-kallang-gasworks.png",
+				"NAME" : "Kallang Gasworks",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/kallang-gasworks",
+				"DESCRIPTION" : "Built in 1862, Kallang Gasworks was Singaporeâ€™s first supplier of piped gas. It played an important role in ensuring efficient gas production for Singapore.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Kampong Bugis End, opposite Kallang Riverside Park",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "54259647F03136DF",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85140100023737, 1.2840910000564687 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2001,
+				"LANDYADDRESSPOINT" : 29613.78549,
+				"LANDXADDRESSPOINT" : 30012.42377,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/Commercial%20Square-Raffles-Place.jpg",
+				"NAME" : "Raffles Place",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/raffles-place",
+				"DESCRIPTION" : "Raffles Place was designated as Singaporeâ€™s business centre in the 1822 Town Plan. Singaporeâ€™s earliest banks, merchant houses and department stores were situated here.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Raffles Place MRT Station, Exit A",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "0153F0EB8A029B1A",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.88455200019318, 1.38160599970633 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2002,
+				"LANDYADDRESSPOINT" : 40396.54893,
+				"LANDXADDRESSPOINT" : 33701.63218,
+				"ADDRESSBLOCKHOUSENUMBER" : "10",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/031-institute-of-mental-health/031-institute-of-mental-health.png",
+				"NAME" : "Institute of Mental Health",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/institute-of-mental-health",
+				"DESCRIPTION" : "The Mental Hospital was completed in 1928 at Yio Chu Kang Road. It was renamed â€œWoodbridge Hospitalâ€� after a nearby wooden bridge, and then â€œThe Institute of Mental Healthâ€� after moving here in 1993.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Buangkok View",
+				"ADDRESSBUILDINGNAME" : "Main entrance of Buangkok Green Medical Park",
+				"ADDRESSPOSTALCODE" : "539747",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "A11890DC386E3195",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85189399975157, 1.2958319996868495 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2003,
+				"LANDYADDRESSPOINT" : 30912.04513,
+				"LANDXADDRESSPOINT" : 30067.28113,
+				"ADDRESSBLOCKHOUSENUMBER" : "30",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/026-gate-of-hope/026-gate-of-hope.png",
+				"NAME" : "Gate of Hope",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/the-gate-of-hope",
+				"DESCRIPTION" : "From a small gate here, the compassionate sisters of the Convent of the Holy Infant Jesus took in many abandoned infants and children. A replica, named â€œGate of Hopeâ€�, was installed here in 1996.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Victoria Street",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "187996",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "568BC976DBC94F97",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84310799994236, 1.293017000174109 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2004,
+				"LANDYADDRESSPOINT" : 30600.77148,
+				"LANDXADDRESSPOINT" : 29089.47771,
+				"ADDRESSBLOCKHOUSENUMBER" : "81",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/092-united-engineers-limited/092-united-engineers-limited.png",
+				"NAME" : "United Engineers Limited",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/united-engineers-limited",
+				"DESCRIPTION" : "UEL was founded in 1912. It led major construction projects that contributed to Singaporeâ€™s urbanisation and economic growth, and built many iconic structures including the Former Supreme Court.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Clemenceau Avenue",
+				"ADDRESSBUILDINGNAME" : "River Valley Road Entrance of UE Square",
+				"ADDRESSPOSTALCODE" : "239920",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "EC7299E68EDC1116",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.81558100012631, 1.2984269997642013 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2005,
+				"LANDYADDRESSPOINT" : 31198.98623,
+				"LANDXADDRESSPOINT" : 26025.96529,
+				"ADDRESSBLOCKHOUSENUMBER" : "318",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/007-block-a-of-phoenix-park/007-block-a-of-phoenix-park.png",
+				"NAME" : "Block A of Phoenix Park",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/block-a-of-phoenix-park",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Tanglin Road",
+				"ADDRESSBUILDINGNAME" : "Block A",
+				"ADDRESSPOSTALCODE" : "247979",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "8E40966FDA492525",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.77289400000925, 1.3088910003184622 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2006,
+				"LANDYADDRESSPOINT" : 32356.11556,
+				"LANDXADDRESSPOINT" : 21275.3087,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/020-execution-of-captured-rimau-commandos/008-rimau-10.png",
+				"NAME" : "Execution of Captured Rimau Commandos Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/execution-of-captured-rimau-commandos",
+				"DESCRIPTION" : "Operation Rimau (â€œtigerâ€� in Malay) was the second Allied commando attack on Japanese ships in Keppel Harbour. It failed, and ten commandos were beheaded by the Japanese near Dover and Clementi Roads.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Dover Road",
+				"ADDRESSBUILDINGNAME" : "Beside Bus Stop No. 19059, Near NUS U-town Dover Road Entrance",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "67D7C414108CCE9E",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8313339997302, 1.3415559996556634 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2007,
+				"LANDYADDRESSPOINT" : 35967.96274,
+				"LANDXADDRESSPOINT" : 27779.13783,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/022-force-136/022-force-136.png",
+				"NAME" : "Force 136 Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/force-136",
+				"DESCRIPTION" : "Force 136 was a British secret service team that operated in Malaya during the Second World War. One of the agents was Lim Bo Seng, who led Gustavus V Operation in 1943. His grave is in the vicinity.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Lornie Road",
+				"ADDRESSBUILDINGNAME" : "Beside zig-zag bridge to Pavailion, MacRitchie Reservoir Park",
+				"ADDRESSPOSTALCODE" : "297732",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "E99B53321A307897",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84639699992262, 1.2958359998558622 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2008,
+				"LANDYADDRESSPOINT" : 30912.48362,
+				"LANDXADDRESSPOINT" : 29455.51331,
+				"ADDRESSBLOCKHOUSENUMBER" : "2",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/023-fort-canning-command-centre/014-fort-canning-command-centre-02.png",
+				"NAME" : "Fort Canning Command Centre",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/fort-canning-command-centre",
+				"DESCRIPTION" : "Fort Canning Command Centre was the site where Lieutenant-General Arthur Percival and his commanders decided to surrender Singapore to the Japanese on 15 February 1942.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Cox Terrace",
+				"ADDRESSBUILDINGNAME" : "Battlebox Entrance, Fort Canning Park",
+				"ADDRESSPOSTALCODE" : "179622",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "5AD2FD72D0EA1DA9",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.8519300003946, 1.286751000077156 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2009,
+				"LANDYADDRESSPOINT" : 29907.91499,
+				"LANDXADDRESSPOINT" : 30071.29496,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Nhb/Images/Places/Historic%20Sites/Ho%20Chi%20Minh-Ho-Chi-Minh.jpg",
+				"NAME" : "Ho Chi Minh Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/ho-chi-minh",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside Anderson Bridge, on the grounds of the Asian Civilisations Museum",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "DB7A032F6C033BD2",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85146600012187, 1.2868290003852019 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2010,
+				"LANDYADDRESSPOINT" : 29916.53946,
+				"LANDXADDRESSPOINT" : 30019.65559,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/034-jawaharlal-nehru/034jawaharlal-nehru.png",
+				"NAME" : "Jawaharlal Nehru Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/jawaharlal-nehru",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside Anderson Bridge, on the grounds of the Asian Civilisations Museum",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "2393A49E056F0F0C",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.85231399966132, 1.287113000009254 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2011,
+				"LANDYADDRESSPOINT" : 29947.9434,
+				"LANDXADDRESSPOINT" : 30114.03064,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/037-jose-rizal/037-jose-rizal.png",
+				"NAME" : "Jose Rizal Historic Marker",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/jose-rizal",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside Anderson Bridge, on the grounds of the Asian Civilisations Museum",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "F1404479BF6CED2A",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.82111200016662, 1.2631590003383175 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2012,
+				"LANDYADDRESSPOINT" : 27299.22936,
+				"LANDXADDRESSPOINT" : 26641.49778,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/044-keppel-harbour/044-keppel-harbour.png",
+				"NAME" : "Keppel Harbour",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/keppel-harbour",
+				"DESCRIPTION" : "Keppel Harbour has been a thriving maritime gateway for trade since the late 19th century. During the Second World War, Operation Jaywick successfully destroyed seven Japanese ships here.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Harbourfront Walk End, Promenade between Harbourfront Centre and Vivocity",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "4FE7B9E5BB983833",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84119599984689, 1.282032000432969 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2013,
+				"LANDYADDRESSPOINT" : 29386.10615,
+				"LANDXADDRESSPOINT" : 28876.69242,
+				"ADDRESSBLOCKHOUSENUMBER" : "100",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/048-lower-barracks/048-lower-barracks.png",
+				"NAME" : "Lower Barracks",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/lower-barracks",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Eu Tong Sen Street",
+				"ADDRESSBUILDINGNAME" : "Junction of Pearl's Hill and Eu Tong Sen Street, opposite Pearl's Centre",
+				"ADDRESSPOSTALCODE" : "59812",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "CF9943EC8E165420",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.81678600022666, 1.2977480000620045 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2014,
+				"LANDYADDRESSPOINT" : 31123.90499,
+				"LANDXADDRESSPOINT" : 26160.07057,
+				"ADDRESSBLOCKHOUSENUMBER" : "300",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/062-phoenix-park/062-phoenix-park.png",
+				"NAME" : "Phoenix Park",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/phoenix-park",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Tanglin Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "247970",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "E45A9B2F9BB5685D",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.87137899897779, 1.4024735634438628 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2015,
+				"LANDYADDRESSPOINT" : 42703.95132,
+				"LANDXADDRESSPOINT" : 32235.60615,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/075-seletar-airfield/075-seletar-airfield.png",
+				"NAME" : "Seletar Airfield",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/seletar-airfield",
+				"DESCRIPTION" : "Seletar Airfield was the British Royal Air Forceâ€™s main base in the Far East, equipped to protect the Sembawang naval base. Indian Prisoners-of-War were interned here during the Japanese Occupation.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Beside 1 Piccadilly Circus, near Former Seletar Camp Gate, Bus Stop No. 68111",
+				"ADDRESSPOSTALCODE" : "797640",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "9746536B12B14D0A",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84178899993596, 1.2846439997397725 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2016,
+				"LANDYADDRESSPOINT" : 29674.92783,
+				"LANDXADDRESSPOINT" : 28942.68751,
+				"ADDRESSBLOCKHOUSENUMBER" : "195",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/094-upper-barracks/094-upper-barracks.png",
+				"NAME" : "Upper Barracks",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/upper-barracks",
+				"DESCRIPTION" : null,
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Pearl's Hill Terrace",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "168976",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "09380E4DE404DF1B",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.77140500023891, 1.4488549999511202 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2017,
+				"LANDYADDRESSPOINT" : 47832.63671,
+				"LANDXADDRESSPOINT" : 21109.99937,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/097-withdrawal-to-singapore/097-withdrawal-to-singapore.png",
+				"NAME" : "Withdrawal to Singapore",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/withdrawal-to-singapore",
+				"DESCRIPTION" : "During the Second World War, the last Allied military troop in Malaya withdrew to Singapore through the Causeway on 31 January 1942, after losing Malaya to the Japanese.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Admiralty Road West",
+				"ADDRESSBUILDINGNAME" : "WOODLANDS WATERFRONT PARK, NEAR LAMP POST 1R-32",
+				"ADDRESSPOSTALCODE" : null,
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "0FA8A8983672EDC6",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84625873645719, 1.2815598687109473 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2018,
+				"LANDYADDRESSPOINT" : 29333.90255,
+				"LANDXADDRESSPOINT" : 29440.13384,
+				"ADDRESSBLOCKHOUSENUMBER" : null,
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/098-yeung-ching-school/098-yeung-ching-school.png",
+				"NAME" : "Yeung Ching School",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/yeung-ching-school",
+				"DESCRIPTION" : "Yeung Ching School began in 1905 as a private school for Cantonese children. Apart from conducting classes in the day, it offered night classes to children who were poor or overaged.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : null,
+				"ADDRESSBUILDINGNAME" : "Land Parcel Beside 65 Club Street",
+				"ADDRESSPOSTALCODE" : "69439",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "1D74D06B47C85E58",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 103.84670000015898, 1.2771269996608903 ]
+			},
+			"properties" : {
+				"OBJECTID_1" : 2019,
+				"LANDYADDRESSPOINT" : 28843.73914,
+				"LANDXADDRESSPOINT" : 29489.24538,
+				"ADDRESSBLOCKHOUSENUMBER" : "32",
+				"PHOTOURL" : "https://roots.sg/~/media/Roots/Images/historic-sites/017-custom-house-maxwell-road/017-custom-house-maxwell-road.png",
+				"NAME" : "Custom House, Maxwell Road",
+				"HYPERLINK" : "https://www.roots.gov.sg/places/places-landing/Places/historic-sites/custom-house-maxwell-road",
+				"DESCRIPTION" : "This was the headquarters of Singapore Customs from 1932 to 1989. The building also housed the Film Censorâ€™s Office and the Maxwell Road Post Office.",
+				"ADDRESSUNITNUMBER" : null,
+				"ADDRESSTYPE" : null,
+				"ADDRESSSTREETNAME" : "Maxwell Road",
+				"ADDRESSBUILDINGNAME" : null,
+				"ADDRESSPOSTALCODE" : "69115",
+				"ADDRESSFLOORNUMBER" : null,
+				"INC_CRC" : "FDDDC4C32836603D",
+				"FMEL_UPD_D" : "20210305144718"
+			}
+		}
+	]
+}
