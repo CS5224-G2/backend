@@ -1,4 +1,5 @@
 # *.geojson
 .venv/
 venv/
-framework/__pycache__/
+**/__pycache__/
+.env
