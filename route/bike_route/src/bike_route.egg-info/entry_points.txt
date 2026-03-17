@@ -1,0 +1,2 @@
+[console_scripts]
+bike_route = bike_route.main:main
