@@ -1,0 +1,15 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Backend application of CycleLink"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.135.1",
+    "psycopg2-binary==2.9.11",
+    "pydantic-settings>=2.13.1",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg>=0.30",
+    "geoalchemy2>=0.15",
+    "httpx>=0.28",
+]
