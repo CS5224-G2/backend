@@ -1,0 +1,8 @@
+# 1. Copy or rename this file to "terraform.tfvars"
+# 2. Replace the dummy values with your actual secrets.
+
+db_username = "RDS_DB_USERNAME"
+db_password = "RDS_DB_PASSWORD"
+
+# To restore from a previous backup after a tofu destroy, uncomment this line and paste the snapshot name:
+# snapshot_identifier = "cyclelink-prod-db-final-snapshot-123456"
