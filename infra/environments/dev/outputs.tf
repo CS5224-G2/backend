@@ -2,18 +2,26 @@ output "s3_bucket_name" {
   value = module.core.s3_bucket_name
 }
 
-output "db_endpoint" {
-  value = module.core.db_endpoint
+output "rds_endpoint" {
+  value = module.core.rds_endpoint
 }
 
-output "db_address" {
-  value = module.core.db_address
+output "rds_address" {
+  value = module.core.rds_address
 }
 
-output "db_port" {
-  value = module.core.db_port
+output "rds_port" {
+  value = module.core.rds_port
 }
 
-output "db_name" {
-  value = module.core.db_name
+output "rds_name" {
+  value = module.core.rds_name
+}
+
+output "docdb_endpoint" {
+  value = module.core.docdb_endpoint
+}
+
+output "docdb_port" {
+  value = module.core.docdb_port
 }

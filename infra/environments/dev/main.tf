@@ -15,9 +15,12 @@ module "core" {
   source      = "../../modules/core"
   environment = "dev"
 
-  db_publicly_accessible = true
+  rds_publicly_accessible = true
   
-  db_username            = var.db_username
-  db_password            = var.db_password
-  snapshot_identifier    = var.snapshot_identifier
+  rds_username            = var.rds_username
+  rds_password            = var.rds_password
+  rds_snapshot_identifier    = var.rds_snapshot_identifier
+
+  docdb_username         = var.docdb_username
+  docdb_password         = var.docdb_password
 }
