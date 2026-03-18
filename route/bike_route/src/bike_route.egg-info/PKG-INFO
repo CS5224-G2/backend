@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: bike_route
+Version: 0.2.0
+Summary: A GPX route generator with elevation enrichment
+Requires-Python: >=3.9
+License-File: LICENSE-2.0.txt
+License-File: NOTICE
+Requires-Dist: osmnx
+Requires-Dist: networkx
+Requires-Dist: gpxpy
+Requires-Dist: requests
+Requires-Dist: shapely
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Dynamic: license-file

@@ -1,4 +1,6 @@
+from enum import StrEnum
 from typing import Generic, TypeVar
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -62,3 +64,60 @@ class TouristAttractionResponse(_ORMBase):
     longitude: float
     latitude: float
     distance_m: float | None = None
+
+class Point(BaseModel):
+    lat: float
+    lon: float
+
+
+class POICategory(StrEnum):
+    HAWKER_CENTRE = "hawker_centre"
+    PARK = "park"
+    HISTORIC_SITE = "historic_site"
+    TOURIST_ATTRACTION = "tourist_attraction"
+
+
+class POIWaypoint(BaseModel):
+    name: str
+    category: POICategory
+    point: Point
+
+class RoutePreferences(BaseModel):
+    include_hawker_centres: bool = True
+    include_parks: bool = True
+    include_historic_sites: bool = True
+    include_tourist_attractions: bool = True
+
+class RouteRequest(BaseModel):
+    model_config = ConfigDict(
+        # example for Gardens By the Bay route
+        json_schema_extra={
+            # Example: East Coast Park coastal ride (~20km)
+            # Changi Beach Park to Marina Barrage (reminds me of NS...)
+            "example": {
+                "origin": {"lat": 1.3889, "lon": 103.9874},
+                "destination": {"lat": 1.2806, "lon": 103.8713},
+                "waypoints": [],
+                "preferences": {
+                    "include_hawker_centres": True,
+                    "include_parks": True,
+                    "include_historic_sites": True,
+                    "include_tourist_attractions": True,
+                },
+            }
+        }
+    )
+
+    origin: Point
+    destination: Point
+    waypoints: list[Point] = []
+    preferences: RoutePreferences = RoutePreferences()
+
+class RouteResponse(BaseModel):
+    # To visualize a gpx, you can use https://gpx.studio/app.
+    # However, we are only returning a list of points. Can consider adding gpx export later
+    path: list[Point]
+    poi_waypoints: list[POIWaypoint] = []
+    # not implemented yet
+    distance: float
+    duration: float

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .clients.http import service_client
 from .config import settings
 from .database import close_engines, init_engines
-from .routers import hawker, historic_sites, parks, tourist_attractions
+from .routers import hawker, historic_sites, parks, tourist_attractions, route_suggestion
 
 
 @asynccontextmanager
@@ -39,3 +39,4 @@ app.include_router(hawker.router, prefix=_V1)
 app.include_router(historic_sites.router, prefix=_V1)
 app.include_router(parks.router, prefix=_V1)
 app.include_router(tourist_attractions.router, prefix=_V1)
+app.include_router(route_suggestion.router, prefix=_V1)
