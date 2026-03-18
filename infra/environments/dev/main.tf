@@ -15,7 +15,7 @@ module "core" {
   source      = "../../modules/core"
   environment = "dev"
 
-  rds_publicly_accessible = true
+  resource_publicly_accessible = true
   
   rds_username            = var.rds_username
   rds_password            = var.rds_password

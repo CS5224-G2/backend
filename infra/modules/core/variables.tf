@@ -3,9 +3,9 @@ variable "environment" {
   description = "The deployment environment (e.g., dev, prod)"
 }
 
-variable "rds_publicly_accessible" {
+variable "resource_publicly_accessible" {
   type        = bool
-  description = "Should RDS have a public IP for local access?"
+  description = "Should the resource have a public IP for local access?"
   default     = false
 }
 
