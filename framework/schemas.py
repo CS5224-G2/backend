@@ -62,3 +62,33 @@ class TouristAttractionResponse(_ORMBase):
     longitude: float
     latitude: float
     distance_m: float | None = None
+
+class Point(BaseModel):
+    lat: float
+    lon: float
+
+class RouteRequest(BaseModel):
+    model_config = ConfigDict(
+        # example for Gardens By the Bay route
+        json_schema_extra={
+            "example": {
+                "origin": {"lat": 1.3009, "lon": 103.9122},
+                "destination": {"lat": 1.3038, "lon": 103.9385},
+                "waypoints": [],
+                "preferences": {},
+            }
+        }
+    )
+
+    origin: Point
+    destination: Point
+    waypoints: list[Point] = []
+    preferences: dict | None = None
+
+class RouteResponse(BaseModel):
+    # To visualize a gpx, you can use https://gpx.studio/app.
+    # However, we are only returning a list of points. Can consider adding gpx export later
+    path: list[Point]
+    # not implemented yet
+    distance: float
+    duration: float
