@@ -16,9 +16,8 @@ from . import tourist_attractions as tourist_attractions_service
 _METRES_PER_DEGREE_LAT = 111_320
 
 # Set to a directory path to keep generated GPX files for debugging, e.g. "debug_gpx"
-# Leave as None in production
 _DEBUG_GPX_DIR: str | None = None
-# _DEBUG_GPX_DIR = "debug_gpx"
+_DEBUG_GPX_DIR = "debug_gpx"
 
 def _validate_route_request(req: RouteRequest):
     if req.origin.lat == req.destination.lat and req.origin.lon == req.destination.lon:
@@ -184,9 +183,7 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     '''
     You can keep the generated GPX file for debugging / visualization by setting 
     _DEBUG_GPX_DIR to a directory path, e.g. "debug_gpx" (just uncomment the line on top of this file).
-    Please only use this for debugging, not prod.
-
-    The GPX file will be saved as "debug_gpx/route.gpx" 
+    If so, the GPX file will be saved in that directory with a fixed name "route.gpx" (overwritten on each request).
 
     Otherwise, it will just write it to a temporary folder which is destroyed immediately.
     
