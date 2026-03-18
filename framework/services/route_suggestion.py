@@ -1,10 +1,11 @@
-from fastapi import HTTPException
-from ..schemas import Point, RouteRequest, RouteResponse
-
-import xml.etree.ElementTree as ET
-import tempfile
-import subprocess
 import os
+import subprocess
+import tempfile
+import xml.etree.ElementTree as ET
+
+from fastapi import HTTPException
+
+from ..schemas import Point, RouteRequest, RouteResponse
 
 def _validate_route_request(req: RouteRequest):
     if req.origin.lat == req.destination.lat and req.origin.lon == req.destination.lon:
