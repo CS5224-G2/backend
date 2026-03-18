@@ -1,0 +1,6 @@
+# This is an example file. 
+# 1. Copy or rename this file to "terraform.tfvars"
+# 2. Replace the dummy values with your actual secrets.
+
+db_username = "RDS_DB_USERNAME"
+db_password = "RDS_DB_PASSWORD"
