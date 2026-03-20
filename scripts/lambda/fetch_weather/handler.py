@@ -3,14 +3,17 @@ Fetch Weather Data from data.gov.sg as a Lambda function
 
 Pulls real-time air temperature, relative humidity, and rainfall
 data from Singapore's open data APIs and returns a consolidated
-weather snapshot keyed by station.
+weather snapshot keyed by station. Uploads results to S3.
 """
 
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
+
+import boto3
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -128,17 +131,57 @@ def fetch_all_weather() -> dict:
     }
 
 
-def lambda_handler(event, context):
+def upload_to_s3(data: dict, bucket_name: str) -> str:
+    """
+    Upload weather data to S3 as a JSON file.
+
+    Key format: weather/YYYY-MM-DD/HH-MM.json
+    Returns the S3 key of the uploaded object.
+    """
+    now = datetime.now(timezone.utc)
+    s3_key = f"weather/{now.strftime('%Y-%m-%d')}/{now.strftime('%H-%M')}.json"
+
+    s3_client = boto3.client("s3")
+    s3_client.put_object(
+        Bucket=bucket_name,
+        Key=s3_key,
+        Body=json.dumps(data),
+        ContentType="application/json",
+    )
+
+    logger.info("Uploaded weather data to s3://%s/%s", bucket_name, s3_key)
+    return s3_key
+
+
+def lambda_handler(event, _context):
     """AWS Lambda entry point."""
     logger.info("Event: %s", json.dumps(event))
+
+    bucket_name = os.environ.get("S3_BUCKET_NAME")
+    if not bucket_name:
+        logger.error("S3_BUCKET_NAME environment variable is not set")
+        return {
+            "statusCode": 500,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps({"error": "S3_BUCKET_NAME not configured"}),
+        }
 
     try:
         result = fetch_all_weather()
         logger.info("Successfully fetched weather for %d stations", len(result["stations"]))
+
+        s3_key = upload_to_s3(result, bucket_name)
+
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(result),
+            "body": json.dumps(
+                {
+                    "message": "Weather data fetched and uploaded",
+                    "s3_key": s3_key,
+                    "station_count": len(result["stations"]),
+                }
+            ),
         }
     except Exception as exc:
         logger.exception("Error fetching weather data")
@@ -151,5 +194,6 @@ def lambda_handler(event, context):
 
 # Allow running locally for testing: python handler.py
 if __name__ == "__main__":
-    response = lambda_handler({}, None)
-    print(json.dumps(json.loads(response["body"]), indent=2))
+    # For local testing, just fetch and print (skip S3 upload)
+    result = fetch_all_weather()
+    print(json.dumps(result, indent=2))
