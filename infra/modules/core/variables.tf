@@ -25,27 +25,3 @@ variable "rds_snapshot_identifier" {
   description = "The name of the snapshot to restore from. Leave null to create a brand new DB."
   default     = null
 }
-
-#### MongoDB Atlas Variables ####
-
-variable "atlas_org_id" {
-  type        = string
-  description = "MongoDB Atlas Organization ID"
-}
-
-variable "atlas_db_username" {
-  type        = string
-  description = "Username for the MongoDB Atlas database user"
-}
-
-variable "atlas_db_password" {
-  type        = string
-  description = "Password for the MongoDB Atlas database user"
-  sensitive   = true
-}
-
-variable "atlas_ip_access_cidr" {
-  type        = string
-  description = "CIDR block to allow access to MongoDB Atlas (e.g., 0.0.0.0/0 for dev, specific IP for prod)"
-  default     = "0.0.0.0/0"
-}
