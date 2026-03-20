@@ -17,3 +17,11 @@ output "rds_port" {
 output "rds_name" {
   value = module.core.rds_name
 }
+
+output "fetch_weather_function_name" {
+  value = module.lambda.fetch_weather_function_name
+}
+
+output "fetch_weather_function_arn" {
+  value = module.lambda.fetch_weather_function_arn
+}

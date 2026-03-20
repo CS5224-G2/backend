@@ -21,3 +21,11 @@ module "core" {
   rds_password            = var.rds_password
   rds_snapshot_identifier    = var.rds_snapshot_identifier
 }
+
+module "lambda" {
+  source      = "../../modules/lambda"
+  environment = "dev"
+
+  s3_bucket_name          = module.core.s3_bucket_name
+  enable_weather_schedule = false
+}
