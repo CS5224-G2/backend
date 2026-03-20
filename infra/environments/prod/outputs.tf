@@ -17,11 +17,3 @@ output "rds_port" {
 output "rds_name" {
   value = module.core.rds_name
 }
-
-output "docdb_endpoint" {
-  value = module.core.docdb_endpoint
-}
-
-output "docdb_port" {
-  value = module.core.docdb_port
-}

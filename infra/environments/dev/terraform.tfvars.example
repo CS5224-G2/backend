@@ -7,7 +7,3 @@ rds_password = "RDS_DB_PASSWORD"
 
 # To restore from a previous backup after a tofu destroy, uncomment this line and paste the snapshot name:
 # rds_snapshot_identifier = "cyclelink-dev-db-final-snapshot-123456"
-
-###### DocumentDB Variables ######
-docdb_username = "DOCDB_USERNAME"
-docdb_password = "DOCDB_PASSWORD"

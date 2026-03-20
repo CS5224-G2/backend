@@ -19,15 +19,6 @@ resource "aws_security_group" "cyclelink_sg" {
     cidr_blocks = var.resource_publicly_accessible ? ["0.0.0.0/0"] : [data.aws_vpc.default.cidr_block]
   }
 
-  # DocumentDB Access
-  ingress {
-    description = "DocumentDB Access"
-    from_port   = 27017
-    to_port     = 27017
-    protocol    = "tcp"
-    cidr_blocks = var.resource_publicly_accessible ? ["0.0.0.0/0"] : [data.aws_vpc.default.cidr_block]
-  }
-
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -67,21 +58,52 @@ resource "aws_db_instance" "cyclelink_db" {
   vpc_security_group_ids = [aws_security_group.cyclelink_sg.id]
 }
 
-# DocumentDB
-resource "aws_docdb_cluster" "cyclelink_docdb" {
-  cluster_identifier      = "cyclelink-${var.environment}-docdb"
-  engine                  = "docdb"
-  master_username         = var.docdb_username
-  master_password         = var.docdb_password
-  
-  skip_final_snapshot       = false
-  final_snapshot_identifier = "cyclelink-${var.environment}-docdb-final-snapshot"
-  vpc_security_group_ids    = [aws_security_group.cyclelink_sg.id]
+# ============================================================
+# MongoDB Atlas
+# ============================================================
+
+# Create a dedicated Atlas Project for this environment
+resource "mongodbatlas_project" "cyclelink" {
+  name   = "cyclelink-${var.environment}"
+  org_id = var.atlas_org_id
 }
 
-resource "aws_docdb_cluster_instance" "cyclelink_docdb_instance" {
-  count              = 1
-  identifier         = "cyclelink-${var.environment}-docdb-instance-${count.index}"
-  cluster_identifier = aws_docdb_cluster.cyclelink_docdb.id
-  instance_class     = "db.t3.medium" # Free tier eligible
+# Free-tier (M0) shared cluster on AWS ap-southeast-1
+resource "mongodbatlas_advanced_cluster" "cyclelink" {
+  project_id   = mongodbatlas_project.cyclelink.id
+  name         = "cyclelink-${var.environment}"
+  cluster_type = "REPLICASET"
+
+  replication_specs {
+    region_configs {
+      provider_name         = "TENANT"
+      backing_provider_name = "AWS"
+      region_name           = "AP_SOUTHEAST_1"
+      priority              = 7
+
+      electable_specs {
+        instance_size = "M0"
+      }
+    }
+  }
+}
+
+# Database User
+resource "mongodbatlas_database_user" "cyclelink" {
+  project_id         = mongodbatlas_project.cyclelink.id
+  auth_database_name = "admin"
+  username           = var.atlas_db_username
+  password           = var.atlas_db_password
+
+  roles {
+    role_name     = "readWrite"
+    database_name = "cyclelink"
+  }
+}
+
+# Allow access from anywhere (dev) or restrict to known IPs (prod)
+resource "mongodbatlas_project_ip_access_list" "cyclelink" {
+  project_id = mongodbatlas_project.cyclelink.id
+  cidr_block = var.atlas_ip_access_cidr
+  comment    = "Managed by OpenTofu - ${var.environment}"
 }

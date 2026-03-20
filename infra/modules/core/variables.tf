@@ -26,13 +26,26 @@ variable "rds_snapshot_identifier" {
   default     = null
 }
 
-variable "docdb_username" {
+#### MongoDB Atlas Variables ####
+
+variable "atlas_org_id" {
   type        = string
-  description = "Username for DocumentDB"
+  description = "MongoDB Atlas Organization ID"
 }
 
-variable "docdb_password" {
+variable "atlas_db_username" {
   type        = string
-  description = "Master password for DocumentDB"
+  description = "Username for the MongoDB Atlas database user"
+}
+
+variable "atlas_db_password" {
+  type        = string
+  description = "Password for the MongoDB Atlas database user"
   sensitive   = true
+}
+
+variable "atlas_ip_access_cidr" {
+  type        = string
+  description = "CIDR block to allow access to MongoDB Atlas (e.g., 0.0.0.0/0 for dev, specific IP for prod)"
+  default     = "0.0.0.0/0"
 }
