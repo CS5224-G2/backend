@@ -69,7 +69,7 @@ jobs:
           FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}"
 
           docker build \
-            -f ./Dockerfile \
+            -f ./framework/Dockerfile \
             -t "${FULL_IMAGE}:${IMAGE_TAG}" \
             -t "${FULL_IMAGE}:latest" \
             .
