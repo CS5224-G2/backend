@@ -28,3 +28,9 @@ variable "allowed_origins" {
   default     = "*"
 }
 
+variable "mongodb_url" {
+  type        = string
+  description = "MongoDB Connection String"
+  sensitive   = true
+}
+

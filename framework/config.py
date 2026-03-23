@@ -1,3 +1,4 @@
+from typing import Any, AsyncGenerator, Annotated
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
@@ -14,6 +15,8 @@ class Settings(BaseSettings):
     # --- Databases ---
     # Places DB (PostgreSQL + PostGIS)
     PLACES_DB_URL: str = "postgresql+asyncpg://postgres:dev@localhost:5432/CycleLink"
+    # MongoDB Cluster
+    MONGODB_URL: str = "mongodb://localhost:27017"
 
     # --- Auth ---
     # Generate with: openssl rand -hex 32
@@ -22,11 +25,12 @@ class Settings(BaseSettings):
     JWT_EXPIRE_MINUTES: int = 60
 
     # --- CORS ---
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8081"]
+    # Using Any type to prevent Pydantic V2 from trying to parse comma-separated strings as JSON.
+    ALLOWED_ORIGINS: Any = ["http://localhost:3000", "http://localhost:8081"]
 
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod
-    def parse_origins(cls, v: str | list) -> list[str]:
+    def parse_origins(cls, v: Any) -> list[str]:
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
@@ -41,6 +45,7 @@ class Settings(BaseSettings):
     def parse_service_urls(cls, v: str | dict) -> dict[str, str]:
         if isinstance(v, str):
             import json
+
             return json.loads(v)
         return v
 

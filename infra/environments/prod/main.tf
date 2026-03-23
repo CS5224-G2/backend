@@ -42,6 +42,7 @@ module "ecs" {
   secret_key      = var.secret_key
   allowed_origins = var.allowed_origins
   s3_bucket_name  = module.core.s3_bucket_name
+  mongodb_url     = var.mongodb_url
 }
 
 
