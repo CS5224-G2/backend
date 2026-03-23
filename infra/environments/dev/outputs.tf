@@ -25,3 +25,20 @@ output "fetch_weather_function_name" {
 output "fetch_weather_function_arn" {
   value = module.lambda.fetch_weather_function_arn
 }
+
+#### ECS Outputs ####
+output "ecr_repository_url" {
+  value = module.ecs.ecr_repository_url
+}
+
+output "ecs_cluster_name" {
+  value = module.ecs.ecs_cluster_name
+}
+
+output "ecs_service_name" {
+  value = module.ecs.ecs_service_name
+}
+
+output "alb_dns_name" {
+  value = module.ecs.alb_dns_name
+}
