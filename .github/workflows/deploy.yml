@@ -1,0 +1,99 @@
+name: Deploy Backend to ECS
+
+on:
+  push:
+    branches: [production]
+    paths:
+      - "backend/**"
+      - "!backend/infra/**"
+      - "!backend/scripts/**"
+      - "!backend/README.md"
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  AWS_REGION: ap-southeast-1
+
+jobs:
+  build-and-deploy:
+    name: Build → Push → Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    permissions:
+      id-token: write   # for OIDC-based AWS auth (if using)
+      contents: read
+
+    steps:
+      # ── Checkout ─────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── AWS Credentials ──────────────────────────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ── ECR Login ────────────────────────────────────────────────
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Determine names ──────────────────────────────────────────
+      - name: Set environment variables
+        run: |
+          ENV="${{ github.event.inputs.environment || 'dev' }}"
+          echo "DEPLOY_ENV=${ENV}" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY=cyclelink-${ENV}-backend" >> $GITHUB_ENV
+          echo "ECS_CLUSTER=cyclelink-${ENV}-cluster" >> $GITHUB_ENV
+          echo "ECS_SERVICE=cyclelink-${ENV}-backend" >> $GITHUB_ENV
+
+      # ── Build & Push ─────────────────────────────────────────────
+      - name: Build, tag, and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+        run: |
+          IMAGE_TAG="${{ github.sha }}"
+          FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}"
+
+          docker build \
+            -f ./backend/Dockerfile \
+            -t "${FULL_IMAGE}:${IMAGE_TAG}" \
+            -t "${FULL_IMAGE}:latest" \
+            ./backend
+
+          docker push "${FULL_IMAGE}:${IMAGE_TAG}"
+          docker push "${FULL_IMAGE}:latest"
+
+          echo "IMAGE=${FULL_IMAGE}:${IMAGE_TAG}" >> $GITHUB_ENV
+
+      # ── Deploy to ECS ────────────────────────────────────────────
+      - name: Force new ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster "${ECS_CLUSTER}" \
+            --service "${ECS_SERVICE}" \
+            --force-new-deployment \
+            --region "${AWS_REGION}"
+
+      # ── Wait for stability ───────────────────────────────────────
+      - name: Wait for ECS service stability
+        run: |
+          echo "Waiting for ECS service to stabilise…"
+          aws ecs wait services-stable \
+            --cluster "${ECS_CLUSTER}" \
+            --services "${ECS_SERVICE}" \
+            --region "${AWS_REGION}"
+          echo "✅ Deployment complete!"

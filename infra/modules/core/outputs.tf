@@ -19,3 +19,19 @@ output "rds_port" {
 output "rds_name" {
   value       = aws_db_instance.cyclelink_db.db_name
 }
+
+#### Networking Outputs ####
+output "vpc_id" {
+  value       = data.aws_vpc.default.id
+  description = "ID of the VPC"
+}
+
+output "subnet_ids" {
+  value       = data.aws_subnets.default.ids
+  description = "IDs of the default subnets"
+}
+
+output "security_group_id" {
+  value       = aws_security_group.cyclelink_sg.id
+  description = "ID of the CycleLink security group"
+}

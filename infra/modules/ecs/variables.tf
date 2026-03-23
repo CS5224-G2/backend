@@ -1,0 +1,77 @@
+variable "environment" {
+  type        = string
+  description = "The deployment environment (e.g., dev, prod)"
+}
+
+variable "aws_region" {
+  type        = string
+  description = "AWS region"
+  default     = "ap-southeast-1"
+}
+
+# ── Networking ───────────────────────────────────────────────────────
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID to deploy into"
+}
+
+variable "subnet_ids" {
+  type        = list(string)
+  description = "Subnet IDs for ALB and ECS tasks"
+}
+
+variable "security_group_id" {
+  type        = string
+  description = "Existing Security Group ID to use for ALB and ECS Tasks"
+}
+
+
+# ── App Configuration ───────────────────────────────────────────────
+variable "places_db_url" {
+  type        = string
+  description = "PostgreSQL connection string for the places database"
+  sensitive   = true
+}
+
+variable "secret_key" {
+  type        = string
+  description = "JWT / session secret key"
+  sensitive   = true
+  default     = "changeme"
+}
+
+variable "allowed_origins" {
+  type        = string
+  description = "Comma-separated CORS origins"
+  default     = "*"
+}
+
+variable "service_urls" {
+  type        = string
+  description = "JSON string of microservice URLs"
+  default     = "{}"
+}
+
+variable "s3_bucket_name" {
+  type        = string
+  description = "Name of the S3 bucket used by the app"
+}
+
+# ── Task Sizing ─────────────────────────────────────────────────────
+variable "task_cpu" {
+  type        = string
+  description = "Fargate task CPU units (256 = 0.25 vCPU)"
+  default     = "256"
+}
+
+variable "task_memory" {
+  type        = string
+  description = "Fargate task memory in MiB"
+  default     = "512"
+}
+
+variable "desired_count" {
+  type        = number
+  description = "Number of ECS tasks to run"
+  default     = 1
+}
