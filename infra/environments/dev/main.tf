@@ -38,7 +38,7 @@ module "ecs" {
   subnet_ids        = module.core.subnet_ids
   security_group_id = module.core.security_group_id
 
-  places_db_url   = "postgresql+asyncpg://${var.rds_username}:${var.rds_password}@${module.core.rds_address}:${module.core.rds_port}/${module.core.rds_name}"
+  places_db_url   = "postgresql+asyncpg://${var.rds_username}:${var.rds_password}@${module.core.rds_address}:${module.core.rds_port}/${module.core.rds_name}?ssl=require"
   secret_key      = var.secret_key
   allowed_origins = var.allowed_origins
   s3_bucket_name  = module.core.s3_bucket_name
