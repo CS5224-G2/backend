@@ -109,6 +109,16 @@ resource "aws_security_group_rule" "ecs_from_alb" {
   description              = "Allow ECS tasks to receive traffic from ALB (same SG)"
 }
 
+resource "aws_security_group_rule" "rds_from_ecs" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  security_group_id        = var.security_group_id
+  source_security_group_id = var.security_group_id
+  description              = "Allow RDS to receive traffic from ECS tasks (same SG)"
+}
+
 ############################################################
 # ALB
 ############################################################
@@ -188,8 +198,9 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "ENVIRONMENT",     value = var.environment },
       { name = "PLACES_DB_URL",   value = var.places_db_url },
       { name = "SECRET_KEY",      value = var.secret_key },
-      { name = "ALLOWED_ORIGINS", value = var.allowed_origins },
+      { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
       { name = "SERVICE_URLS",    value = var.service_urls },
+      { name = "MONGODB_URL",     value = var.mongodb_url },
     ]
 
     logConfiguration = {

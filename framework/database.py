@@ -6,8 +6,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
+from pymongo import AsyncMongoClient
+from pymongo.asynchronous.database import AsyncDatabase
 from .config import settings
-
 
 class Base(DeclarativeBase):
     pass
@@ -19,9 +20,14 @@ class Base(DeclarativeBase):
 _engines: dict = {}
 _session_factories: dict = {}
 
+_mongo_client: AsyncMongoClient | None = None
 
 def init_engines() -> None:
     """Create all database engines. Called once at app startup (lifespan)."""
+    global _mongo_client
+    if _mongo_client is None:
+        _mongo_client = AsyncMongoClient(settings.MONGODB_URL)
+
     if "places" in _engines:
         return
     _engines["places"] = create_async_engine(
@@ -41,6 +47,10 @@ def init_engines() -> None:
 
 async def close_engines() -> None:
     """Dispose all engine connection pools. Called at app shutdown (lifespan)."""
+    global _mongo_client
+    if _mongo_client is not None:
+        await _mongo_client.close()
+
     for engine in _engines.values():
         await engine.dispose()
 
@@ -54,3 +64,10 @@ async def get_places_db() -> AsyncGenerator[AsyncSession, None]:
 
 # Typed alias for imports
 PlacesDB = Annotated[AsyncSession, Depends(get_places_db)]
+
+
+async def get_mongo_db() -> AsyncGenerator[AsyncDatabase, None]:
+    # We implicitly default to a database named "cyclelink" inside the Mongo cluster
+    yield _mongo_client.cyclelink
+
+MongoDB = Annotated[AsyncDatabase, Depends(get_mongo_db)]

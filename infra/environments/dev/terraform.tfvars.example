@@ -11,4 +11,4 @@ rds_password = "RDS_DB_PASSWORD"
 ###### ECS / App Variables ######
 # secret_key      = "YOUR_JWT_SECRET_KEY"
 # allowed_origins = "http://localhost:3000,https://cyclelink.com"
-
+mongodb_url     = "MONGODB_URL"

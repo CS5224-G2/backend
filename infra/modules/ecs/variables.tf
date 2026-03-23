@@ -52,6 +52,13 @@ variable "service_urls" {
   default     = "{}"
 }
 
+variable "mongodb_url" {
+  type        = string
+  description = "MongoDB Connection String"
+  sensitive   = true
+}
+
+
 variable "s3_bucket_name" {
   type        = string
   description = "Name of the S3 bucket used by the app"

@@ -13,6 +13,7 @@ dependencies = [
     "geoalchemy2>=0.15",
     "httpx>=0.28",
     "bike_route",
+    "pymongo>=4.16.0",
 ]
 
 [tool.uv.sources]
