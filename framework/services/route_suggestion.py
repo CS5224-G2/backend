@@ -1,13 +1,17 @@
+import asyncio
+import functools
 import math
 import os
 import subprocess
 import tempfile
+import uuid
 import xml.etree.ElementTree as ET
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..schemas import POICategory, POIWaypoint, Point, RouteRequest, RouteResponse
+from ..config import settings
 from . import hawker as hawker_service
 from . import historic_sites as historic_sites_service
 from . import parks as park_service
@@ -15,9 +19,9 @@ from . import tourist_attractions as tourist_attractions_service
 
 _METRES_PER_DEGREE_LAT = 111_320
 
-# Set to a directory path to keep generated GPX files for debugging, e.g. "debug_gpx"
-_DEBUG_GPX_DIR: str | None = None
-_DEBUG_GPX_DIR = "debug_gpx"
+# Set SAVE_GPX=true to persist generated GPX files to the saved_gpx/ folder.
+# Each request writes a unique file (route_<uuid>.gpx).
+_GPX_DIR = "saved_gpx"
 
 def _validate_route_request(req: RouteRequest):
     if req.origin.lat == req.destination.lat and req.origin.lon == req.destination.lon:
@@ -151,13 +155,13 @@ def _build_cli_command(req: RouteRequest, output_path: str, extra_waypoints: lis
 
     return cmd
 
-def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
-    # better to use async but somehow does not work so just run synchronously for now
+async def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
     # stdout/stderr are inherited (not captured) so bike_route output streams to the server terminal
+    loop = asyncio.get_event_loop()
     try:
-        result = subprocess.run(
-            cmd,
-            check=False
+        # moves the blocking subprocess.run call to a separate thread so it doesn't block the event loop
+        result = await loop.run_in_executor(
+            None, functools.partial(subprocess.run, cmd, check=False)
         )
     except Exception as e:
         raise HTTPException(
@@ -176,17 +180,16 @@ def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
             status_code=500,
             detail="CLI succeeded but did not create the GPX output file"
         )
-    
+
     return _parse_gpx_points(output_path)
 
 async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     '''
-    You can keep the generated GPX file for debugging / visualization by setting 
-    _DEBUG_GPX_DIR to a directory path, e.g. "debug_gpx" (just uncomment the line on top of this file).
-    If so, the GPX file will be saved in that directory with a fixed name "route.gpx" (overwritten on each request).
+    Set SAVE_GPX=true to persist generated GPX files to the saved_gpx/ folder.
+    Each request gets a unique filename (route_<uuid>.gpx) to avoid collisions.
 
-    Otherwise, it will just write it to a temporary folder which is destroyed immediately.
-    
+    Otherwise, GPX files are written to a temporary folder and destroyed immediately.
+
     To visualize a gpx, you can use https://gpx.studio/app.
     '''
     _validate_route_request(req)
@@ -194,16 +197,16 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     poi_waypoints = await _get_poi_waypoints(db, req)
     extra_points = [p.point for p in poi_waypoints]
 
-    if _DEBUG_GPX_DIR:
-        os.makedirs(_DEBUG_GPX_DIR, exist_ok=True)
-        output_path = os.path.join(_DEBUG_GPX_DIR, "route.gpx")
+    if settings.SAVE_GPX:
+        os.makedirs(_GPX_DIR, exist_ok=True)
+        output_path = os.path.join(_GPX_DIR, f"route_{uuid.uuid4().hex}.gpx")
         cmd = _build_cli_command(req, output_path, extra_points)
-        path = _run_cli_command(cmd, output_path)
+        path = await _run_cli_command(cmd, output_path)
     else:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "route.gpx")
             cmd = _build_cli_command(req, output_path, extra_points)
-            path = _run_cli_command(cmd, output_path)
+            path = await _run_cli_command(cmd, output_path)
 
     return RouteResponse(
         path=path,
