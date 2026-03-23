@@ -50,5 +50,8 @@ class Settings(BaseSettings):
 
     # --- AWS URLs (For later on) ---
 
+    # --- GPX export ---
+    SAVE_GPX: bool = False
+
 
 settings = Settings()
