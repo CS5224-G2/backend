@@ -1,3 +1,5 @@
+import asyncio
+import functools
 import math
 import os
 import subprocess
@@ -151,13 +153,13 @@ def _build_cli_command(req: RouteRequest, output_path: str, extra_waypoints: lis
 
     return cmd
 
-def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
-    # better to use async but somehow does not work so just run synchronously for now
+async def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
     # stdout/stderr are inherited (not captured) so bike_route output streams to the server terminal
+    loop = asyncio.get_event_loop()
     try:
-        result = subprocess.run(
-            cmd,
-            check=False
+        # moves the blocking subprocess.run call to a separate thread so it doesn't block the event loop
+        result = await loop.run_in_executor(
+            None, functools.partial(subprocess.run, cmd, check=False)
         )
     except Exception as e:
         raise HTTPException(
@@ -176,7 +178,7 @@ def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
             status_code=500,
             detail="CLI succeeded but did not create the GPX output file"
         )
-    
+
     return _parse_gpx_points(output_path)
 
 async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
@@ -198,12 +200,12 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
         os.makedirs(_DEBUG_GPX_DIR, exist_ok=True)
         output_path = os.path.join(_DEBUG_GPX_DIR, "route.gpx")
         cmd = _build_cli_command(req, output_path, extra_points)
-        path = _run_cli_command(cmd, output_path)
+        path = await _run_cli_command(cmd, output_path)
     else:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "route.gpx")
             cmd = _build_cli_command(req, output_path, extra_points)
-            path = _run_cli_command(cmd, output_path)
+            path = await _run_cli_command(cmd, output_path)
 
     return RouteResponse(
         path=path,
