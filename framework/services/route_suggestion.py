@@ -2,7 +2,6 @@ import asyncio
 import functools
 import math
 import os
-import subprocess
 import tempfile
 import uuid
 import xml.etree.ElementTree as ET
@@ -137,58 +136,39 @@ async def _get_poi_waypoints(db: AsyncSession, req: RouteRequest) -> list[POIWay
     return poi_waypoints
 
 
-def _build_cli_command(req: RouteRequest, output_path: str, extra_waypoints: list[Point] = []) -> list[str]:
-    cmd = [
-        "bike_route",
-        "--start-lat", str(req.origin.lat),
-        "--start-lon", str(req.origin.lon),
-        "--end-lat", str(req.destination.lat),
-        "--end-lon", str(req.destination.lon),
-        "--output", output_path,
-    ]
+async def _compute_route_in_process(
+    req: RouteRequest, output_path: str, extra_waypoints: list[Point]
+) -> list[Point]:
+    """
+    Call compute_route directly in-process instead of spawning a subprocess.
+    This reuses the graph already loaded in memory — no re-download needed.
+    """
+    from bike_route.main import compute_route
+    from bike_route.utils import init_elevation_cache
 
-    all_waypoints = req.waypoints + extra_waypoints
-    if all_waypoints:
-        cmd.append("--waypoints")
-        for wp in all_waypoints:
-            cmd.extend([str(wp.lat), str(wp.lon)])
+    init_elevation_cache()
 
-    return cmd
+    start = (req.origin.lat, req.origin.lon)
+    end = (req.destination.lat, req.destination.lon)
+    waypoints = [(wp.lat, wp.lon) for wp in req.waypoints + extra_waypoints]
 
-async def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
-    # stdout/stderr are inherited (not captured) so bike_route output streams to the server terminal
     loop = asyncio.get_event_loop()
-
-    # Pass graph-related env vars so the subprocess can load the pre-cached graph
-    env = os.environ.copy()
-    if settings.OSM_GRAPH_LOCAL_PATH:
-        env["OSM_GRAPH_LOCAL_PATH"] = settings.OSM_GRAPH_LOCAL_PATH
-    if settings.S3_BUCKET_NAME:
-        env["S3_BUCKET_NAME"] = settings.S3_BUCKET_NAME
-    if settings.OSM_GRAPH_S3_KEY:
-        env["OSM_GRAPH_S3_KEY"] = settings.OSM_GRAPH_S3_KEY
-
     try:
-        # moves the blocking subprocess.run call to a separate thread so it doesn't block the event loop
-        result = await loop.run_in_executor(
-            None, functools.partial(subprocess.run, cmd, check=False, env=env)
+        # Run the blocking computation in a thread so it doesn't block the event loop
+        await loop.run_in_executor(
+            None,
+            functools.partial(compute_route, start, end, waypoints, output_path),
         )
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to start route generation: {type(e).__name__}: {repr(e)}"
-        )
-
-    if result.returncode != 0:
-        raise HTTPException(
-            status_code=500,
-            detail="bike_route CLI failed"
-        )
+            detail=f"Route computation failed: {type(e).__name__}: {repr(e)}",
+        ) from e
 
     if not os.path.exists(output_path):
         raise HTTPException(
             status_code=500,
-            detail="CLI succeeded but did not create the GPX output file"
+            detail="compute_route did not create the GPX output file",
         )
 
     return _parse_gpx_points(output_path)
@@ -210,13 +190,11 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     if settings.SAVE_GPX:
         os.makedirs(_GPX_DIR, exist_ok=True)
         output_path = os.path.join(_GPX_DIR, f"route_{uuid.uuid4().hex}.gpx")
-        cmd = _build_cli_command(req, output_path, extra_points)
-        path = await _run_cli_command(cmd, output_path)
+        path = await _compute_route_in_process(req, output_path, extra_points)
     else:
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "route.gpx")
-            cmd = _build_cli_command(req, output_path, extra_points)
-            path = await _run_cli_command(cmd, output_path)
+            path = await _compute_route_in_process(req, output_path, extra_points)
 
     return RouteResponse(
         path=path,
@@ -224,3 +202,4 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
         distance=0.0,  # placeholder
         duration=0.0,  # placeholder
     )
+
