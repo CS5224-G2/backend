@@ -11,13 +11,28 @@ resource "aws_ecr_repository" "backend" {
   }
 }
 
+resource "aws_ecr_repository" "bike_route" {
+  name                 = "cyclelink-${var.environment}-bike-route"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 
 
 ############################################################
 # CloudWatch Logs
 ############################################################
-resource "aws_cloudwatch_log_group" "ecs" {
+resource "aws_cloudwatch_log_group" "ecs_backend" {
   name              = "/ecs/cyclelink-${var.environment}-backend"
+  retention_in_days = 30
+}
+
+resource "aws_cloudwatch_log_group" "ecs_bike_route" {
+  name              = "/ecs/cyclelink-${var.environment}-bike-route"
   retention_in_days = 30
 }
 
@@ -158,6 +173,39 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+resource "aws_lb_target_group" "bike_route" {
+  name        = "cyclelink-${var.environment}-br-tg"
+  port        = 8000
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+  target_type = "ip"
+
+  health_check {
+    path                = "/docs"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+    timeout             = 5
+    interval            = 30
+  }
+}
+
+resource "aws_lb_listener_rule" "bike_route" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 10
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.bike_route.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/v1/route-suggestion*"]
+    }
+  }
+}
+
 
 ############################################################
 # ECS Cluster
@@ -206,7 +254,7 @@ resource "aws_ecs_task_definition" "backend" {
     logConfiguration = {
       logDriver = "awslogs"
       options = {
-        "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
+        "awslogs-group"         = aws_cloudwatch_log_group.ecs_backend.name
         "awslogs-region"        = var.aws_region
         "awslogs-stream-prefix" = "backend"
       }
@@ -237,4 +285,66 @@ resource "aws_ecs_service" "backend" {
   }
 
   depends_on = [aws_lb_listener.http]
+}
+
+resource "aws_ecs_task_definition" "bike_route" {
+  family                   = "cyclelink-${var.environment}-bike-route"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.task_cpu
+  memory                   = var.task_memory
+  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  task_role_arn            = aws_iam_role.ecs_task.arn
+
+  container_definitions = jsonencode([{
+    name      = "bike-route"
+    image     = "${aws_ecr_repository.bike_route.repository_url}:latest"
+    essential = true
+
+    portMappings = [{
+      containerPort = 8000
+      hostPort      = 8000
+      protocol      = "tcp"
+    }]
+
+    environment = [
+      { name = "ENVIRONMENT",     value = var.environment },
+      { name = "PLACES_DB_URL",   value = var.places_db_url },
+      { name = "SECRET_KEY",      value = var.secret_key },
+      { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
+      { name = "SERVICE_URLS",    value = var.service_urls },
+      { name = "MONGODB_URL",     value = var.mongodb_url },
+    ]
+
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = aws_cloudwatch_log_group.ecs_bike_route.name
+        "awslogs-region"        = var.aws_region
+        "awslogs-stream-prefix" = "bike-route"
+      }
+    }
+  }])
+}
+
+resource "aws_ecs_service" "bike_route" {
+  name            = "cyclelink-${var.environment}-bike-route"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.bike_route.arn
+  desired_count   = var.desired_count
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = var.subnet_ids
+    security_groups  = [var.security_group_id]
+    assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.bike_route.arn
+    container_name   = "bike-route"
+    container_port   = 8000
+  }
+
+  depends_on = [aws_lb_listener_rule.bike_route]
 }

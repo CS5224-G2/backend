@@ -1,4 +1,4 @@
-name: Deploy Backend to ECS
+name: Deploy Services to ECS
 
 on:
   push:
@@ -56,35 +56,53 @@ jobs:
         run: |
           ENV="${{ github.event.inputs.environment || 'dev' }}"
           echo "DEPLOY_ENV=${ENV}" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY=cyclelink-${ENV}-backend" >> $GITHUB_ENV
+          echo "BACKEND_ECR_REPOSITORY=cyclelink-${ENV}-backend" >> $GITHUB_ENV
+          echo "BIKE_ROUTE_ECR_REPOSITORY=cyclelink-${ENV}-bike-route" >> $GITHUB_ENV
           echo "ECS_CLUSTER=cyclelink-${ENV}-cluster" >> $GITHUB_ENV
-          echo "ECS_SERVICE=cyclelink-${ENV}-backend" >> $GITHUB_ENV
+          echo "BACKEND_ECS_SERVICE=cyclelink-${ENV}-backend" >> $GITHUB_ENV
+          echo "BIKE_ROUTE_ECS_SERVICE=cyclelink-${ENV}-bike-route" >> $GITHUB_ENV
 
       # ── Build & Push ─────────────────────────────────────────────
-      - name: Build, tag, and push Docker image
+      - name: Build, tag, and push Docker images
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
         run: |
           IMAGE_TAG="${{ github.sha }}"
-          FULL_IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}"
-
+          
+          # Backend
+          BACKEND_FULL_IMAGE="${ECR_REGISTRY}/${BACKEND_ECR_REPOSITORY}"
           docker build \
             -f ./framework/Dockerfile \
-            -t "${FULL_IMAGE}:${IMAGE_TAG}" \
-            -t "${FULL_IMAGE}:latest" \
+            -t "${BACKEND_FULL_IMAGE}:${IMAGE_TAG}" \
+            -t "${BACKEND_FULL_IMAGE}:latest" \
             .
+          docker push "${BACKEND_FULL_IMAGE}:${IMAGE_TAG}"
+          docker push "${BACKEND_FULL_IMAGE}:latest"
 
-          docker push "${FULL_IMAGE}:${IMAGE_TAG}"
-          docker push "${FULL_IMAGE}:latest"
-
-          echo "IMAGE=${FULL_IMAGE}:${IMAGE_TAG}" >> $GITHUB_ENV
+          # Bike Route
+          BIKE_ROUTE_FULL_IMAGE="${ECR_REGISTRY}/${BIKE_ROUTE_ECR_REPOSITORY}"
+          docker build \
+            -f ./route/Dockerfile \
+            -t "${BIKE_ROUTE_FULL_IMAGE}:${IMAGE_TAG}" \
+            -t "${BIKE_ROUTE_FULL_IMAGE}:latest" \
+            .
+          docker push "${BIKE_ROUTE_FULL_IMAGE}:${IMAGE_TAG}"
+          docker push "${BIKE_ROUTE_FULL_IMAGE}:latest"
 
       # ── Deploy to ECS ────────────────────────────────────────────
-      - name: Force new ECS deployment
+      - name: Force new ECS deployment (Backend)
         run: |
           aws ecs update-service \
             --cluster "${ECS_CLUSTER}" \
-            --service "${ECS_SERVICE}" \
+            --service "${BACKEND_ECS_SERVICE}" \
+            --force-new-deployment \
+            --region "${AWS_REGION}"
+
+      - name: Force new ECS deployment (Bike Route)
+        run: |
+          aws ecs update-service \
+            --cluster "${ECS_CLUSTER}" \
+            --service "${BIKE_ROUTE_ECS_SERVICE}" \
             --force-new-deployment \
             --region "${AWS_REGION}"
 
@@ -94,6 +112,6 @@ jobs:
           echo "Waiting for ECS service to stabilise…"
           aws ecs wait services-stable \
             --cluster "${ECS_CLUSTER}" \
-            --services "${ECS_SERVICE}" \
+            --services "${BACKEND_ECS_SERVICE}" "${BIKE_ROUTE_ECS_SERVICE}" \
             --region "${AWS_REGION}"
           echo "✅ Deployment complete!"
