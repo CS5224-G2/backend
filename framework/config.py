@@ -55,6 +55,11 @@ class Settings(BaseSettings):
 
     # --- AWS URLs (For later on) ---
 
+    # --- S3 / Pre-downloaded OSM Graph ---
+    S3_BUCKET_NAME: str = ""
+    OSM_GRAPH_S3_KEY: str = "osm-graphs/singapore_bike_graph.graphml"
+    OSM_GRAPH_LOCAL_PATH: str = ""  # Set for local dev (overrides S3)
+
     # --- GPX export ---
     SAVE_GPX: bool = False
 

@@ -33,6 +33,7 @@ from .utils import (
     use_virtual_waypoints,
     route_to_coords
 )
+from . import graph_manager
 
 # -----------------------------
 # Main processing
@@ -59,7 +60,13 @@ def compute_route(start, end, waypoints, output_gpx):
         
         n, s, e, w = max(lat1, lat2)+buffer, min(lat1, lat2)-buffer, max(lon1, lon2)+buffer, min(lon1, lon2)-buffer
         
-        G = ox.graph_from_bbox((w, s, e, n), network_type="drive", simplify=True)
+        # Use pre-loaded in-memory graph when available (fast subgraph extraction).
+        # Falls back to live Overpass API download if no graph was loaded on startup.
+        if graph_manager.is_loaded():
+            G = graph_manager.get_subgraph(n, s, e, w)
+        else:
+            logger.warning("No pre-loaded graph — downloading from Overpass API (slow)")
+            G = ox.graph_from_bbox((w, s, e, n), network_type="drive", simplify=True)
         initial_edges = len(G.edges)
         
         rem = [(u, v, k) for u, v, k, d in G.edges(keys=True, data=True) if not is_allowed_road(d)]

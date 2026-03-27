@@ -77,6 +77,18 @@ variable "task_memory" {
   default     = "512"
 }
 
+variable "bike_route_task_cpu" {
+  type        = string
+  description = "Fargate task CPU units for the bike-route service"
+  default     = "512"
+}
+
+variable "bike_route_task_memory" {
+  type        = string
+  description = "Fargate task memory in MiB for the bike-route service (needs more for in-memory OSM graph)"
+  default     = "1024"
+}
+
 variable "desired_count" {
   type        = number
   description = "Number of ECS tasks to run"

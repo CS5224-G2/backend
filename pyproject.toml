@@ -14,6 +14,7 @@ dependencies = [
     "httpx>=0.28",
     "bike_route",
     "pymongo>=4.16.0",
+    "boto3>=1.35",
 ]
 
 [tool.uv.sources]

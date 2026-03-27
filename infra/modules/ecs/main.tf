@@ -291,8 +291,8 @@ resource "aws_ecs_task_definition" "bike_route" {
   family                   = "cyclelink-${var.environment}-bike-route"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.task_cpu
-  memory                   = var.task_memory
+  cpu                      = var.bike_route_task_cpu
+  memory                   = var.bike_route_task_memory
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task.arn
 
@@ -314,6 +314,7 @@ resource "aws_ecs_task_definition" "bike_route" {
       { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
       { name = "SERVICE_URLS",    value = var.service_urls },
       { name = "MONGODB_URL",     value = var.mongodb_url },
+      { name = "S3_BUCKET_NAME",  value = var.s3_bucket_name },
     ]
 
     logConfiguration = {
