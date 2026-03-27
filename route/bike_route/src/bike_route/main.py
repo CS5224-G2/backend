@@ -175,6 +175,19 @@ def main():
     args = parser.parse_args()
 
     init_elevation_cache()
+
+    # Load pre-cached graph if configured (works for both direct and subprocess invocation)
+    import os
+    local_path = os.environ.get("OSM_GRAPH_LOCAL_PATH", "")
+    s3_bucket = os.environ.get("S3_BUCKET_NAME", "")
+    s3_key = os.environ.get("OSM_GRAPH_S3_KEY", "")
+
+    if not graph_manager.is_loaded():
+        if local_path:
+            graph_manager.load_graph_from_file(local_path)
+        elif s3_bucket:
+            graph_manager.load_graph_from_s3(s3_bucket, s3_key or None)
+
     wpts = [(args.waypoints[i], args.waypoints[i+1]) for i in range(0, len(args.waypoints), 2)]
     
     total_len = compute_route((args.start_lat, args.start_lon), (args.end_lat, args.end_lon), wpts, args.output)

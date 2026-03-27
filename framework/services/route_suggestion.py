@@ -158,10 +158,20 @@ def _build_cli_command(req: RouteRequest, output_path: str, extra_waypoints: lis
 async def _run_cli_command(cmd: list[str], output_path: str) -> list[Point]:
     # stdout/stderr are inherited (not captured) so bike_route output streams to the server terminal
     loop = asyncio.get_event_loop()
+
+    # Pass graph-related env vars so the subprocess can load the pre-cached graph
+    env = os.environ.copy()
+    if settings.OSM_GRAPH_LOCAL_PATH:
+        env["OSM_GRAPH_LOCAL_PATH"] = settings.OSM_GRAPH_LOCAL_PATH
+    if settings.S3_BUCKET_NAME:
+        env["S3_BUCKET_NAME"] = settings.S3_BUCKET_NAME
+    if settings.OSM_GRAPH_S3_KEY:
+        env["OSM_GRAPH_S3_KEY"] = settings.OSM_GRAPH_S3_KEY
+
     try:
         # moves the blocking subprocess.run call to a separate thread so it doesn't block the event loop
         result = await loop.run_in_executor(
-            None, functools.partial(subprocess.run, cmd, check=False)
+            None, functools.partial(subprocess.run, cmd, check=False, env=env)
         )
     except Exception as e:
         raise HTTPException(

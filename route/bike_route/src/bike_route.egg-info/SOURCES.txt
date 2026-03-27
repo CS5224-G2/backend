@@ -3,6 +3,7 @@ NOTICE
 README.md
 pyproject.toml
 src/bike_route/__init__.py
+src/bike_route/graph_manager.py
 src/bike_route/main.py
 src/bike_route/utils.py
 src/bike_route.egg-info/PKG-INFO
