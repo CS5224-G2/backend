@@ -17,6 +17,7 @@ from . import parks as park_service
 from . import tourist_attractions as tourist_attractions_service
 
 _METRES_PER_DEGREE_LAT = 111_320
+_AVG_CYCLING_SPEED_KMH = 15.0
 
 # Set SAVE_GPX=true to persist generated GPX files to the saved_gpx/ folder.
 # Each request writes a unique file (route_<uuid>.gpx).
@@ -57,6 +58,11 @@ def _straight_line_distance_m(a: Point, b: Point) -> float:
     d_lat = (b.lat - a.lat) * _METRES_PER_DEGREE_LAT
     d_lng = (b.lng - a.lng) * _METRES_PER_DEGREE_LAT * math.cos(math.radians((a.lat + b.lat) / 2))
     return math.sqrt(d_lat ** 2 + d_lng ** 2)
+
+
+def _compute_path_distance_m(path: list[Point]) -> float:
+    """Sum of segment distances along the route path in metres."""
+    return sum(_straight_line_distance_m(path[i], path[i + 1]) for i in range(len(path) - 1))
 
 
 def _interpolate_point(origin: Point, destination: Point, t: float) -> Point:
@@ -196,10 +202,13 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
             output_path = os.path.join(tmpdir, "route.gpx")
             path = await _compute_route_in_process(req, output_path, extra_points)
 
+    distance_m = _compute_path_distance_m(path)
+    duration_min = (distance_m / 1000) / _AVG_CYCLING_SPEED_KMH * 60
+
     return RouteResponse(
         path=path,
         poi_waypoints=poi_waypoints,
-        distance=0.0,  # placeholder
-        duration=0.0,  # placeholder
+        distance=round(distance_m / 1000, 2),
+        duration=round(duration_min),
     )
 
