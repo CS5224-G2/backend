@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Path, Query
 
-from ..database import MongoDB
-from ..schemas import CyclistType, RouteDetail, RouteSummary
+from ..database import MongoDB, PlacesDB
+from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary
 from ..services import routes as routes_service
 
 router = APIRouter(prefix="/routes", tags=["Routes"])
@@ -22,6 +22,11 @@ async def get_popular_routes(
     limit: int = Query(default=3, ge=1, le=3),
 ):
     return await routes_service.get_popular_routes(db, limit=limit)
+
+
+@router.post("/recommendations", response_model=list[RecommendationResult])
+async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB, places_db: PlacesDB):
+    return await routes_service.get_recommendations(mongo, places_db, body)
 
 
 @router.get("/{route_id}", response_model=RouteDetail)

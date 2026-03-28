@@ -272,6 +272,30 @@ class RecommendationPreferences(BaseModel):
 
 
 class RecommendationsRequest(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "start_point": {"name": "Changi Beach Park", "lat": 1.3889, "lng": 103.9874, "source": "search"},
+                "end_point": {"name": "Marina Barrage", "lat": 1.2806, "lng": 103.8713, "source": "search"},
+                "checkpoints": [],
+                "preferences": {
+                    "cyclist_type": "recreational",
+                    "shade_preference": "reduce-shade",
+                    "elevation_preference": "dont-care",
+                    "air_quality_preference": "care",
+                    "max_distance": 20,
+                    "points_of_interest": {
+                        "allow_hawker_center": True,
+                        "allow_park": True,
+                        "allow_historic_site": True,
+                        "allow_tourist_attraction": True,
+                    },
+                },
+                "limit": 3,
+            }
+        }
+    )
+
     start_point: RecommendationPoint
     end_point: RecommendationPoint
     checkpoints: list[RecommendationCheckpoint] = []
