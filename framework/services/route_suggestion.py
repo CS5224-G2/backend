@@ -23,7 +23,7 @@ _METRES_PER_DEGREE_LAT = 111_320
 _GPX_DIR = "saved_gpx"
 
 def _validate_route_request(req: RouteRequest):
-    if req.origin.lat == req.destination.lat and req.origin.lon == req.destination.lon:
+    if req.origin.lat == req.destination.lat and req.origin.lng == req.destination.lng:
         raise HTTPException(
             status_code=400,
             detail="Origin and destination cannot be the same"
@@ -41,22 +41,22 @@ def _parse_gpx_points(gpx_path: str) -> list[Point]:
     # Find all track points
     for trkpt in root.findall(".//gpx:trkpt", ns):
         lat = float(trkpt.attrib["lat"])
-        lon = float(trkpt.attrib["lon"])
-        points.append(Point(lat=lat, lon=lon))
+        lng = float(trkpt.attrib["lon"])
+        points.append(Point(lat=lat, lng=lng))
 
     return points
 
 def _straight_line_distance_m(a: Point, b: Point) -> float:
     """
-    Approximate straight-line distance in metres between two lat/lon points.
+    Approximate straight-line distance in metres between two lat/lng points.
 
     This is somewhat inaccurate as compared to Haversine but should be OK for short 
     distances within Singapore, and is much faster to compute. See
     https://en.wikipedia.org/wiki/Equirectangular_projection
     """
     d_lat = (b.lat - a.lat) * _METRES_PER_DEGREE_LAT
-    d_lon = (b.lon - a.lon) * _METRES_PER_DEGREE_LAT * math.cos(math.radians((a.lat + b.lat) / 2))
-    return math.sqrt(d_lat ** 2 + d_lon ** 2)
+    d_lng = (b.lng - a.lng) * _METRES_PER_DEGREE_LAT * math.cos(math.radians((a.lat + b.lat) / 2))
+    return math.sqrt(d_lat ** 2 + d_lng ** 2)
 
 
 def _interpolate_point(origin: Point, destination: Point, t: float) -> Point:
@@ -67,7 +67,7 @@ def _interpolate_point(origin: Point, destination: Point, t: float) -> Point:
     """
     return Point(
         lat=origin.lat + t * (destination.lat - origin.lat),
-        lon=origin.lon + t * (destination.lon - origin.lon),
+        lng=origin.lng + t * (destination.lng - origin.lng),
     )
 
 
@@ -87,28 +87,28 @@ def _active_categories(req: RouteRequest) -> list[POICategory]:
 
 
 async def _find_nearest_poi(
-    db: AsyncSession, category: POICategory, lat: float, lon: float, radius_m: float
+    db: AsyncSession, category: POICategory, lat: float, lng: float, radius_m: float
 ) -> POIWaypoint | None:
     if category == POICategory.HAWKER_CENTRE:
-        rows = await hawker_service.list_nearby_hawker_centres(db, lat=lat, lng=lon, radius_m=radius_m, limit=1)
+        rows = await hawker_service.list_nearby_hawker_centres(db, lat=lat, lng=lng, radius_m=radius_m, limit=1)
         if rows:
             obj = rows[0].HawkerCentre
-            return POIWaypoint(name=obj.name, category=category, point=Point(lat=obj.latitude, lon=obj.longitude))
+            return POIWaypoint(name=obj.name, category=category, point=Point(lat=obj.latitude, lng=obj.longitude))
     elif category == POICategory.PARK:
-        rows = await park_service.list_nearby_parks(db, lat=lat, lng=lon, radius_m=radius_m, limit=1)
+        rows = await park_service.list_nearby_parks(db, lat=lat, lng=lng, radius_m=radius_m, limit=1)
         if rows:
             obj = rows[0].Park
-            return POIWaypoint(name=obj.name, category=category, point=Point(lat=obj.latitude, lon=obj.longitude))
+            return POIWaypoint(name=obj.name, category=category, point=Point(lat=obj.latitude, lng=obj.longitude))
     elif category == POICategory.HISTORIC_SITE:
-        rows = await historic_sites_service.list_nearby_historic_sites(db, lat=lat, lng=lon, radius_m=radius_m, limit=1)
+        rows = await historic_sites_service.list_nearby_historic_sites(db, lat=lat, lng=lng, radius_m=radius_m, limit=1)
         if rows:
             obj = rows[0].HistoricSite
-            return POIWaypoint(name=obj.name, category=category, point=Point(lat=obj.latitude, lon=obj.longitude))
+            return POIWaypoint(name=obj.name, category=category, point=Point(lat=obj.latitude, lng=obj.longitude))
     elif category == POICategory.TOURIST_ATTRACTION:
-        rows = await tourist_attractions_service.list_nearby_tourist_attractions(db, lat=lat, lng=lon, radius_m=radius_m, limit=1)
+        rows = await tourist_attractions_service.list_nearby_tourist_attractions(db, lat=lat, lng=lng, radius_m=radius_m, limit=1)
         if rows:
             obj = rows[0].TouristAttraction
-            return POIWaypoint(name=obj.page_title, category=category, point=Point(lat=obj.latitude, lon=obj.longitude))
+            return POIWaypoint(name=obj.page_title, category=category, point=Point(lat=obj.latitude, lng=obj.longitude))
     return None
 
 
@@ -129,7 +129,7 @@ async def _get_poi_waypoints(db: AsyncSession, req: RouteRequest) -> list[POIWay
     for i, category in enumerate(categories, start=1):
         t = i / (n + 1)
         segment_point = _interpolate_point(req.origin, req.destination, t)
-        poi = await _find_nearest_poi(db, category, segment_point.lat, segment_point.lon, segment_radius)
+        poi = await _find_nearest_poi(db, category, segment_point.lat, segment_point.lng, segment_radius)
         if poi:
             poi_waypoints.append(poi)
 
@@ -148,9 +148,9 @@ async def _compute_route_in_process(
 
     init_elevation_cache()
 
-    start = (req.origin.lat, req.origin.lon)
-    end = (req.destination.lat, req.destination.lon)
-    waypoints = [(wp.lat, wp.lon) for wp in req.waypoints + extra_waypoints]
+    start = (req.origin.lat, req.origin.lng)
+    end = (req.destination.lat, req.destination.lng)
+    waypoints = [(wp.lat, wp.lng) for wp in req.waypoints + extra_waypoints]
 
     loop = asyncio.get_event_loop()
     try:

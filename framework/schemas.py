@@ -67,7 +67,7 @@ class TouristAttractionResponse(_ORMBase):
 
 class Point(BaseModel):
     lat: float
-    lon: float
+    lng: float
 
 
 class POICategory(StrEnum):
@@ -95,8 +95,8 @@ class RouteRequest(BaseModel):
             # Example: East Coast Park coastal ride (~20km)
             # Changi Beach Park to Marina Barrage (reminds me of NS...)
             "example": {
-                "origin": {"lat": 1.3889, "lon": 103.9874},
-                "destination": {"lat": 1.2806, "lon": 103.8713},
+                "origin": {"lat": 1.3889, "lng": 103.9874},
+                "destination": {"lat": 1.2806, "lng": 103.8713},
                 "waypoints": [],
                 "preferences": {
                     "include_hawker_centres": True,
@@ -121,3 +121,182 @@ class RouteResponse(BaseModel):
     # not implemented yet
     distance: float
     duration: float
+
+
+# ------------------------------------------------------------------
+# Contract-facing models (used in /routes API responses)
+# ------------------------------------------------------------------
+
+class LatLng(BaseModel):
+    """Bare coordinate pair for route_path entries."""
+    lat: float
+    lng: float
+
+
+class NamedLatLng(BaseModel):
+    """Coordinate pair with an optional display name, used for start_point / end_point."""
+    lat: float
+    lng: float
+    name: str | None = None
+
+
+class POIVisited(BaseModel):
+    """A point of interest visited along a route, as returned to the frontend."""
+    name: str
+    description: str | None = None
+    lat: float
+    lng: float
+
+
+class Checkpoint(BaseModel):
+    """A named checkpoint along a route."""
+    checkpoint_id: str
+    checkpoint_name: str
+    description: str | None = None
+    lat: float
+    lng: float
+
+
+# ------------------------------------------------------------------
+# Enums for route properties and preferences
+# ------------------------------------------------------------------
+
+class CyclistType(StrEnum):
+    RECREATIONAL = "recreational"
+    COMMUTER = "commuter"
+    FITNESS = "fitness"
+    GENERAL = "general"
+
+
+class ElevationPreference(StrEnum):
+    LOWER = "lower"
+    DONT_CARE = "dont-care"
+    HIGHER = "higher"
+
+
+class ShadePreference(StrEnum):
+    REDUCE_SHADE = "reduce-shade"
+    DONT_CARE = "dont-care"
+
+
+class AirQualityPreference(StrEnum):
+    CARE = "care"
+    DONT_CARE = "dont-care"
+
+
+# ------------------------------------------------------------------
+# Route response shapes
+# ------------------------------------------------------------------
+
+class RouteSummary(BaseModel):
+    """Summary route object — returned by GET /routes and GET /routes/popular."""
+    route_id: str
+    name: str
+    description: str | None = None
+    distance: float                          # km
+    estimated_time: int                      # minutes
+    elevation: ElevationPreference
+    shade: ShadePreference
+    air_quality: AirQualityPreference
+    cyclist_type: CyclistType
+    review_count: int = 0
+    rating: float = 0.0
+    checkpoints: list[Checkpoint] = []
+    points_of_interest_visited: list[POIVisited] = []
+    start_point: NamedLatLng
+    end_point: NamedLatLng
+
+
+class RouteDetail(RouteSummary):
+    """Full route object — returned by GET /routes/:routeId. Adds the polyline path."""
+    route_path: list[LatLng] = []
+
+
+class RecommendationResult(BaseModel):
+    """Route item returned by POST /routes/recommendations (lighter — no checkpoints or start/end points)."""
+    route_id: str
+    name: str
+    description: str | None = None
+    distance: float
+    estimated_time: int
+    elevation: ElevationPreference
+    shade: ShadePreference
+    air_quality: AirQualityPreference
+    cyclist_type: CyclistType
+    review_count: int = 0
+    rating: float = 0.0
+    points_of_interest_visited: list[POIVisited] = []
+
+
+# ------------------------------------------------------------------
+# Request shapes
+# ------------------------------------------------------------------
+
+class LocationSource(StrEnum):
+    CURRENT_LOCATION = "current-location"
+    SEARCH = "search"
+    MAP = "map"
+
+
+class RecommendationPoint(BaseModel):
+    """A start or end point in a recommendations request."""
+    lat: float
+    lng: float
+    name: str | None = None
+    source: LocationSource
+
+
+class RecommendationCheckpoint(BaseModel):
+    """A waypoint checkpoint in a recommendations request."""
+    id: str
+    name: str
+    lat: float
+    lng: float
+    source: LocationSource  # only "search" | "map" valid per contract, but we accept all LocationSource values
+
+
+class POIPreferences(BaseModel):
+    allow_hawker_center: bool = True
+    allow_park: bool = True
+    allow_historic_site: bool = True
+    allow_tourist_attraction: bool = True
+
+
+class RecommendationPreferences(BaseModel):
+    cyclist_type: CyclistType = CyclistType.GENERAL
+    shade_preference: ShadePreference = ShadePreference.DONT_CARE
+    elevation_preference: ElevationPreference = ElevationPreference.DONT_CARE
+    air_quality_preference: AirQualityPreference = AirQualityPreference.DONT_CARE
+    max_distance: float | None = None           # km
+    points_of_interest: POIPreferences = POIPreferences()
+
+
+class RecommendationsRequest(BaseModel):
+    start_point: RecommendationPoint
+    end_point: RecommendationPoint
+    checkpoints: list[RecommendationCheckpoint] = []
+    preferences: RecommendationPreferences = RecommendationPreferences()
+    limit: int = 3
+
+
+class SaveRouteRequest(BaseModel):
+    """Snapshot of a route the user wants to save to their favourites."""
+    route_id: str
+    name: str
+    description: str | None = None
+    distance: float
+    estimated_time: int
+    elevation: ElevationPreference
+    shade: ShadePreference
+    air_quality: AirQualityPreference
+    cyclist_type: CyclistType
+    checkpoints: list[Checkpoint] = []
+    points_of_interest_visited: list[POIVisited] = []
+    route_path: list[LatLng] = []
+
+
+class SaveRouteResponse(BaseModel):
+    saved_route_id: str
+    route_id: str
+    saved_at: str       # ISO 8601 timestamp
+    status: str = "saved"

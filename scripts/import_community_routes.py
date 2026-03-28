@@ -35,12 +35,12 @@ from framework.config import settings
 AVG_SPEED_KMH = 15.0
 
 
-def haversine_distance(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
-    """Return great-circle distance in metres between two (lon, lat) points."""
+def haversine_distance(lng1: float, lat1: float, lng2: float, lat2: float) -> float:
+    """Return great-circle distance in metres between two (lng, lat) points."""
     R = 6_371_000  # Earth radius in metres
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
+    dlambda = math.radians(lng2 - lng1)
     a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
     return 2 * R * math.asin(math.sqrt(a))
 
@@ -68,7 +68,7 @@ OUTPUT_FILE = os.path.join(SCRIPTS_DIR, "community_routes.json")
 
 
 def parse_coordinates(coord_text: str) -> list[list[float]]:
-    """Parse KML coordinates string into [[lon, lat], ...] (altitude dropped)."""
+    """Parse KML coordinates string into [[lng, lat], ...] (altitude dropped)."""
     coords = []
     for triplet in coord_text.strip().split():
         parts = triplet.split(",")
@@ -103,6 +103,7 @@ def extract_routes(kml_path: str) -> list[dict]:
             distance_m = route_distance_m(coords)
             estimated_time_min = (distance_m / 1000) / AVG_SPEED_KMH * 60
             routes.append({
+                "source": "precomputed",
                 "name": name,
                 "type": folder_name,
                 "distance_m": round(distance_m, 1),
@@ -158,14 +159,15 @@ if __name__ == "__main__":
         client = MongoClient(args.mongodb_url)
         collection = client.cyclelink["precomputed-routes"]
 
-        # Assign a stable integer id based on position, upsert by route_id
+        # Upsert by (name, type) so _id is stable across re-runs and serves as the public route ID.
+        # route_id integer is intentionally not stored — use _id (ObjectId) instead.
         ops = [
             UpdateOne(
-                {"route_id": i},
-                {"$set": {"route_id": i, **route}},
+                {"name": route["name"], "type": route["type"]},
+                {"$set": route},
                 upsert=True,
             )
-            for i, route in enumerate(routes)
+            for route in routes
         ]
         result = collection.bulk_write(ops)
         client.close()
