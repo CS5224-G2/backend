@@ -1,7 +1,0 @@
-osmnx
-networkx
-gpxpy
-requests
-shapely
-matplotlib
-numpy
