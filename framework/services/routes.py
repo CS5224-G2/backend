@@ -166,17 +166,48 @@ async def get_recommendations(
     return results
 
 
+def _doc_to_route_detail_generated(doc: dict) -> RouteDetail:
+    """Convert a generated-routes MongoDB document to a RouteDetail."""
+    coords = doc.get("coordinates", [])
+    sp = doc.get("start_point", {})
+    ep = doc.get("end_point", {})
+    return RouteDetail(
+        route_id=str(doc["_id"]),
+        name=doc.get("name") or "",
+        description=doc.get("description"),
+        distance=round(doc.get("distance_m", 0) / 1000, 2),
+        estimated_time=round(doc.get("estimated_time_min", 0)),
+        elevation=doc.get("elevation", ElevationPreference.DONT_CARE),
+        shade=doc.get("shade", ShadePreference.DONT_CARE),
+        air_quality=doc.get("air_quality", AirQualityPreference.DONT_CARE),
+        cyclist_type=doc.get("cyclist_type", CyclistType.GENERAL),
+        review_count=doc.get("review_count", 0),
+        rating=doc.get("rating", 0.0),
+        checkpoints=doc.get("checkpoints", []),
+        points_of_interest_visited=doc.get("points_of_interest_visited", []),
+        start_point=NamedLatLng(lat=sp.get("lat", 0.0), lng=sp.get("lng", 0.0), name=sp.get("name")),
+        end_point=NamedLatLng(lat=ep.get("lat", 0.0), lng=ep.get("lng", 0.0), name=ep.get("name")),
+        route_path=[LatLng(lat=c[1], lng=c[0]) for c in coords],
+    )
+
+
 async def get_route_by_id(db: AsyncDatabase, route_id: str) -> RouteDetail | None:
     try:
         oid = ObjectId(route_id)
     except Exception:
         return None
+
     doc = await db[_PRECOMPUTED_COLLECTION].find_one({"_id": oid})
-    if doc is None:
-        return None
-    coords = doc.get("coordinates", [])
-    summary = _doc_to_route_summary(doc)
-    return RouteDetail(
-        **summary.model_dump(),
-        route_path=[LatLng(lat=c[1], lng=c[0]) for c in coords],
-    )
+    if doc is not None:
+        coords = doc.get("coordinates", [])
+        summary = _doc_to_route_summary(doc)
+        return RouteDetail(
+            **summary.model_dump(),
+            route_path=[LatLng(lat=c[1], lng=c[0]) for c in coords],
+        )
+
+    doc = await db[_GENERATED_COLLECTION].find_one({"_id": oid})
+    if doc is not None:
+        return _doc_to_route_detail_generated(doc)
+
+    return None
