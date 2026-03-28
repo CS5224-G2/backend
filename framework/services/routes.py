@@ -5,7 +5,9 @@ from ..schemas import (
     AirQualityPreference,
     CyclistType,
     ElevationPreference,
+    LatLng,
     NamedLatLng,
+    RouteDetail,
     RouteSummary,
     ShadePreference,
 )
@@ -62,3 +64,19 @@ async def get_popular_routes(
         .limit(limit)
     )
     return [_doc_to_route_summary(doc) async for doc in cursor]
+
+
+async def get_route_by_id(db: AsyncDatabase, route_id: str) -> RouteDetail | None:
+    try:
+        oid = ObjectId(route_id)
+    except Exception:
+        return None
+    doc = await db[_PRECOMPUTED_COLLECTION].find_one({"_id": oid})
+    if doc is None:
+        return None
+    coords = doc.get("coordinates", [])
+    summary = _doc_to_route_summary(doc)
+    return RouteDetail(
+        **summary.model_dump(),
+        route_path=[LatLng(lat=c[1], lng=c[0]) for c in coords],
+    )
