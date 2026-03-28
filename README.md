@@ -45,3 +45,7 @@ LIMIT 5;
 ## FastAPI
 1. Run `uv sync`
 2. From root, run `uv run fastapi dev framework/main.py`
+
+### For route recommendation service
+1. Run `uv sync`
+2. From root, run `uv run uvicorn route.server:app --reload`
