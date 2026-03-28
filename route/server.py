@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from framework.config import settings
 from framework.database import close_engines, init_engines
-from framework.routers import route_suggestion
+from framework.routers import route_suggestion, routes
 
 logger = logging.getLogger(__name__)
 
@@ -55,3 +55,4 @@ app.add_middleware(
 _V1 = "/v1"
 
 app.include_router(route_suggestion.router, prefix=_V1)
+app.include_router(routes.router, prefix=_V1)
