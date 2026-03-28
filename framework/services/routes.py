@@ -49,3 +49,16 @@ async def get_routes(
 
     cursor = db[_PRECOMPUTED_COLLECTION].find(query).limit(limit)
     return [_doc_to_route_summary(doc) async for doc in cursor]
+
+
+async def get_popular_routes(
+    db: AsyncDatabase,
+    limit: int = 3,
+) -> list[RouteSummary]:
+    cursor = (
+        db[_PRECOMPUTED_COLLECTION]
+        .find({"source": "precomputed"})
+        .sort([("review_count", -1), ("rating", -1)])
+        .limit(limit)
+    )
+    return [_doc_to_route_summary(doc) async for doc in cursor]
