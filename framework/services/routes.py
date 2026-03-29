@@ -30,7 +30,7 @@ from ..config import settings
 logger = logging.getLogger(__name__)
 
 _PRECOMPUTED_COLLECTION = "precomputed-routes"
-
+_GENERATED_COLLECTION = "generated-routes"
 
 def _doc_to_route_summary(doc: dict) -> RouteSummary:
     """Convert a precomputed-routes MongoDB document to a RouteSummary."""
@@ -41,15 +41,15 @@ def _doc_to_route_summary(doc: dict) -> RouteSummary:
     return RouteSummary(
         route_id=str(doc["_id"]),
         name=doc.get("name") or "",
-        description=doc.get("type"),
+        description=doc.get("type") or doc.get("description"),
         distance=round(doc.get("distance_m", 0) / 1000, 2),
         estimated_time=round(doc.get("estimated_time_min", 0)),
         elevation=ElevationPreference.DONT_CARE,
         shade=ShadePreference.DONT_CARE,
         air_quality=AirQualityPreference.DONT_CARE,
-        cyclist_type=CyclistType.GENERAL,
-        review_count=0,
-        rating=0.0,
+        cyclist_type=doc.get("cyclist_type", CyclistType.GENERAL),
+        review_count=doc.get("review_count", 0),
+        rating=doc.get("rating", 0.0),
         checkpoints=[],
         points_of_interest_visited=[],
         start_point=NamedLatLng(lng=first[0], lat=first[1]),
@@ -74,16 +74,14 @@ async def get_popular_routes(
     db: AsyncDatabase,
     limit: int = 3,
 ) -> list[RouteSummary]:
-    cursor = (
-        db[_PRECOMPUTED_COLLECTION]
-        .find({"source": "precomputed"})
-        .sort([("review_count", -1), ("rating", -1)])
-        .limit(limit)
+    precomputed = [doc async for doc in db[_PRECOMPUTED_COLLECTION].find()]
+    generated = [doc async for doc in db[_GENERATED_COLLECTION].find()]
+    all_docs = sorted(
+        precomputed + generated,
+        key=lambda d: (d.get("review_count", 0), d.get("rating", 0.0)),
+        reverse=True,
     )
-    return [_doc_to_route_summary(doc) async for doc in cursor]
-
-
-_GENERATED_COLLECTION = "generated-routes"
+    return [_doc_to_route_summary(doc) for doc in all_docs[:limit]]
 
 # Each tuple defines which POI categories are active for that route variant.
 # Varied across 3 calls so each recommendation has a different set of waypoints.
