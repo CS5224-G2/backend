@@ -56,4 +56,15 @@ module "ecs" {
   redis_host = module.core.elasticache_endpoint
   redis_port = module.core.elasticache_port
   redis_ssl  = true
+
+  # CloudFront Security
+  cloudfront_header_secret = var.cloudfront_header_secret
+}
+
+module "cdn" {
+  source      = "../../modules/cdn"
+  environment = "dev"
+
+  alb_dns_name             = module.ecs.alb_dns_name
+  cloudfront_header_secret = var.cloudfront_header_secret
 }

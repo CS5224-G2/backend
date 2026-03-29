@@ -52,3 +52,11 @@ output "elasticache_port" {
   value       = module.core.elasticache_port
   description = "Port of the ElastiCache Valkey endpoint"
 }
+
+output "cloudfront_domain_name" {
+  value = module.cdn.cloudfront_domain_name
+}
+
+output "cloudfront_distribution_id" {
+  value = module.cdn.cloudfront_distribution_id
+}

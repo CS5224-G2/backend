@@ -47,3 +47,10 @@ variable "swagger_password" {
   sensitive   = true
 }
 
+variable "cloudfront_header_secret" {
+  type        = string
+  description = "Secret header value to ensure ALB only accepts traffic from CloudFront"
+  default     = "X-CycleLink-CloudFront-Secret-123"
+  sensitive   = true
+}
+

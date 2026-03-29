@@ -124,3 +124,10 @@ variable "desired_count" {
   description = "Number of ECS tasks to run"
   default     = 1
 }
+
+variable "cloudfront_header_secret" {
+  type        = string
+  description = "Secret header value to ensure ALB only accepts traffic from CloudFront"
+  default     = "X-CycleLink-CloudFront-Secret-123" # In production, this should be more secure and set via variables
+  sensitive   = true
+}
