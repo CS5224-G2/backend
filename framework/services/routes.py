@@ -74,7 +74,6 @@ async def get_popular_routes(
     db: AsyncDatabase,
     limit: int = 3,
 ) -> list[RouteSummary]:
-    # Redis cache is deprecated here in favor of CloudFront Edge Caching
     cursor = (
         db[_PRECOMPUTED_COLLECTION]
         .find({"source": "precomputed"})
