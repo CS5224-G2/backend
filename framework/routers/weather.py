@@ -1,9 +1,11 @@
 import json
+import logging
 import redis
 from fastapi import APIRouter, HTTPException
 from ..config import settings
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
+logger = logging.getLogger(__name__)
 
 @router.get("/")
 async def get_current_weather():
@@ -27,7 +29,9 @@ async def get_current_weather():
             
         return {"status": "success", "data": json.loads(weather_data)}
         
-    except redis.ConnectionError as exc:
+    except (redis.ConnectionError, redis.TimeoutError) as exc:
+        logger.error(f"Redis connection/timeout error: {exc}")
         raise HTTPException(status_code=503, detail=f"Failed to connect to weather cache: {exc}") from exc
     except Exception as exc:
+        logger.error(f"Unexpected error in get_current_weather: {exc}")
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {exc}") from exc
