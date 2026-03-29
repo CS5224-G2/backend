@@ -1,4 +1,9 @@
+import hashlib
+import json
+import logging
 from datetime import datetime, timezone
+
+from ..clients.redis import redis_client
 
 from bson import ObjectId
 from pymongo.asynchronous.database import AsyncDatabase
@@ -20,6 +25,9 @@ from ..schemas import (
     ShadePreference,
     Point,
 )
+from ..config import settings
+ 
+logger = logging.getLogger(__name__)
 
 _PRECOMPUTED_COLLECTION = "precomputed-routes"
 
@@ -66,13 +74,39 @@ async def get_popular_routes(
     db: AsyncDatabase,
     limit: int = 3,
 ) -> list[RouteSummary]:
+    cache_key = f"routes:popular:{limit}"
+    
+    # 1. Try to fetch from Redis Cache
+    try:
+        cached_data = redis_client.get(cache_key)
+        if cached_data:
+            data = json.loads(cached_data)
+            return [RouteSummary.model_validate(obj) for obj in data]
+    except Exception as exc:
+        # Fallback to DB on any Redis error
+        logger.warning("Redis error in get_popular_routes: %s", exc)
+
+    # 2. Fetch from MongoDB if not in cache (or Redis error)
     cursor = (
         db[_PRECOMPUTED_COLLECTION]
         .find({"source": "precomputed"})
         .sort([("review_count", -1), ("rating", -1)])
         .limit(limit)
     )
-    return [_doc_to_route_summary(doc) async for doc in cursor]
+    routes = [_doc_to_route_summary(doc) async for doc in cursor]
+
+    # 3. Store in Redis for future use (15 min expiry)
+    try:
+        if routes:
+            redis_client.set(
+                cache_key, 
+                json.dumps([r.model_dump() for r in routes]), 
+                ex=900
+            )
+    except Exception:
+        pass
+
+    return routes
 
 
 _GENERATED_COLLECTION = "generated-routes"
@@ -93,6 +127,18 @@ async def get_recommendations(
 ) -> list[RecommendationResult]:
     from .route_suggestion import recommend_route
 
+    # 1. Check Redis Cache
+    request_dump = req.model_dump_json()
+    cache_key = f"routes:recommendations:{hashlib.md5(request_dump.encode()).hexdigest()}"
+    try:
+        cached = redis_client.get(cache_key)
+        if cached:
+            logger.info("Serving recommendations from cache: %s", cache_key)
+            return [RecommendationResult.model_validate(res) for res in json.loads(cached)]
+    except Exception as exc:
+        logger.warning("Redis error in get_recommendations check: %s", exc)
+
+    # 2. Compute Recommendations
     poi_prefs = req.preferences.points_of_interest
     results = []
 
@@ -162,6 +208,17 @@ async def get_recommendations(
                 for p in pois
             ],
         ))
+
+    # 3. Cache the results for 30 minutes
+    try:
+        if results:
+            redis_client.set(
+                cache_key, 
+                json.dumps([res.model_dump() for res in results]), 
+                ex=1800
+            )
+    except Exception:
+        pass
 
     return results
 

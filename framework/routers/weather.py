@@ -1,9 +1,8 @@
 import json
 import logging
 import redis
-import ssl
 from fastapi import APIRouter, HTTPException
-from ..config import settings
+from ..clients.redis import redis_client
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
 logger = logging.getLogger(__name__)
@@ -14,17 +13,7 @@ async def get_current_weather():
     Retrieves the latest weather snapshot from the Redis/ElastiCache cache.
     """
     try:
-        r = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            ssl=settings.REDIS_SSL,
-            ssl_cert_reqs=ssl.CERT_NONE,
-            decode_responses=True,
-            socket_timeout=5,
-            socket_connect_timeout=5
-        )
-        
-        weather_data = r.get("weather:latest")
+        weather_data = redis_client.get("weather:latest")
         if not weather_data:
             return {"status": "success", "data": None, "message": "No weather data found in cache"}
             
