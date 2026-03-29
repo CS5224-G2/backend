@@ -112,16 +112,83 @@ def _score_cyclist_type(distance_km: float, cyclist_type: CyclistType) -> float:
     return math.exp(-((distance_km - ideal) ** 2) / (2 * _CYCLIST_TYPE_SIGMA ** 2))
 
 
-def _score_air_quality(air_quality_preference) -> float:
-    """Score [0, 1] based on air quality preference. Placeholder — always returns 0."""
-    return 0.0
+def _nearest_station(lat: float, lng: float, stations: dict) -> dict | None:
+    """Return the station dict closest to the given lat/lng."""
+    best, best_dist = None, float("inf")
+    for s in stations.values():
+        d = (s["latitude"] - lat) ** 2 + (s["longitude"] - lng) ** 2
+        if d < best_dist:
+            best, best_dist = s, d
+    return best
 
 
-def _score_route(distance_km: float, preferences) -> float:
-    return (
-        _score_cyclist_type(distance_km, preferences.cyclist_type)
-        + _score_air_quality(preferences.air_quality_preference)
-    )
+def _score_station_conditions(station: dict) -> float:
+    """Score [0, 1] for a single weather station based on rainfall, humidity, and temperature."""
+    rainfall = station.get("rainfall", {}).get("value", 0)
+    humidity = station.get("relative_humidity", {}).get("value", 80)
+    temperature = station.get("air_temperature", {}).get("value", 28)
+
+    # Rainfall: any rain is bad
+    rainfall_score = 0.0 if rainfall > 0 else 1.0
+
+    # Humidity: <=70% is ideal, >=90% is bad, linear between
+    humidity_score = max(0.0, min(1.0, (90 - humidity) / 20))
+
+    # Temperature: <=27°C is ideal, >=33°C is bad, linear between
+    temp_score = max(0.0, min(1.0, (33 - temperature) / 6))
+
+    return (rainfall_score + humidity_score + temp_score) / 3
+
+
+def _score_air_quality(air_quality_preference, poi_waypoints: list, start_point, weather: dict | None) -> float:
+    """Score [0, 1] based on air quality preference.
+
+    Weather is sampled at POI waypoints since each route variant visits different POIs,
+    making this the only signal that meaningfully differs between routes with the same
+    start/end. If a route has no POI waypoints, falls back to the start point.
+
+    Returns 0 if weather data is unavailable or air_quality_preference is dont-care.
+    """
+    if air_quality_preference == AirQualityPreference.DONT_CARE:
+        return 0.0
+    if not weather:
+        return 0.0
+
+    stations = weather.get("stations", {})
+    if not stations:
+        return 0.0
+
+    # Sample weather at each POI waypoint; fall back to start point if no POIs
+    sample_points = [(wp.point.lat, wp.point.lng) for wp in poi_waypoints] if poi_waypoints else [(start_point.lat, start_point.lng)]
+
+    scores = []
+    for lat, lng in sample_points:
+        station = _nearest_station(lat, lng, stations)
+        if station:
+            scores.append(_score_station_conditions(station))
+
+    return sum(scores) / len(scores) if scores else 0.0
+
+
+def _get_weather() -> dict | None:
+    """Fetch weather data from Redis. Returns None on any failure."""
+    try:
+        raw = redis_client.get("weather:latest")
+        if raw:
+            logger.info("Weather data fetched from Redis (%d bytes)", len(raw))
+            return json.loads(raw)
+        logger.warning("No weather data found in Redis (key: weather:latest)")
+        return None
+    except Exception as exc:
+        logger.warning("Failed to fetch weather from Redis: %s", exc)
+        return None
+
+
+def _score_route(distance_km: float, preferences, poi_waypoints: list, start_point, weather: dict | None) -> float:
+    cyclist_score = _score_cyclist_type(distance_km, preferences.cyclist_type)
+    air_quality_score = _score_air_quality(preferences.air_quality_preference, poi_waypoints, start_point, weather)
+    logger.info("Route scoring — distance: %.2f km | cyclist_type score: %.3f | air_quality score: %.3f", distance_km, cyclist_score, air_quality_score)
+    return cyclist_score + air_quality_score
 
 
 async def get_recommendations(
@@ -144,7 +211,9 @@ async def get_recommendations(
 
     # 2. Compute Recommendations
     poi_prefs = req.preferences.points_of_interest
+    weather = _get_weather()
     results = []
+    poi_waypoints_per_result = []
 
     for combo in _POI_COMBOS[:req.limit]:
         route_req = RouteRequest(
@@ -216,9 +285,15 @@ async def get_recommendations(
                 for p in pois
             ],
         ))
+        poi_waypoints_per_result.append(route.poi_waypoints)
 
     # 3. Rank results by score (highest first)
-    results.sort(key=lambda r: _score_route(r.distance, req.preferences), reverse=True)
+    ranked = sorted(
+        zip(results, poi_waypoints_per_result),
+        key=lambda pair: _score_route(pair[0].distance, req.preferences, pair[1], req.start_point, weather),
+        reverse=True,
+    )
+    results = [r for r, _ in ranked]
 
     # 4. Cache the results for 30 minutes
     try:
