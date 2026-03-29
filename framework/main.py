@@ -14,7 +14,6 @@ from .database import close_engines, init_engines
 from .routers import (
     hawker,
     historic_sites,
-    mongodb_test,
     parks,
     route_suggestion,
     routes,
@@ -112,5 +111,4 @@ app.include_router(parks.router, prefix=_V1)
 app.include_router(tourist_attractions.router, prefix=_V1)
 app.include_router(route_suggestion.router, prefix=_V1)
 app.include_router(routes.router, prefix=_V1)
-app.include_router(mongodb_test.router, prefix=_V1)
 app.include_router(weather.router, prefix=_V1)
