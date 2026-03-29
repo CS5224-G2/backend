@@ -123,6 +123,8 @@ def extract_routes(kml_path: str) -> list[dict]:
                 "distance_m": round(distance_m, 1),
                 "estimated_time_min": round(estimated_time_min, 1),
                 "coordinates": coords,
+                "review_count": 0,
+                "rating": 0.0,
             })
 
     return routes
