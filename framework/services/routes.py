@@ -114,7 +114,7 @@ async def get_recommendations(
     poi_prefs = req.preferences.points_of_interest
     results = []
 
-    for combo in _POI_COMBOS:
+    for combo in _POI_COMBOS[:req.limit]:
         route_req = RouteRequest(
             origin=Point(lat=req.start_point.lat, lng=req.start_point.lng),
             destination=Point(lat=req.end_point.lat, lng=req.end_point.lng),
