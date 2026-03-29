@@ -59,20 +59,20 @@ resource "aws_lambda_function" "fetch_weather" {
   runtime = "python3.12"
   timeout = 30
 
-  filename         = data.archive_file.fetch_weather.output_path
-  source_code_hash = data.archive_file.fetch_weather.output_base64sha256
+  filename         = data.archive_file.fetch_weather_zip.output_path
+  source_code_hash = data.archive_file.fetch_weather_zip.output_base64sha256
 
   environment {
     variables = {
       S3_BUCKET_NAME      = var.s3_bucket_name
-      PUSH_WEATHER_LAMBDA = "cyclelink-${var.environment}-push-weather-to-cache"
+      PUSH_WEATHER_LAMBDA = "cyclelink-${var.environment}-push-data-to-cache"
     }
   }
 }
 
-#### Push Weather to Cache Lambda (Inside VPC - Has Cache Access) ####
-resource "aws_lambda_function" "push_weather_to_cache" {
-  function_name = "cyclelink-${var.environment}-push-weather-to-cache"
+#### Push Data to Cache Lambda (Inside VPC - Has Cache Access) ####
+resource "aws_lambda_function" "push_data_to_cache" {
+  function_name = "cyclelink-${var.environment}-push-data-to-cache"
   description   = "Pushes weather data to ElastiCache (sitting inside VPC)"
 
   role    = aws_iam_role.lambda_exec.arn
@@ -80,8 +80,8 @@ resource "aws_lambda_function" "push_weather_to_cache" {
   runtime = "python3.12"
   timeout = 30
 
-  filename         = data.archive_file.fetch_weather.output_path
-  source_code_hash = data.archive_file.fetch_weather.output_base64sha256
+  filename         = data.archive_file.push_data_to_cache_zip.output_path
+  source_code_hash = data.archive_file.push_data_to_cache_zip.output_base64sha256
 
   vpc_config {
     subnet_ids         = var.subnet_ids

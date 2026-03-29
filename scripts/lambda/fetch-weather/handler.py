@@ -6,7 +6,6 @@ from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 
 import boto3
-import redis
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -205,30 +204,6 @@ def lambda_handler(event, _context):
         return {"statusCode": 500, "body": str(exc)}
 
 
-def pusher_handler(event, _context):
-    """
-    Entry point for the INSIDE VPC Lambda.
-    Receives processed data and pushes it to ElastiCache.
-    """
-    logger.info("Pusher event received")
-    
-    endpoint = os.environ.get("ELASTICACHE_ENDPOINT")
-    port = os.environ.get("ELASTICACHE_PORT", "6379")
-
-    if not endpoint:
-        logger.error("ELASTICACHE_ENDPOINT not set")
-        return
-
-    try:
-        r = redis.Redis(host=endpoint, port=int(port), ssl=True, decode_responses=True)
-        # Event is the processed weather data sent from lambda_handler
-        r.set("weather:latest", json.dumps(event), ex=900)
-        logger.info("Successfully pushed weather data to ElastiCache via bridge")
-    except Exception as exc:
-        logger.error("Failed to push to ElastiCache: %s", exc)
-
-
-# Allow running locally for testing: python handler.py
 if __name__ == "__main__":
     processed, _ = fetch_all_weather()
     print(json.dumps(processed, indent=2))
