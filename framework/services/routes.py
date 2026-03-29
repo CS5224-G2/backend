@@ -63,7 +63,7 @@ async def get_routes(
     limit: int = 3,
 ) -> list[RouteSummary]:
     query: dict = {"source": "precomputed"}
-    if cyclist_type is not None:
+    if cyclist_type is not None and cyclist_type != CyclistType.GENERAL:
         query["cyclist_type"] = cyclist_type.value
 
     cursor = db[_PRECOMPUTED_COLLECTION].find(query).limit(limit)
