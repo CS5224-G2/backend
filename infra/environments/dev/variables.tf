@@ -34,3 +34,16 @@ variable "mongodb_url" {
   sensitive   = true
 }
 
+variable "swagger_username" {
+  type        = string
+  description = "Username for Swagger UI documentation"
+  default     = "admin"
+}
+
+variable "swagger_password" {
+  type        = string
+  description = "Password for Swagger UI documentation"
+  default     = "changeme"
+  sensitive   = true
+}
+

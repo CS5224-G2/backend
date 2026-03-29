@@ -1,4 +1,4 @@
-from typing import Any, AsyncGenerator, Annotated
+from typing import Any
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
@@ -31,7 +31,11 @@ class Settings(BaseSettings):
 
     # --- CORS ---
     # Using Any type to prevent Pydantic V2 from trying to parse comma-separated strings as JSON.
-    ALLOWED_ORIGINS: Any = ["http://localhost:3000", "http://localhost:8081"]
+    ALLOWED_ORIGINS: Any = ["*"]
+
+    # --- Swagger Settings ---
+    SWAGGER_USERNAME: str = "admin"
+    SWAGGER_PASSWORD: str = "changeme"
 
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod

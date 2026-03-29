@@ -252,6 +252,8 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "REDIS_HOST",      value = var.redis_host },
       { name = "REDIS_PORT",      value = tostring(var.redis_port) },
       { name = "REDIS_SSL",       value = tostring(var.redis_ssl) },
+      { name = "SWAGGER_USERNAME", value = var.swagger_username },
+      { name = "SWAGGER_PASSWORD", value = var.swagger_password },
     ]
 
     logConfiguration = {

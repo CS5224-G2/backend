@@ -49,6 +49,8 @@ module "ecs" {
   allowed_origins = var.allowed_origins
   s3_bucket_name  = module.core.s3_bucket_name
   mongodb_url     = var.mongodb_url
+  swagger_username = var.swagger_username
+  swagger_password = var.swagger_password
 
   # Redis / ElastiCache
   redis_host = module.core.elasticache_endpoint

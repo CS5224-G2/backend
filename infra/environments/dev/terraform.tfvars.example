@@ -12,3 +12,7 @@ rds_password = "RDS_DB_PASSWORD"
 # secret_key      = "YOUR_JWT_SECRET_KEY"
 # allowed_origins = "http://localhost:3000,https://cyclelink.com"
 mongodb_url     = "MONGODB_URL"
+
+##### Swagger Authentication #####
+swagger_username = "admin"
+swagger_password = "changeme"
