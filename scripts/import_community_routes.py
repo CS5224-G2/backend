@@ -59,6 +59,14 @@ ROUTE_FOLDERS = {
     "Mountain Bike Trails",
 }
 
+FOLDER_CYCLIST_TYPE = {
+    "Cycling Path Network": "commuter",
+    "Park Connector Network": "recreational",
+    "Mountain Bike Trails": "fitness",
+}
+
+FITNESS_DISTANCE_M = 20_000
+
 NS = "{http://www.opengis.net/kml/2.2}"
 
 SCRIPTS_DIR = os.path.dirname(__file__)
@@ -102,10 +110,16 @@ def extract_routes(kml_path: str) -> list[dict]:
             coords = parse_coordinates(coord_el.text)
             distance_m = route_distance_m(coords)
             estimated_time_min = (distance_m / 1000) / AVG_SPEED_KMH * 60
+            cyclist_type = (
+                "fitness"
+                if distance_m >= FITNESS_DISTANCE_M
+                else FOLDER_CYCLIST_TYPE[folder_name]
+            )
             routes.append({
                 "source": "precomputed",
                 "name": name,
                 "type": folder_name,
+                "cyclist_type": cyclist_type,
                 "distance_m": round(distance_m, 1),
                 "estimated_time_min": round(estimated_time_min, 1),
                 "coordinates": coords,
