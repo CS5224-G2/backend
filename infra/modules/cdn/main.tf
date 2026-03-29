@@ -31,7 +31,11 @@ resource "aws_cloudfront_distribution" "frontend" {
 
     forwarded_values {
       query_string = true
-      headers      = ["*"]
+      
+      # Selectively forward headers so CloudFront can cache based on response headers.
+      # We still forward Host and Authorization to ensure the app works correctly.
+      headers      = ["Host", "Origin", "Authorization", "Access-Control-Request-Headers", "Access-Control-Request-Method"]
+      
       cookies {
         forward = "all"
       }
@@ -39,9 +43,11 @@ resource "aws_cloudfront_distribution" "frontend" {
 
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
-    default_ttl            = 0
-    max_ttl                = 0
+    default_ttl            = 0      # If the app doesn't say anything, don't cache
+    max_ttl                = 86400  # Allow caching up to 24 hours if the app asks for it
   }
+
+
 
   restrictions {
     geo_restriction {

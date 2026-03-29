@@ -74,39 +74,14 @@ async def get_popular_routes(
     db: AsyncDatabase,
     limit: int = 3,
 ) -> list[RouteSummary]:
-    cache_key = f"routes:popular:{limit}"
-    
-    # 1. Try to fetch from Redis Cache
-    try:
-        cached_data = redis_client.get(cache_key)
-        if cached_data:
-            data = json.loads(cached_data)
-            return [RouteSummary.model_validate(obj) for obj in data]
-    except Exception as exc:
-        # Fallback to DB on any Redis error
-        logger.warning("Redis error in get_popular_routes: %s", exc)
-
-    # 2. Fetch from MongoDB if not in cache (or Redis error)
+    # Redis cache is deprecated here in favor of CloudFront Edge Caching
     cursor = (
         db[_PRECOMPUTED_COLLECTION]
         .find({"source": "precomputed"})
         .sort([("review_count", -1), ("rating", -1)])
         .limit(limit)
     )
-    routes = [_doc_to_route_summary(doc) async for doc in cursor]
-
-    # 3. Store in Redis for future use (15 min expiry)
-    try:
-        if routes:
-            redis_client.set(
-                cache_key, 
-                json.dumps([r.model_dump() for r in routes]), 
-                ex=900
-            )
-    except Exception:
-        pass
-
-    return routes
+    return [_doc_to_route_summary(doc) async for doc in cursor]
 
 
 _GENERATED_COLLECTION = "generated-routes"

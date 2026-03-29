@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Path, Query, Response
 
 from ..database import MongoDB, PlacesDB
 from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary
@@ -19,8 +19,11 @@ async def get_routes(
 @router.get("/popular", response_model=list[RouteSummary])
 async def get_popular_routes(
     db: MongoDB,
+    response: Response,
     limit: int = Query(default=3, ge=1, le=3),
 ):
+    # Set Cache-Control header for CloudFront to cache for 1 hour
+    response.headers["Cache-Control"] = "public, max-age=3600"
     return await routes_service.get_popular_routes(db, limit=limit)
 
 
