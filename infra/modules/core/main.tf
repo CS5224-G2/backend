@@ -31,6 +31,15 @@ resource "aws_security_group" "cyclelink_sg" {
     cidr_blocks = var.resource_publicly_accessible ? ["0.0.0.0/0"] : [data.aws_vpc.default.cidr_block]
   }
 
+  # Redis/Valkey Access
+  ingress {
+    description = "Redis/Valkey Access"
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    self        = true
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -68,4 +77,15 @@ resource "aws_db_instance" "cyclelink_db" {
   
   publicly_accessible    = var.resource_publicly_accessible
   vpc_security_group_ids = [aws_security_group.cyclelink_sg.id]
+}
+
+# ElastiCache Valkey Serverless
+resource "aws_elasticache_serverless_cache" "cache" {
+  name = "cyclelink-${var.environment}-cache"
+  engine = "valkey"
+  
+  description = "Serverless Valkey cache for CycleLink"
+  
+  subnet_ids         = data.aws_subnets.default.ids
+  security_group_ids = [aws_security_group.cyclelink_sg.id]
 }

@@ -35,3 +35,14 @@ output "security_group_id" {
   value       = aws_security_group.cyclelink_sg.id
   description = "ID of the CycleLink security group"
 }
+
+#### ElastiCache Outputs ####
+output "elasticache_endpoint" {
+  value       = aws_elasticache_serverless_cache.cache.endpoint[0].address
+  description = "Address of the ElastiCache Valkey endpoint"
+}
+
+output "elasticache_port" {
+  value       = aws_elasticache_serverless_cache.cache.endpoint[0].port
+  description = "Port of the ElastiCache Valkey endpoint"
+}

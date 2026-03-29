@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     # MongoDB Cluster
     MONGODB_URL: str = "mongodb://localhost:27017"
 
+    # Redis / ElastiCache
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_SSL: bool = False
+
     # --- Auth ---
     # Generate with: openssl rand -hex 32
     SECRET_KEY: str = "changeme"

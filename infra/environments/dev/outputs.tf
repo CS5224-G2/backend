@@ -42,3 +42,13 @@ output "ecs_service_name" {
 output "alb_dns_name" {
   value = module.ecs.alb_dns_name
 }
+
+output "elasticache_endpoint" {
+  value       = module.core.elasticache_endpoint
+  description = "Address of the ElastiCache Valkey endpoint"
+}
+
+output "elasticache_port" {
+  value       = module.core.elasticache_port
+  description = "Port of the ElastiCache Valkey endpoint"
+}

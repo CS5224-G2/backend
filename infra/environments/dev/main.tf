@@ -27,7 +27,13 @@ module "lambda" {
   environment = "dev"
 
   s3_bucket_name          = module.core.s3_bucket_name
-  enable_weather_schedule = false
+  enable_weather_schedule = true
+
+  vpc_id               = module.core.vpc_id
+  subnet_ids           = module.core.subnet_ids
+  security_group_id    = module.core.security_group_id
+  elasticache_endpoint = module.core.elasticache_endpoint
+  elasticache_port     = module.core.elasticache_port
 }
 
 module "ecs" {
@@ -43,6 +49,9 @@ module "ecs" {
   allowed_origins = var.allowed_origins
   s3_bucket_name  = module.core.s3_bucket_name
   mongodb_url     = var.mongodb_url
+
+  # Redis / ElastiCache
+  redis_host = module.core.elasticache_endpoint
+  redis_port = module.core.elasticache_port
+  redis_ssl  = true
 }
-
-

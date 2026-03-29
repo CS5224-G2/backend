@@ -249,6 +249,9 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
       { name = "SERVICE_URLS",    value = var.service_urls },
       { name = "MONGODB_URL",     value = var.mongodb_url },
+      { name = "REDIS_HOST",      value = var.redis_host },
+      { name = "REDIS_PORT",      value = tostring(var.redis_port) },
+      { name = "REDIS_SSL",       value = tostring(var.redis_ssl) },
     ]
 
     logConfiguration = {

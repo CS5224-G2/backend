@@ -18,6 +18,12 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# Allow Lambda to run in a VPC
+resource "aws_iam_role_policy_attachment" "lambda_vpc_execution" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 # Allow Lambda to write weather data to S3
 resource "aws_iam_role_policy" "lambda_s3_write" {
   name = "cyclelink-${var.environment}-lambda-s3-write"
@@ -25,18 +31,28 @@ resource "aws_iam_role_policy" "lambda_s3_write" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["s3:PutObject"]
-      Resource = "arn:aws:s3:::${var.s3_bucket_name}/weather/*"
-    }]
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:PutObject", "s3:GetObject"]
+        Resource = [
+          "arn:aws:s3:::${var.s3_bucket_name}/weather/*",
+          "arn:aws:s3:::${var.s3_bucket_name}/raw/*"
+        ]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["lambda:InvokeFunction"]
+        Resource = "*"
+      }
+    ]
   })
 }
 
-#### Fetch Weather Lambda ####
+#### Fetch Weather Lambda (Outside VPC - Has Internet) ####
 resource "aws_lambda_function" "fetch_weather" {
   function_name = "cyclelink-${var.environment}-fetch-weather"
-  description   = "Fetches real-time weather data from data.gov.sg"
+  description   = "Fetches real-time weather data (sitting outside VPC for internet access)"
 
   role    = aws_iam_role.lambda_exec.arn
   handler = "handler.lambda_handler"
@@ -48,7 +64,34 @@ resource "aws_lambda_function" "fetch_weather" {
 
   environment {
     variables = {
-      S3_BUCKET_NAME = var.s3_bucket_name
+      S3_BUCKET_NAME      = var.s3_bucket_name
+      PUSH_WEATHER_LAMBDA = "cyclelink-${var.environment}-push-weather-to-cache"
+    }
+  }
+}
+
+#### Push Weather to Cache Lambda (Inside VPC - Has Cache Access) ####
+resource "aws_lambda_function" "push_weather_to_cache" {
+  function_name = "cyclelink-${var.environment}-push-weather-to-cache"
+  description   = "Pushes weather data to ElastiCache (sitting inside VPC)"
+
+  role    = aws_iam_role.lambda_exec.arn
+  handler = "handler.pusher_handler"
+  runtime = "python3.12"
+  timeout = 30
+
+  filename         = data.archive_file.fetch_weather.output_path
+  source_code_hash = data.archive_file.fetch_weather.output_base64sha256
+
+  vpc_config {
+    subnet_ids         = var.subnet_ids
+    security_group_ids = [var.security_group_id]
+  }
+
+  environment {
+    variables = {
+      ELASTICACHE_ENDPOINT = var.elasticache_endpoint
+      ELASTICACHE_PORT     = var.elasticache_port
     }
   }
 }

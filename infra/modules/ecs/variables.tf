@@ -58,6 +58,23 @@ variable "mongodb_url" {
   sensitive   = true
 }
 
+variable "redis_host" {
+  type        = string
+  description = "Redis/ElastiCache host"
+}
+
+variable "redis_port" {
+  type        = number
+  description = "Redis/ElastiCache port"
+  default     = 6379
+}
+
+variable "redis_ssl" {
+  type        = bool
+  description = "Whether to use SSL for Redis"
+  default     = true
+}
+
 
 variable "s3_bucket_name" {
   type        = string
