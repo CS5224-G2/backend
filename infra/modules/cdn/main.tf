@@ -1,3 +1,10 @@
+data "aws_cloudfront_cache_policy" "optimized" {
+  name = "Managed-CachingOptimized"
+}
+data "aws_cloudfront_origin_request_policy" "all_headers" {
+  name = "Managed-AllViewerExceptHostHeader"
+}
+
 ############################################################
 # CloudFront Distribution
 ############################################################
@@ -29,22 +36,10 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "ALB-Origin"
 
-    forwarded_values {
-      query_string = true
-      
-      # Selectively forward headers so CloudFront can cache based on response headers.
-      # We still forward Host and Authorization to ensure the app works correctly.
-      headers      = ["Host", "Origin", "Authorization", "Access-Control-Request-Headers", "Access-Control-Request-Method"]
-      
-      cookies {
-        forward = "all"
-      }
-    }
+    cache_policy_id          = data.aws_cloudfront_cache_policy.optimized.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_headers.id
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 0      # If the app doesn't say anything, don't cache
-    max_ttl                = 86400  # Allow caching up to 24 hours if the app asks for it
   }
 
 

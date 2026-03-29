@@ -153,7 +153,7 @@ resource "aws_lb_target_group" "backend" {
   target_type = "ip"
 
   health_check {
-    path                = "/docs"
+    path                = "/health"
     port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 3
@@ -205,7 +205,7 @@ resource "aws_lb_target_group" "bike_route" {
   target_type = "ip"
 
   health_check {
-    path                = "/docs"
+    path                = "/health"
     port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 3

@@ -23,30 +23,10 @@ from .routers import (
 
 logger = logging.getLogger(__name__)
 
-
-def _load_osm_graph():
-    """Load the pre-downloaded Singapore OSM graph into memory on startup."""
-    from bike_route.graph_manager import load_graph_from_file, load_graph_from_s3
-
-    if settings.OSM_GRAPH_LOCAL_PATH:
-        load_graph_from_file(settings.OSM_GRAPH_LOCAL_PATH)
-    elif settings.S3_BUCKET_NAME:
-        load_graph_from_s3(
-            settings.S3_BUCKET_NAME,
-            settings.OSM_GRAPH_S3_KEY or None,
-        )
-    else:
-        logger.warning(
-            "No OSM graph configured (set S3_BUCKET_NAME or OSM_GRAPH_LOCAL_PATH). "
-            "Falling back to live Overpass API calls per request."
-        )
-
-
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # Startup
     init_engines()
-    _load_osm_graph()
     yield
     # Shutdown
     await close_engines()
@@ -100,6 +80,10 @@ async def get_redoc(username: str = Depends(authenticate_swagger)):
 @app.get("/openapi.json", include_in_schema=False)
 async def get_open_api_endpoint(username: str = Depends(authenticate_swagger)):
     return JSONResponse(app.openapi())
+
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    return {"status": "ok"}
 
 
 # Routers
