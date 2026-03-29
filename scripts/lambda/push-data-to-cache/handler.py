@@ -22,7 +22,16 @@ def pusher_handler(event, _context):
 
     try:
         # Event is the processed weather data sent from fetch-weather Lambda
-        r = redis.Redis(host=endpoint, port=int(port), ssl=True, decode_responses=True)
+        # Using socket_timeout=5 and bypassing SSL validation to avoid hangs in public subnets without NAT
+        r = redis.Redis(
+            host=endpoint,
+            port=int(port),
+            ssl=True,
+            ssl_cert_reqs=None,
+            decode_responses=True,
+            socket_timeout=5,
+            socket_connect_timeout=5
+        )
         r.set("weather:latest", json.dumps(event), ex=900)
         logger.info("Successfully pushed weather data to ElastiCache")
     except Exception as exc:

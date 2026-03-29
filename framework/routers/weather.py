@@ -15,7 +15,10 @@ async def get_current_weather():
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             ssl=settings.REDIS_SSL,
-            decode_responses=True
+            ssl_cert_reqs=None,
+            decode_responses=True,
+            socket_timeout=5,
+            socket_connect_timeout=5
         )
         
         weather_data = r.get("weather:latest")
