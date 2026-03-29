@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import redis
+import ssl
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -27,7 +28,7 @@ def pusher_handler(event, _context):
             host=endpoint,
             port=int(port),
             ssl=True,
-            ssl_cert_reqs=None,
+            ssl_cert_reqs=ssl.CERT_NONE,
             decode_responses=True,
             socket_timeout=5,
             socket_connect_timeout=5
