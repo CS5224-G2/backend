@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import math
 from datetime import datetime, timezone
 
 from ..clients.redis import redis_client
@@ -92,6 +93,37 @@ _POI_COMBOS = [
 ]
 
 
+# Scoring functions — each subcategory score is in the range [0, 1].
+# Final route score is the sum of all subcategory scores.
+
+_CYCLIST_TYPE_IDEAL_KM = {
+    CyclistType.RECREATIONAL: 5.0,
+    CyclistType.COMMUTER: 10.0,
+    CyclistType.FITNESS: 20.0,
+}
+_CYCLIST_TYPE_SIGMA = 10.0
+
+
+def _score_cyclist_type(distance_km: float, cyclist_type: CyclistType) -> float:
+    """Score [0, 1] based on how close the route distance is to the ideal for the cyclist type."""
+    ideal = _CYCLIST_TYPE_IDEAL_KM.get(cyclist_type)
+    if ideal is None:
+        return 0.0
+    return math.exp(-((distance_km - ideal) ** 2) / (2 * _CYCLIST_TYPE_SIGMA ** 2))
+
+
+def _score_air_quality(air_quality_preference) -> float:
+    """Score [0, 1] based on air quality preference. Placeholder — always returns 0."""
+    return 0.0
+
+
+def _score_route(distance_km: float, preferences) -> float:
+    return (
+        _score_cyclist_type(distance_km, preferences.cyclist_type)
+        + _score_air_quality(preferences.air_quality_preference)
+    )
+
+
 async def get_recommendations(
     mongo: AsyncDatabase,
     places_db: AsyncSession,
@@ -128,6 +160,10 @@ async def get_recommendations(
         )
 
         route = await recommend_route(places_db, route_req)
+
+        if req.preferences.max_distance is not None and route.distance > req.preferences.max_distance:
+            logger.info("Route exceeds max_distance (%.2f km > %.2f km), skipping", route.distance, req.preferences.max_distance)
+            continue
 
         start_name = req.start_point.name or f"{req.start_point.lat:.4f}, {req.start_point.lng:.4f}"
         end_name = req.end_point.name or f"{req.end_point.lat:.4f}, {req.end_point.lng:.4f}"
@@ -181,7 +217,10 @@ async def get_recommendations(
             ],
         ))
 
-    # 3. Cache the results for 30 minutes
+    # 3. Rank results by score (highest first)
+    results.sort(key=lambda r: _score_route(r.distance, req.preferences), reverse=True)
+
+    # 4. Cache the results for 30 minutes
     try:
         if results:
             redis_client.set(
