@@ -288,6 +288,9 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "REDIS_SSL",       value = tostring(var.redis_ssl) },
       { name = "SWAGGER_USERNAME", value = var.swagger_username },
       { name = "SWAGGER_PASSWORD", value = var.swagger_password },
+      { name = "AWS_REGION",       value = var.aws_region },
+      { name = "S3_BUCKET_NAME",   value = var.s3_bucket_name },
+      { name = "CDN_BASE_URL",     value = var.cdn_base_url },
     ]
 
     logConfiguration = {
@@ -354,6 +357,8 @@ resource "aws_ecs_task_definition" "bike_route" {
       { name = "SERVICE_URLS",    value = var.service_urls },
       { name = "MONGODB_URL",     value = var.mongodb_url },
       { name = "S3_BUCKET_NAME",  value = var.s3_bucket_name },
+      { name = "AWS_REGION",      value = var.aws_region },
+      { name = "CDN_BASE_URL",    value = var.cdn_base_url },
     ]
 
     logConfiguration = {

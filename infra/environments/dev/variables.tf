@@ -54,3 +54,9 @@ variable "cloudfront_header_secret" {
   sensitive   = true
 }
 
+variable "cdn_base_url" {
+  type        = string
+  description = "Base URL of the CloudFront distribution (if any)"
+  default     = ""
+}
+

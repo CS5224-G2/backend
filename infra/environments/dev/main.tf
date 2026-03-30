@@ -59,6 +59,7 @@ module "ecs" {
 
   # CloudFront Security
   cloudfront_header_secret = var.cloudfront_header_secret
+  cdn_base_url = var.cdn_base_url
 }
 
 module "cdn" {
@@ -67,4 +68,7 @@ module "cdn" {
 
   alb_dns_name             = module.ecs.alb_dns_name
   cloudfront_header_secret = var.cloudfront_header_secret
+  s3_bucket_arn            = module.core.s3_bucket_arn
+  s3_bucket_name           = module.core.s3_bucket_name
+  s3_bucket_domain_name    = module.core.s3_bucket_domain_name
 }

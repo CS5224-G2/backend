@@ -8,6 +8,13 @@ data "aws_cloudfront_origin_request_policy" "all_headers" {
 ############################################################
 # CloudFront Distribution
 ############################################################
+
+resource "aws_cloudfront_origin_access_control" "s3_oac" {
+  name                              = "cyclelink-${var.environment}-s3-oac"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   is_ipv6_enabled    = true
@@ -31,6 +38,12 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
+  origin {
+    domain_name              = var.s3_bucket_domain_name
+    origin_id                = "S3-Origin"
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
+  }
+
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
@@ -40,6 +53,19 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_headers.id
 
     viewer_protocol_policy = "redirect-to-https"
+  }
+
+  # Cache behavior for avatars in S3
+  ordered_cache_behavior {
+    path_pattern     = "/profile/*"
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-Origin"
+
+    cache_policy_id = data.aws_cloudfront_cache_policy.use_origin.id
+
+    viewer_protocol_policy = "redirect-to-https"
+    compress               = true
   }
 
 
@@ -57,4 +83,28 @@ resource "aws_cloudfront_distribution" "frontend" {
   tags = {
     Environment = var.environment
   }
+}
+
+resource "aws_s3_bucket_policy" "cdn_bucket_access" {
+  bucket = var.s3_bucket_name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowCloudFrontServicePrincipalReadOnly"
+        Effect    = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${var.s3_bucket_arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.frontend.arn
+          }
+        }
+      }
+    ]
+  })
 }

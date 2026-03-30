@@ -40,12 +40,7 @@ _s3_client = None
 def _get_s3():
     global _s3_client
     if _s3_client is None:
-        _s3_client = boto3.client(
-            "s3",
-            region_name=settings.AWS_REGION,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID or None,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY or None,
-        )
+        _s3_client = boto3.client("s3", region_name=settings.AWS_REGION)
     return _s3_client
 
 
@@ -56,7 +51,7 @@ def _avatar_s3_key(user_id: uuid.UUID, ext: str) -> str:
 def _avatar_url(s3_key: str) -> str:
     if settings.CDN_BASE_URL:
         return f"{settings.CDN_BASE_URL.rstrip('/')}/{s3_key}"
-    return f"https://{settings.S3_USER_BUCKET}.s3.{settings.AWS_REGION}.amazonaws.com/{s3_key}"
+    return f"https://{settings.S3_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/{s3_key}"
 
 
 # ============================================================
@@ -182,7 +177,7 @@ async def upload_avatar(
     s3_key = _avatar_s3_key(user.id, ext)
 
     _get_s3().put_object(
-        Bucket=settings.S3_USER_BUCKET,
+        Bucket=settings.S3_BUCKET_NAME,
         Key=s3_key,
         Body=file_bytes,
         ContentType=content_type,
@@ -210,11 +205,11 @@ async def delete_avatar(db: AsyncSession, user: User) -> None:
         s3_key = user.avatar_url[len(settings.CDN_BASE_URL.rstrip("/")) + 1:]
     else:
         # Direct S3 URL: https://{bucket}.s3.{region}.amazonaws.com/{key}
-        prefix = f"https://{settings.S3_USER_BUCKET}.s3.{settings.AWS_REGION}.amazonaws.com/"
+        prefix = f"https://{settings.S3_BUCKET_NAME}.s3.{settings.AWS_REGION}.amazonaws.com/"
         s3_key = user.avatar_url[len(prefix):]
 
     try:
-        _get_s3().delete_object(Bucket=settings.S3_USER_BUCKET, Key=s3_key)
+        _get_s3().delete_object(Bucket=settings.S3_BUCKET_NAME, Key=s3_key)
     except ClientError:
         pass
 

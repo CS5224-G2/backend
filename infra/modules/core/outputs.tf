@@ -3,6 +3,14 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.cyclelink_s3_bucket.bucket
 }
 
+output "s3_bucket_arn" {
+  value       = aws_s3_bucket.cyclelink_s3_bucket.arn
+}
+
+output "s3_bucket_domain_name" {
+  value       = aws_s3_bucket.cyclelink_s3_bucket.bucket_regional_domain_name
+}
+
 #### RDS Outputs ####
 output "rds_endpoint" {
   value       = aws_db_instance.cyclelink_db.endpoint

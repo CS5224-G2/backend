@@ -61,19 +61,12 @@ class Settings(BaseSettings):
             return json.loads(v)
         return v
 
-    # --- External APIs ---
-    NEA_API_KEY: str = ""
-    NEA_BASE_URL: str = ""
-
     # --- AWS ---
     AWS_REGION: str = "ap-southeast-1"
-    AWS_ACCESS_KEY_ID: str = ""
-    AWS_SECRET_ACCESS_KEY: str = ""
-    S3_USER_BUCKET: str = "cyclelink-user-content"
+    S3_BUCKET_NAME: str = ""
     CDN_BASE_URL: str = ""           # e.g. https://cdn.cyclelink.example.com — avatar URLs use this if set
 
-    # --- S3 / Pre-downloaded OSM Graph ---
-    S3_BUCKET_NAME: str = ""
+    # --- Pre-downloaded OSM Graph ---
     OSM_GRAPH_S3_KEY: str = "osm-graphs/singapore_bike_graph.graphml"
     OSM_GRAPH_LOCAL_PATH: str = ""  # Set for local dev (overrides S3)
 
