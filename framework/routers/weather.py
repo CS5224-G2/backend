@@ -1,13 +1,14 @@
 import json
 import logging
 import redis
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from ..clients.redis import redis_client
+from ..utils.cache import cdn_cache
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
 logger = logging.getLogger(__name__)
 
-@router.get("/")
+@router.get("/", dependencies=[Depends(cdn_cache(max_age=0))])
 async def get_current_weather():
     """
     Retrieves the latest weather snapshot from the Redis/ElastiCache cache.
