@@ -140,6 +140,20 @@ def _score_station_conditions(station: dict) -> float:
     return (rainfall_score + humidity_score + temp_score) / 3
 
 
+def _score_elevation(total_ascent_m: float, elevation_preference) -> float:
+    """Score [0, 1] based on how well the route's total ascent matches the elevation preference.
+
+    higher: linear 0→1 from 0–500m, capped at 1.0 beyond 500m.
+    lower:  linear 1→0 from 0–250m, capped at 0.0 beyond 250m.
+    dont-care: neutral (0).
+    """
+    if elevation_preference == ElevationPreference.HIGHER:
+        return min(1.0, total_ascent_m / 500)
+    if elevation_preference == ElevationPreference.LOWER:
+        return max(0.0, 1.0 - total_ascent_m / 250)
+    return 0.0
+
+
 def _score_air_quality(air_quality_preference, poi_waypoints: list, start_point, weather: dict | None) -> float:
     """Score [0, 1] based on air quality preference.
 
@@ -184,11 +198,12 @@ def _get_weather() -> dict | None:
         return None
 
 
-def _score_route(distance_km: float, preferences, poi_waypoints: list, start_point, weather: dict | None) -> float:
+def _score_route(distance_km: float, total_ascent_m: float, preferences, poi_waypoints: list, start_point, weather: dict | None) -> float:
     cyclist_score = _score_cyclist_type(distance_km, preferences.cyclist_type)
+    elevation_score = _score_elevation(total_ascent_m, preferences.elevation_preference)
     air_quality_score = _score_air_quality(preferences.air_quality_preference, poi_waypoints, start_point, weather)
-    logger.info("Route scoring — distance: %.2f km | cyclist_type score: %.3f | air_quality score: %.3f", distance_km, cyclist_score, air_quality_score)
-    return cyclist_score + air_quality_score
+    logger.info("Route scoring — distance: %.2f km, ascent: %.1f m | cyclist_type score: %.3f | elevation score: %.3f | air_quality score: %.3f", distance_km, total_ascent_m, cyclist_score, elevation_score, air_quality_score)
+    return cyclist_score + elevation_score + air_quality_score
 
 
 async def get_recommendations(
@@ -214,6 +229,7 @@ async def get_recommendations(
     weather = _get_weather()
     results = []
     poi_waypoints_per_result = []
+    ascents_per_result = []
 
     for combo in _POI_COMBOS[:req.limit]:
         route_req = RouteRequest(
@@ -286,14 +302,15 @@ async def get_recommendations(
             ],
         ))
         poi_waypoints_per_result.append(route.poi_waypoints)
+        ascents_per_result.append(route.total_ascent_m)
 
     # 3. Rank results by score (highest first)
     ranked = sorted(
-        zip(results, poi_waypoints_per_result),
-        key=lambda pair: _score_route(pair[0].distance, req.preferences, pair[1], req.start_point, weather),
+        zip(results, poi_waypoints_per_result, ascents_per_result),
+        key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather),
         reverse=True,
     )
-    results = [r for r, _ in ranked]
+    results = [r for r, _, _ in ranked]
 
     # 4. Cache the results for 30 minutes
     try:

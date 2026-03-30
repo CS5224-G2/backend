@@ -205,10 +205,18 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     distance_m = _compute_path_distance_m(path)
     duration_min = (distance_m / 1000) / _AVG_CYCLING_SPEED_KMH * 60
 
+    from bike_route import graph_manager
+    elevations = graph_manager.get_elevations_for_path([(p.lat, p.lng) for p in path])
+    total_ascent_m = sum(
+        max(0.0, elevations[i + 1] - elevations[i])
+        for i in range(len(elevations) - 1)
+    )
+
     return RouteResponse(
         path=path,
         poi_waypoints=poi_waypoints,
         distance=round(distance_m / 1000, 2),
         duration=round(duration_min),
+        total_ascent_m=round(total_ascent_m, 1),
     )
 

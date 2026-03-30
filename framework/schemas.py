@@ -121,6 +121,7 @@ class RouteResponse(BaseModel):
     # not implemented yet
     distance: float
     duration: float
+    total_ascent_m: float = 0.0
 
 
 # ------------------------------------------------------------------

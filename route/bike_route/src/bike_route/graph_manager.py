@@ -99,6 +99,25 @@ def get_subgraph(
     return subgraph
 
 
+def get_elevations_for_path(path: list[tuple[float, float]]) -> list[float]:
+    """
+    Return elevation (metres) for each (lat, lng) point in the path by finding
+    the nearest graph node. Returns 0.0 for any point where elevation is unavailable.
+    """
+    if _graph is None:
+        return [0.0] * len(path)
+
+    lats = [p[0] for p in path]
+    lngs = [p[1] for p in path]
+    node_ids = ox.distance.nearest_nodes(_graph, lngs, lats)
+
+    elevations = []
+    for node_id in node_ids:
+        ele = _graph.nodes[node_id].get("elevation", 0.0)
+        elevations.append(float(ele) if ele is not None else 0.0)
+    return elevations
+
+
 def is_loaded() -> bool:
     """Check whether the graph has been loaded into memory."""
     return _graph is not None
