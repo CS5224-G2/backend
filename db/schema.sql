@@ -117,3 +117,67 @@ CREATE TABLE tourist_attractions (
     inc_crc TEXT,
     fmel_upd_d TEXT
 );
+
+-- ============================================================
+-- Auth / User tables
+-- ============================================================
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TYPE user_role AS ENUM ('user', 'admin', 'business');
+CREATE TYPE cycling_pref AS ENUM ('Leisure', 'Commuter', 'Performance');
+
+CREATE TABLE users (
+    id                       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email                    TEXT UNIQUE NOT NULL,
+    hashed_password          TEXT NOT NULL,
+    first_name               TEXT NOT NULL,
+    last_name                TEXT NOT NULL,
+    role                     user_role NOT NULL DEFAULT 'user',
+    onboarding_complete      BOOLEAN NOT NULL DEFAULT FALSE,
+
+    -- Profile fields
+    city_name                TEXT,
+    cycling_preference       cycling_pref,
+    weekly_goal_km           DOUBLE PRECISION,
+    bio_text                 TEXT,
+    avatar_url               TEXT,
+    avatar_color             TEXT DEFAULT '#1D4ED8',
+
+    -- Privacy settings (backend-controlled only; OS permissions managed client-side)
+    third_party_ads_opt_out  BOOLEAN NOT NULL DEFAULT FALSE,
+    data_improvement_opt_out BOOLEAN NOT NULL DEFAULT FALSE,
+
+    is_active                BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at               TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at               TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX users_email_idx ON users(email);
+
+-- user_saved_routes links a user to a MongoDB route document.
+-- route_id is the MongoDB ObjectId string (from precomputed-routes or generated-routes collections).
+-- favorite_trails_count in GET /user/profile = COUNT(*) WHERE user_id = current_user.id
+CREATE TABLE user_saved_routes (
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    route_id   TEXT NOT NULL,   -- MongoDB ObjectId string
+    saved_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (user_id, route_id)  -- prevents duplicate saves (409 check)
+);
+
+CREATE INDEX user_saved_routes_user_id_idx ON user_saved_routes(user_id);
+
+CREATE TABLE refresh_tokens (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash  TEXT NOT NULL,   -- SHA-256 hex of the token
+    client      TEXT NOT NULL,   -- 'mobile_app' | 'web_app'
+    remember_me BOOLEAN NOT NULL DEFAULT FALSE,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    revoked_at  TIMESTAMPTZ      -- NULL = still valid; set on rotation or account deletion
+);
+
+CREATE INDEX refresh_tokens_user_id_idx    ON refresh_tokens(user_id);
+CREATE INDEX refresh_tokens_token_hash_idx ON refresh_tokens(token_hash);
