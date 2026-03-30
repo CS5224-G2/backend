@@ -1,15 +1,20 @@
 import hashlib
 import json
 import logging
+import uuid
 import math
 from datetime import datetime, timezone
 
 from ..clients.redis import redis_client
 
 from bson import ObjectId
+from fastapi import HTTPException, status
 from pymongo.asynchronous.database import AsyncDatabase
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..models import UserSavedRoute
 from ..schemas import (
     AirQualityPreference,
     CyclistType,
@@ -23,6 +28,7 @@ from ..schemas import (
     RoutePreferences,
     RouteRequest,
     RouteSummary,
+    SaveRouteRequest,
     ShadePreference,
     Point,
 )
@@ -32,6 +38,57 @@ logger = logging.getLogger(__name__)
 
 _PRECOMPUTED_COLLECTION = "precomputed-routes"
 _GENERATED_COLLECTION = "generated-routes"
+
+async def save_route(
+    db: AsyncSession,
+    mongo: AsyncDatabase,
+    user_id: uuid.UUID,
+    body: SaveRouteRequest,
+) -> UserSavedRoute:
+    """
+    Saves a route reference for a user. Raises 409 if already saved.
+    The route data itself lives in MongoDB, this table stores the user → route_id link.
+    """
+    record = UserSavedRoute(user_id=user_id, route_id=body.route_id)
+    db.add(record)
+    try:
+        await db.commit()
+        await db.refresh(record)
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Route already saved",
+        )
+
+    await mongo["saved-routes"].insert_one({
+        "_id": str(record.id),
+        "user_id": str(user_id),
+        "route_id": body.route_id,
+        "name": body.name,
+        "description": body.description,
+        "distance": body.distance,
+        "estimated_time": body.estimated_time,
+        "elevation": body.elevation,
+        "shade": body.shade,
+        "air_quality": body.air_quality,
+        "cyclist_type": body.cyclist_type,
+        "checkpoints": [c.model_dump() for c in body.checkpoints],
+        "points_of_interest_visited": [p.model_dump() for p in body.points_of_interest_visited],
+        "route_path": [pt.model_dump() for pt in body.route_path],
+        "saved_at": record.saved_at.isoformat(),
+    })
+
+    return record
+
+
+async def get_saved_route_count(db: AsyncSession, user_id: uuid.UUID) -> int:
+    """Returns the number of routes saved by a user (used for favorite_trails_count)."""
+    result = await db.execute(
+        select(UserSavedRoute).where(UserSavedRoute.user_id == user_id)
+    )
+    return len(result.scalars().all())
+
 
 def _doc_to_route_summary(doc: dict) -> RouteSummary:
     """Convert a precomputed-routes MongoDB document to a RouteSummary."""

@@ -27,7 +27,10 @@ class Settings(BaseSettings):
     # Generate with: openssl rand -hex 32
     SECRET_KEY: str = "changeme"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 60
+    JWT_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    REFRESH_TOKEN_REMEMBER_ME_DAYS: int = 30
+    RATE_LIMIT_LOGIN: str = "10/minute"
 
     # --- CORS ---
     # Using Any type to prevent Pydantic V2 from trying to parse comma-separated strings as JSON.
@@ -62,7 +65,12 @@ class Settings(BaseSettings):
     NEA_API_KEY: str = ""
     NEA_BASE_URL: str = ""
 
-    # --- AWS URLs (For later on) ---
+    # --- AWS ---
+    AWS_REGION: str = "ap-southeast-1"
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    S3_USER_BUCKET: str = "cyclelink-user-content"
+    CDN_BASE_URL: str = ""           # e.g. https://cdn.cyclelink.example.com — avatar URLs use this if set
 
     # --- S3 / Pre-downloaded OSM Graph ---
     S3_BUCKET_NAME: str = ""

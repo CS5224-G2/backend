@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, Path, Query, Depends
+from fastapi import APIRouter, HTTPException, Path, Query, Depends, status
 
 from ..database import MongoDB, PlacesDB
-from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary
+from ..dependencies import CurrentUser
+from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary, SaveRouteRequest, SaveRouteResponse
 from ..services import routes as routes_service
 from ..utils.cache import cdn_cache
 
@@ -25,6 +26,21 @@ async def get_popular_routes(
     return await routes_service.get_popular_routes(db, limit=limit)
 
 
+@router.post("/save", status_code=status.HTTP_201_CREATED)
+async def save_route(
+    body: SaveRouteRequest,
+    current_user: CurrentUser,
+    db: PlacesDB,
+    mongo: MongoDB,
+) -> SaveRouteResponse:
+    record = await routes_service.save_route(db, mongo, current_user.id, body)
+    return SaveRouteResponse(
+        saved_route_id=str(record.id),
+        route_id=record.route_id,
+        saved_at=record.saved_at.isoformat(),
+    )
+
+
 @router.post("/recommendations", response_model=list[RecommendationResult])
 async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB, places_db: PlacesDB):
     return await routes_service.get_recommendations(mongo, places_db, body)
@@ -33,7 +49,7 @@ async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB, pla
 @router.get("/{route_id}", response_model=RouteDetail)
 async def get_route(
     db: MongoDB,
-    route_id: str = Path(example="69c7eeb258d7af07774a41f2"),
+    route_id: str = Path(examples=["69c7eeb258d7af07774a41f2"]),
 ):
     route = await routes_service.get_route_by_id(db, route_id)
     if route is None:
