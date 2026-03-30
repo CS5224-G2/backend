@@ -1,14 +1,19 @@
 import hashlib
 import json
 import logging
+import uuid
 from datetime import datetime, timezone
 
 from ..clients.redis import redis_client
 
 from bson import ObjectId
+from fastapi import HTTPException, status
 from pymongo.asynchronous.database import AsyncDatabase
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..models import UserSavedRoute
 from ..schemas import (
     AirQualityPreference,
     CyclistType,
@@ -30,6 +35,37 @@ from ..config import settings
 logger = logging.getLogger(__name__)
 
 _PRECOMPUTED_COLLECTION = "precomputed-routes"
+
+
+async def save_route(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    route_id: str,
+) -> UserSavedRoute:
+    """
+    Saves a route reference for a user. Raises 409 if already saved.
+    The route data itself lives in MongoDB, this table stores the user → route_id link.
+    """
+    record = UserSavedRoute(user_id=user_id, route_id=route_id)
+    db.add(record)
+    try:
+        await db.commit()
+        await db.refresh(record)
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Route already saved",
+        )
+    return record
+
+
+async def get_saved_route_count(db: AsyncSession, user_id: uuid.UUID) -> int:
+    """Returns the number of routes saved by a user (used for favorite_trails_count)."""
+    result = await db.execute(
+        select(UserSavedRoute).where(UserSavedRoute.user_id == user_id)
+    )
+    return len(result.scalars().all())
 
 
 def _doc_to_route_summary(doc: dict) -> RouteSummary:

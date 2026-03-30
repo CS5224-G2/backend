@@ -1,8 +1,101 @@
+import enum
+import uuid
+from datetime import datetime, timezone
+
 from geoalchemy2 import Geography
-from sqlalchemy import BigInteger, Double, Integer, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import BigInteger, Boolean, DateTime, Double, Enum as SAEnum, ForeignKey, Integer, Text
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
 
+
+class UserRole(str, enum.Enum):
+    user = "user"
+    admin = "admin"
+    business = "business"
+
+
+class CyclingPreference(str, enum.Enum):
+    leisure = "Leisure"
+    commuter = "Commuter"
+    performance = "Performance"
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(Text, nullable=False)
+    first_name: Mapped[str] = mapped_column(Text, nullable=False)
+    last_name: Mapped[str] = mapped_column(Text, nullable=False)
+    role: Mapped[UserRole] = mapped_column(
+        SAEnum(UserRole, name="user_role"), nullable=False, default=UserRole.user
+    )
+    onboarding_complete: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    city_name: Mapped[str | None] = mapped_column(Text)
+    cycling_preference: Mapped[CyclingPreference | None] = mapped_column(
+        SAEnum(CyclingPreference, name="cycling_pref")
+    )
+    weekly_goal_km: Mapped[float | None] = mapped_column(Double)
+    bio_text: Mapped[str | None] = mapped_column(Text)
+    avatar_url: Mapped[str | None] = mapped_column(Text)
+    avatar_color: Mapped[str | None] = mapped_column(Text, default="#1D4ED8")
+
+    third_party_ads_opt_out: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    data_improvement_opt_out: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    saved_routes: Mapped[list["UserSavedRoute"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    token_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    client: Mapped[str] = mapped_column(Text, nullable=False)
+    remember_me: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    user: Mapped["User"] = relationship(back_populates="refresh_tokens")
+
+
+class UserSavedRoute(Base):
+    __tablename__ = "user_saved_routes"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    route_id: Mapped[str] = mapped_column(Text, nullable=False)  # MongoDB ObjectId string
+    saved_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+    user: Mapped["User"] = relationship(back_populates="saved_routes")
 
 class HawkerCentre(Base):
     __tablename__ = "hawker_centres"
