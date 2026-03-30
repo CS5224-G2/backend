@@ -47,5 +47,7 @@ LIMIT 5;
 2. From root, run `uv run fastapi dev framework/main.py`
 
 ### For route recommendation service
-1. Run `uv sync`
-2. From root, run `uv run uvicorn route.server:app --reload`
+
+1. Run `uv add --editable ./route/bike_route` (one time use)
+2. Run `uv sync`
+3. From root, run `uv run uvicorn route.server:app --reload`

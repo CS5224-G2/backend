@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import math
 from datetime import datetime, timezone
 
 from ..clients.redis import redis_client
@@ -30,7 +31,7 @@ from ..config import settings
 logger = logging.getLogger(__name__)
 
 _PRECOMPUTED_COLLECTION = "precomputed-routes"
-
+_GENERATED_COLLECTION = "generated-routes"
 
 def _doc_to_route_summary(doc: dict) -> RouteSummary:
     """Convert a precomputed-routes MongoDB document to a RouteSummary."""
@@ -41,15 +42,15 @@ def _doc_to_route_summary(doc: dict) -> RouteSummary:
     return RouteSummary(
         route_id=str(doc["_id"]),
         name=doc.get("name") or "",
-        description=doc.get("type"),
+        description=doc.get("type") or doc.get("description"),
         distance=round(doc.get("distance_m", 0) / 1000, 2),
         estimated_time=round(doc.get("estimated_time_min", 0)),
         elevation=ElevationPreference.DONT_CARE,
         shade=ShadePreference.DONT_CARE,
         air_quality=AirQualityPreference.DONT_CARE,
-        cyclist_type=CyclistType.GENERAL,
-        review_count=0,
-        rating=0.0,
+        cyclist_type=doc.get("cyclist_type", CyclistType.GENERAL),
+        review_count=doc.get("review_count", 0),
+        rating=doc.get("rating", 0.0),
         checkpoints=[],
         points_of_interest_visited=[],
         start_point=NamedLatLng(lng=first[0], lat=first[1]),
@@ -63,7 +64,7 @@ async def get_routes(
     limit: int = 3,
 ) -> list[RouteSummary]:
     query: dict = {"source": "precomputed"}
-    if cyclist_type is not None:
+    if cyclist_type is not None and cyclist_type != CyclistType.GENERAL:
         query["cyclist_type"] = cyclist_type.value
 
     cursor = db[_PRECOMPUTED_COLLECTION].find(query).limit(limit)
@@ -74,16 +75,14 @@ async def get_popular_routes(
     db: AsyncDatabase,
     limit: int = 3,
 ) -> list[RouteSummary]:
-    cursor = (
-        db[_PRECOMPUTED_COLLECTION]
-        .find({"source": "precomputed"})
-        .sort([("review_count", -1), ("rating", -1)])
-        .limit(limit)
+    precomputed = [doc async for doc in db[_PRECOMPUTED_COLLECTION].find()]
+    generated = [doc async for doc in db[_GENERATED_COLLECTION].find()]
+    all_docs = sorted(
+        precomputed + generated,
+        key=lambda d: (d.get("review_count", 0), d.get("rating", 0.0)),
+        reverse=True,
     )
-    return [_doc_to_route_summary(doc) async for doc in cursor]
-
-
-_GENERATED_COLLECTION = "generated-routes"
+    return [_doc_to_route_summary(doc) for doc in all_docs[:limit]]
 
 # Each tuple defines which POI categories are active for that route variant.
 # Varied across 3 calls so each recommendation has a different set of waypoints.
@@ -92,6 +91,119 @@ _POI_COMBOS = [
     {"include_hawker_centres": False, "include_parks": False, "include_historic_sites": True,  "include_tourist_attractions": True},
     {"include_hawker_centres": True,  "include_parks": True,  "include_historic_sites": True,  "include_tourist_attractions": True},
 ]
+
+
+# Scoring functions — each subcategory score is in the range [0, 1].
+# Final route score is the sum of all subcategory scores.
+
+_CYCLIST_TYPE_IDEAL_KM = {
+    CyclistType.RECREATIONAL: 5.0,
+    CyclistType.COMMUTER: 10.0,
+    CyclistType.FITNESS: 20.0,
+}
+_CYCLIST_TYPE_SIGMA = 10.0
+
+
+def _score_cyclist_type(distance_km: float, cyclist_type: CyclistType) -> float:
+    """Score [0, 1] based on how close the route distance is to the ideal for the cyclist type."""
+    ideal = _CYCLIST_TYPE_IDEAL_KM.get(cyclist_type)
+    if ideal is None:
+        return 0.0
+    return math.exp(-((distance_km - ideal) ** 2) / (2 * _CYCLIST_TYPE_SIGMA ** 2))
+
+
+def _nearest_station(lat: float, lng: float, stations: dict) -> dict | None:
+    """Return the station dict closest to the given lat/lng."""
+    best, best_dist = None, float("inf")
+    for s in stations.values():
+        d = (s["latitude"] - lat) ** 2 + (s["longitude"] - lng) ** 2
+        if d < best_dist:
+            best, best_dist = s, d
+    return best
+
+
+def _score_station_conditions(station: dict) -> float:
+    """Score [0, 1] for a single weather station based on rainfall, humidity, and temperature."""
+    rainfall = station.get("rainfall", {}).get("value", 0)
+    humidity = station.get("relative_humidity", {}).get("value", 80)
+    temperature = station.get("air_temperature", {}).get("value", 28)
+
+    # Rainfall: any rain is bad
+    rainfall_score = 0.0 if rainfall > 0 else 1.0
+
+    # Humidity: <=70% is ideal, >=90% is bad, linear between
+    humidity_score = max(0.0, min(1.0, (90 - humidity) / 20))
+
+    # Temperature: <=27°C is ideal, >=33°C is bad, linear between
+    temp_score = max(0.0, min(1.0, (33 - temperature) / 6))
+
+    return (rainfall_score + humidity_score + temp_score) / 3
+
+
+def _score_elevation(total_ascent_m: float, elevation_preference) -> float:
+    """Score [0, 1] based on how well the route's total ascent matches the elevation preference.
+
+    higher: linear 0→1 from 0–500m, capped at 1.0 beyond 500m.
+    lower:  linear 1→0 from 0–250m, capped at 0.0 beyond 250m.
+    dont-care: neutral (0).
+    """
+    if elevation_preference == ElevationPreference.HIGHER:
+        return min(1.0, total_ascent_m / 500)
+    if elevation_preference == ElevationPreference.LOWER:
+        return max(0.0, 1.0 - total_ascent_m / 250)
+    return 0.0
+
+
+def _score_air_quality(air_quality_preference, poi_waypoints: list, start_point, weather: dict | None) -> float:
+    """Score [0, 1] based on air quality preference.
+
+    Weather is sampled at POI waypoints since each route variant visits different POIs,
+    making this the only signal that meaningfully differs between routes with the same
+    start/end. If a route has no POI waypoints, falls back to the start point.
+
+    Returns 0 if weather data is unavailable or air_quality_preference is dont-care.
+    """
+    if air_quality_preference == AirQualityPreference.DONT_CARE:
+        return 0.0
+    if not weather:
+        return 0.0
+
+    stations = weather.get("stations", {})
+    if not stations:
+        return 0.0
+
+    # Sample weather at each POI waypoint; fall back to start point if no POIs
+    sample_points = [(wp.point.lat, wp.point.lng) for wp in poi_waypoints] if poi_waypoints else [(start_point.lat, start_point.lng)]
+
+    scores = []
+    for lat, lng in sample_points:
+        station = _nearest_station(lat, lng, stations)
+        if station:
+            scores.append(_score_station_conditions(station))
+
+    return sum(scores) / len(scores) if scores else 0.0
+
+
+def _get_weather() -> dict | None:
+    """Fetch weather data from Redis. Returns None on any failure."""
+    try:
+        raw = redis_client.get("weather:latest")
+        if raw:
+            logger.info("Weather data fetched from Redis (%d bytes)", len(raw))
+            return json.loads(raw)
+        logger.warning("No weather data found in Redis (key: weather:latest)")
+        return None
+    except Exception as exc:
+        logger.warning("Failed to fetch weather from Redis: %s", exc)
+        return None
+
+
+def _score_route(distance_km: float, total_ascent_m: float, preferences, poi_waypoints: list, start_point, weather: dict | None) -> float:
+    cyclist_score = _score_cyclist_type(distance_km, preferences.cyclist_type)
+    elevation_score = _score_elevation(total_ascent_m, preferences.elevation_preference)
+    air_quality_score = _score_air_quality(preferences.air_quality_preference, poi_waypoints, start_point, weather)
+    logger.info("Route scoring — distance: %.2f km, ascent: %.1f m | cyclist_type score: %.3f | elevation score: %.3f | air_quality score: %.3f", distance_km, total_ascent_m, cyclist_score, elevation_score, air_quality_score)
+    return cyclist_score + elevation_score + air_quality_score
 
 
 async def get_recommendations(
@@ -114,9 +226,12 @@ async def get_recommendations(
 
     # 2. Compute Recommendations
     poi_prefs = req.preferences.points_of_interest
+    weather = _get_weather()
     results = []
+    poi_waypoints_per_result = []
+    ascents_per_result = []
 
-    for combo in _POI_COMBOS:
+    for combo in _POI_COMBOS[:req.limit]:
         route_req = RouteRequest(
             origin=Point(lat=req.start_point.lat, lng=req.start_point.lng),
             destination=Point(lat=req.end_point.lat, lng=req.end_point.lng),
@@ -130,6 +245,10 @@ async def get_recommendations(
         )
 
         route = await recommend_route(places_db, route_req)
+
+        if req.preferences.max_distance is not None and route.distance > req.preferences.max_distance:
+            logger.info("Route exceeds max_distance (%.2f km > %.2f km), skipping", route.distance, req.preferences.max_distance)
+            continue
 
         start_name = req.start_point.name or f"{req.start_point.lat:.4f}, {req.start_point.lng:.4f}"
         end_name = req.end_point.name or f"{req.end_point.lat:.4f}, {req.end_point.lng:.4f}"
@@ -182,8 +301,18 @@ async def get_recommendations(
                 for p in pois
             ],
         ))
+        poi_waypoints_per_result.append(route.poi_waypoints)
+        ascents_per_result.append(route.total_ascent_m)
 
-    # 3. Cache the results for 30 minutes
+    # 3. Rank results by score (highest first)
+    ranked = sorted(
+        zip(results, poi_waypoints_per_result, ascents_per_result),
+        key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather),
+        reverse=True,
+    )
+    results = [r for r, _, _ in ranked]
+
+    # 4. Cache the results for 30 minutes
     try:
         if results:
             redis_client.set(

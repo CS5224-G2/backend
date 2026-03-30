@@ -121,6 +121,7 @@ class RouteResponse(BaseModel):
     # not implemented yet
     distance: float
     duration: float
+    total_ascent_m: float = 0.0
 
 
 # ------------------------------------------------------------------
@@ -283,7 +284,7 @@ class RecommendationsRequest(BaseModel):
                     "shade_preference": "reduce-shade",
                     "elevation_preference": "dont-care",
                     "air_quality_preference": "care",
-                    "max_distance": 20,
+                    "max_distance": 99,
                     "points_of_interest": {
                         "allow_hawker_center": True,
                         "allow_park": True,
