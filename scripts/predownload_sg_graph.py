@@ -36,7 +36,7 @@ DEFAULT_FILENAME = "singapore_bike_graph.graphml"
 S3_KEY_PREFIX = "osm-graphs"
 
 
-def download_singapore_graph(output_path: str) -> str:
+def download_singapore_graph(output_path: str, include_elevation: bool = False) -> str:
     """Download the full Singapore drive-type road network and save as .graphml."""
     logger.info("Downloading Singapore OSM graph via Overpass API …")
     logger.info("(This may take a few minutes on the first run.)")
@@ -51,6 +51,12 @@ def download_singapore_graph(output_path: str) -> str:
         f"Removed {len(isolated):,} isolated nodes. "
         f"Final: {len(G.nodes):,} nodes, {len(G.edges):,} edges"
     )
+
+    if include_elevation:
+        logger.info("Fetching elevation data for all nodes via opentopodata (this may take a while) …")
+        ox.settings.elevation_url_template = "https://api.opentopodata.org/v1/srtm90m?locations={locations}"
+        G = ox.elevation.add_node_elevations_google(G, api_key=None, batch_size=100, pause=1.0)
+        logger.info("Elevation data added to all nodes.")
 
     ox.save_graphml(G, output_path)
     size_mb = os.path.getsize(output_path) / (1024 * 1024)
@@ -83,12 +89,17 @@ def main():
         action="store_true",
         help="Save locally without uploading to S3",
     )
+    parser.add_argument(
+        "--no-elevation",
+        action="store_true",
+        help="Skip fetching elevation data for all nodes",
+    )
     args = parser.parse_args()
 
     if not args.local_only and not args.bucket:
         parser.error("--bucket is required unless --local-only is set")
 
-    output_path = download_singapore_graph(args.output)
+    output_path = download_singapore_graph(args.output, include_elevation=not args.no_elevation)
 
     s3_key = f"{S3_KEY_PREFIX}/{DEFAULT_FILENAME}"
 
