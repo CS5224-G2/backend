@@ -49,9 +49,22 @@ module "ecs" {
   allowed_origins = var.allowed_origins
   s3_bucket_name  = module.core.s3_bucket_name
   mongodb_url     = var.mongodb_url
+  swagger_username = var.swagger_username
+  swagger_password = var.swagger_password
 
   # Redis / ElastiCache
   redis_host = module.core.elasticache_endpoint
   redis_port = module.core.elasticache_port
   redis_ssl  = true
+
+  # CloudFront Security
+  cloudfront_header_secret = var.cloudfront_header_secret
+}
+
+module "cdn" {
+  source      = "../../modules/cdn"
+  environment = "dev"
+
+  alb_dns_name             = module.ecs.alb_dns_name
+  cloudfront_header_secret = var.cloudfront_header_secret
 }

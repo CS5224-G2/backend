@@ -153,7 +153,7 @@ resource "aws_lb_target_group" "backend" {
   target_type = "ip"
 
   health_check {
-    path                = "/docs"
+    path                = "/health"
     port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 3
@@ -167,9 +167,33 @@ resource "aws_lb_listener" "http" {
   port              = 80
   protocol          = "HTTP"
 
+  # Default action returns 403 Forbidden
   default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Access Denied: Please access the website via CloudFront"
+      status_code  = "403"
+    }
+  }
+}
+
+# Main Backend Forwarding Rule
+resource "aws_lb_listener_rule" "main_backend" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 100
+
+  action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.backend.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "X-Custom-Header"
+      values           = [var.cloudfront_header_secret]
+    }
   }
 }
 
@@ -181,7 +205,7 @@ resource "aws_lb_target_group" "bike_route" {
   target_type = "ip"
 
   health_check {
-    path                = "/docs"
+    path                = "/health"
     port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 3
@@ -204,7 +228,17 @@ resource "aws_lb_listener_rule" "bike_route" {
       values = ["/v1/route-suggestion*"]
     }
   }
+
+  # Also restrict bike_route access to CloudFront
+  condition {
+    http_header {
+      http_header_name = "X-Custom-Header"
+      values           = [var.cloudfront_header_secret]
+    }
+  }
 }
+
+
 
 
 ############################################################
@@ -252,6 +286,8 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "REDIS_HOST",      value = var.redis_host },
       { name = "REDIS_PORT",      value = tostring(var.redis_port) },
       { name = "REDIS_SSL",       value = tostring(var.redis_ssl) },
+      { name = "SWAGGER_USERNAME", value = var.swagger_username },
+      { name = "SWAGGER_PASSWORD", value = var.swagger_password },
     ]
 
     logConfiguration = {

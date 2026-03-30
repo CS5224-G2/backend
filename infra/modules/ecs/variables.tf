@@ -58,6 +58,19 @@ variable "mongodb_url" {
   sensitive   = true
 }
 
+variable "swagger_username" {
+  type        = string
+  description = "Username for Swagger UI documentation"
+  default     = "admin"
+}
+
+variable "swagger_password" {
+  type        = string
+  description = "Password for Swagger UI documentation"
+  default     = "changeme"
+  sensitive   = true
+}
+
 variable "redis_host" {
   type        = string
   description = "Redis/ElastiCache host"
@@ -110,4 +123,11 @@ variable "desired_count" {
   type        = number
   description = "Number of ECS tasks to run"
   default     = 1
+}
+
+variable "cloudfront_header_secret" {
+  type        = string
+  description = "Secret header value to ensure ALB only accepts traffic from CloudFront"
+  default     = "X-CycleLink-CloudFront-Secret-123" # In production, this should be more secure and set via variables
+  sensitive   = true
 }

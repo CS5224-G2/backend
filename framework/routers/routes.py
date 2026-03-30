@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Path, Query, status
+from fastapi import APIRouter, HTTPException, Path, Query, Depends, status
 
 from ..database import MongoDB, PlacesDB
 from ..dependencies import CurrentUser
 from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary, SaveRouteRequest, SaveRouteResponse
 from ..services import routes as routes_service
+from ..utils.cache import cdn_cache
 
 router = APIRouter(prefix="/routes", tags=["Routes"])
 
@@ -17,7 +18,7 @@ async def get_routes(
     return await routes_service.get_routes(db, cyclist_type=cyclist_type, limit=limit)
 
 
-@router.get("/popular", response_model=list[RouteSummary])
+@router.get("/popular", response_model=list[RouteSummary], dependencies=[Depends(cdn_cache(3600))])
 async def get_popular_routes(
     db: MongoDB,
     limit: int = Query(default=3, ge=1, le=3),
