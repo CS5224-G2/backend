@@ -27,6 +27,7 @@ from ..schemas import (
     RoutePreferences,
     RouteRequest,
     RouteSummary,
+    SaveRouteRequest,
     ShadePreference,
     Point,
 )
@@ -39,14 +40,15 @@ _PRECOMPUTED_COLLECTION = "precomputed-routes"
 
 async def save_route(
     db: AsyncSession,
+    mongo: AsyncDatabase,
     user_id: uuid.UUID,
-    route_id: str,
+    body: SaveRouteRequest,
 ) -> UserSavedRoute:
     """
     Saves a route reference for a user. Raises 409 if already saved.
     The route data itself lives in MongoDB, this table stores the user → route_id link.
     """
-    record = UserSavedRoute(user_id=user_id, route_id=route_id)
+    record = UserSavedRoute(user_id=user_id, route_id=body.route_id)
     db.add(record)
     try:
         await db.commit()
@@ -57,6 +59,25 @@ async def save_route(
             status_code=status.HTTP_409_CONFLICT,
             detail="Route already saved",
         )
+
+    await mongo["saved-routes"].insert_one({
+        "_id": str(record.id),
+        "user_id": str(user_id),
+        "route_id": body.route_id,
+        "name": body.name,
+        "description": body.description,
+        "distance": body.distance,
+        "estimated_time": body.estimated_time,
+        "elevation": body.elevation,
+        "shade": body.shade,
+        "air_quality": body.air_quality,
+        "cyclist_type": body.cyclist_type,
+        "checkpoints": [c.model_dump() for c in body.checkpoints],
+        "points_of_interest_visited": [p.model_dump() for p in body.points_of_interest_visited],
+        "route_path": [pt.model_dump() for pt in body.route_path],
+        "saved_at": record.saved_at.isoformat(),
+    })
+
     return record
 
 

@@ -30,8 +30,9 @@ async def save_route(
     body: SaveRouteRequest,
     current_user: CurrentUser,
     db: PlacesDB,
+    mongo: MongoDB,
 ) -> SaveRouteResponse:
-    record = await routes_service.save_route(db, current_user.id, body.route_id)
+    record = await routes_service.save_route(db, mongo, current_user.id, body)
     return SaveRouteResponse(
         saved_route_id=str(record.id),
         route_id=record.route_id,
@@ -47,7 +48,7 @@ async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB, pla
 @router.get("/{route_id}", response_model=RouteDetail)
 async def get_route(
     db: MongoDB,
-    route_id: str = Path(example="69c7eeb258d7af07774a41f2"),
+    route_id: str = Path(examples=["69c7eeb258d7af07774a41f2"]),
 ):
     route = await routes_service.get_route_by_id(db, route_id)
     if route is None:

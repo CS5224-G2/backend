@@ -36,7 +36,7 @@ class User(Base):
 
     city_name: Mapped[str | None] = mapped_column(Text)
     cycling_preference: Mapped[CyclingPreference | None] = mapped_column(
-        SAEnum(CyclingPreference, name="cycling_pref")
+        SAEnum(CyclingPreference, name="cycling_pref", values_callable=lambda x: [e.value for e in x])
     )
     weekly_goal_km: Mapped[float | None] = mapped_column(Double)
     bio_text: Mapped[str | None] = mapped_column(Text)

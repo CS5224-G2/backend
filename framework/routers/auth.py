@@ -50,7 +50,7 @@ async def register(body: RegisterRequest, db: PlacesDB) -> AuthResponse:
     )
     access_token, expires_in = auth_service.create_access_token(str(user.id), user.role.value)
     refresh_token = await auth_service.create_refresh_token(
-        db, user.id, body.client, body.remember_me
+        db, user.id, body.client, remember_me=False
     )
     return _build_auth_response(user, access_token, refresh_token, expires_in)
 
