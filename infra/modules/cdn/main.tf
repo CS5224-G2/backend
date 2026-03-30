@@ -1,5 +1,5 @@
-data "aws_cloudfront_cache_policy" "optimized" {
-  name = "Managed-CachingOptimized"
+data "aws_cloudfront_cache_policy" "use_origin" {
+  name = "UseOriginCacheControlHeaders-QueryStrings"
 }
 data "aws_cloudfront_origin_request_policy" "all_headers" {
   name = "Managed-AllViewerExceptHostHeader"
@@ -36,7 +36,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "ALB-Origin"
 
-    cache_policy_id          = data.aws_cloudfront_cache_policy.optimized.id
+    cache_policy_id          = data.aws_cloudfront_cache_policy.use_origin.id
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_headers.id
 
     viewer_protocol_policy = "redirect-to-https"
