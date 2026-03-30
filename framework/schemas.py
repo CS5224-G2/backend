@@ -1,7 +1,8 @@
 from enum import StrEnum
 from typing import Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
+from typing import Literal
 
 
 class _ORMBase(BaseModel):
@@ -324,3 +325,151 @@ class SaveRouteResponse(BaseModel):
     route_id: str
     saved_at: str       # ISO 8601 timestamp
     status: str = "saved"
+
+
+# ------------------------------------------------------------------
+# Auth schemas
+# ------------------------------------------------------------------
+
+UserRoleLiteral = Literal["user", "admin", "business"]
+CyclingPreferenceLiteral = Literal["Leisure", "Commuter", "Performance"]
+ClientLiteral = Literal["mobile_app", "web_app"]
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+    remember_me: bool = False
+    client: ClientLiteral = "mobile_app"
+
+
+class RegisterRequest(BaseModel):
+    first_name: str
+    last_name: str
+    email: EmailStr
+    password: str
+    confirm_password: str
+    agreed_to_terms: bool
+    client: ClientLiteral = "mobile_app"
+
+    @field_validator("confirm_password")
+    @classmethod
+    def passwords_match(cls, v: str, info) -> str:
+        if "password" in info.data and v != info.data["password"]:
+            raise ValueError("Passwords do not match")
+        return v
+
+
+class TokenRefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class AuthUserResponse(_ORMBase):
+    id: str
+    first_name: str
+    last_name: str
+    email: str
+    onboarding_complete: bool
+    role: UserRoleLiteral
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def uuid_to_str(cls, v) -> str:
+        return str(v)
+
+
+class AuthResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    expires_in: int
+    user: AuthUserResponse
+
+
+# ------------------------------------------------------------------
+# User profile schemas
+# ------------------------------------------------------------------
+
+class RideStats(BaseModel):
+    total_rides: int = 0
+    total_distance_km: float = 0.0
+    favorite_trails_count: int = 0
+
+
+class UserProfileResponse(BaseModel):
+    user_id: str
+    full_name: str
+    email_address: str
+    city_name: str | None
+    member_since: str
+    cycling_preference: CyclingPreferenceLiteral | None
+    weekly_goal_km: float | None
+    bio_text: str | None
+    avatar_url: str | None
+    avatar_color: str | None
+    ride_stats: RideStats
+
+
+class UpdateProfileRequest(BaseModel):
+    full_name: str | None = None
+    city_name: str | None = None
+    cycling_preference: CyclingPreferenceLiteral | None = None
+    weekly_goal_km: float | None = None
+    bio_text: str | None = None
+    avatar_color: str | None = None
+
+
+class AvatarUploadResponse(BaseModel):
+    avatar_url: str
+
+
+# ------------------------------------------------------------------
+# User settings schemas
+# ------------------------------------------------------------------
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_new_password: str
+
+    @field_validator("confirm_new_password")
+    @classmethod
+    def passwords_match(cls, v: str, info) -> str:
+        if "new_password" in info.data and v != info.data["new_password"]:
+            raise ValueError("Passwords do not match")
+        return v
+
+
+class ChangePasswordResponse(BaseModel):
+    status: str = "ok"
+    message: str = "Password updated successfully."
+    updated_at: str
+
+
+class PrivacyControls(BaseModel):
+    third_party_ads_opt_out: bool
+    data_improvement_opt_out: bool
+
+
+class DevicePermissions(BaseModel):
+    notifications_managed_in_os: bool = True
+
+
+class PrivacyResponse(BaseModel):
+    privacy_controls: PrivacyControls
+    device_permissions: DevicePermissions
+
+
+class UpdatePrivacyRequest(BaseModel):
+    privacy_controls: PrivacyControls
+
+
+# ------------------------------------------------------------------
+# Admin schemas
+# ------------------------------------------------------------------
+
+class AdminUserListItem(BaseModel):
+    user_id: str
+    email_address: str
+    role: UserRoleLiteral
+    account_status: Literal["Active", "Inactive"]
+    joined_formatted: str
