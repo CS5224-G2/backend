@@ -46,7 +46,7 @@ async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB, pla
     return await routes_service.get_recommendations(mongo, places_db, body)
 
 
-@router.get("/{route_id}", response_model=RouteDetail)
+@router.get("/{route_id}", response_model=RouteDetail, dependencies=[Depends(cdn_cache(300))])
 async def get_route(
     db: MongoDB,
     route_id: str = Path(examples=["69c7eeb258d7af07774a41f2"]),
