@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 
 from geoalchemy2 import Geography
-from sqlalchemy import BigInteger, Boolean, DateTime, Double, Enum as SAEnum, ForeignKey, Integer, Text
+from sqlalchemy import BigInteger, Boolean, DateTime, Double, Enum as SAEnum, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .database import Base
@@ -62,6 +62,9 @@ class User(Base):
     saved_routes: Mapped[list["UserSavedRoute"]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    route_ratings: Mapped[list["UserRouteRating"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class RefreshToken(Base):
@@ -96,6 +99,40 @@ class UserSavedRoute(Base):
     )
 
     user: Mapped["User"] = relationship(back_populates="saved_routes")
+
+class UserRouteRating(Base):
+    __tablename__ = "user_route_ratings"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    route_id: Mapped[str] = mapped_column(Text, nullable=False)  # MongoDB ObjectId string
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5
+    review_text: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+
+    user: Mapped["User"] = relationship(back_populates="route_ratings")
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "route_id", name="uq_user_route_rating"),
+    )
+
+
+class OsmTree(Base):
+    __tablename__ = "osm_trees"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    osm_id: Mapped[int | None] = mapped_column(BigInteger)
+    geom = mapped_column(Geography(geometry_type="POINT", srid=4326), nullable=False)
+
 
 class HawkerCentre(Base):
     __tablename__ = "hawker_centres"

@@ -465,6 +465,23 @@ class UpdatePrivacyRequest(BaseModel):
 
 
 # ------------------------------------------------------------------
+# Rides / Feedback schemas
+# ------------------------------------------------------------------
+
+class FeedbackRequest(BaseModel):
+    route_id: str
+    rating: int
+    review_text: str = ""
+
+    @field_validator("rating")
+    @classmethod
+    def rating_in_range(cls, v: int) -> int:
+        if not (1 <= v <= 5):
+            raise ValueError("rating must be between 1 and 5")
+        return v
+
+
+# ------------------------------------------------------------------
 # Admin schemas
 # ------------------------------------------------------------------
 

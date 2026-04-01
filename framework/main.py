@@ -11,7 +11,7 @@ from .clients.http import service_client
 from .config import settings
 from .database import close_engines, init_engines
 from .routers import hawker, historic_sites, parks, tourist_attractions, route_suggestion, routes, weather
-from .routers import auth, user, admin
+from .routers import auth, user, admin, rides
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -99,3 +99,4 @@ app.include_router(weather.router, prefix=_V1)
 app.include_router(auth.router, prefix=_V1)
 app.include_router(user.router, prefix=_V1)
 app.include_router(admin.router, prefix=_V1)
+app.include_router(rides.router, prefix=_V1)
