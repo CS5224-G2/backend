@@ -108,7 +108,8 @@ resource "aws_iam_role_policy" "ecs_cloudwatch_read" {
           "logs:GetQueryResults",
           "logs:DescribeLogGroups",
           "ecs:DescribeServices",
-          "elasticloadbalancing:DescribeLoadBalancers"
+          "elasticloadbalancing:DescribeLoadBalancers",
+          "elasticloadbalancing:DescribeTargetGroups"
         ]
         Resource = "*"
       }
@@ -324,6 +325,7 @@ resource "aws_ecs_task_definition" "backend" {
         "awslogs-group"         = aws_cloudwatch_log_group.ecs_backend.name
         "awslogs-region"        = var.aws_region
         "awslogs-stream-prefix" = "backend"
+        "awslogs-multiline-pattern" = "^[^\\s]"
       }
     }
   }])
@@ -396,6 +398,7 @@ resource "aws_ecs_task_definition" "bike_route" {
         "awslogs-group"         = aws_cloudwatch_log_group.ecs_bike_route.name
         "awslogs-region"        = var.aws_region
         "awslogs-stream-prefix" = "bike-route"
+        "awslogs-multiline-pattern" = "^[^\\s]"
       }
     }
   }])

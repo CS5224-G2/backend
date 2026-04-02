@@ -95,12 +95,10 @@ async def get_infrastructure_metrics() -> dict:
                 elbv2 = boto3.client('elbv2', region_name=settings.AWS_REGION)
                 albs = elbv2.describe_load_balancers(Names=[f"cyclelink-{settings.ENVIRONMENT}-alb"])
                 alb_arn = albs['LoadBalancers'][0]['LoadBalancerArn']
-                alb_dim = alb_arn.split("loadbalancer/")[1]
+                # Correct dimension format: app/name/hexid
+                alb_dim = "/".join(alb_arn.split("/")[-3:])
                 
-                tgs = elbv2.describe_target_groups(LoadBalancerArn=alb_arn)
-                tg_dim = tgs['TargetGroups'][0]['TargetGroupArn'].split(":")[-1]
-                
-                # RequestCount
+                # 1. Total ALB RequestCount (LB Dimension Only)
                 resp_rc = cw.get_metric_statistics(
                     Namespace="AWS/ApplicationELB", MetricName="RequestCount",
                     Dimensions=[{"Name": "LoadBalancer", "Value": alb_dim}],
@@ -109,25 +107,40 @@ async def get_infrastructure_metrics() -> dict:
                 for dp in sorted(resp_rc.get("Datapoints", []), key=lambda x: x["Timestamp"]):
                     res_alb["RequestCount"].append({"timestamp": dp["Timestamp"].isoformat(), "value": dp["Sum"]})
                 
-                # ELB 5xx Errors
+                # 2. Total ALB 5XX (Sum of ELB and Target 5XX)
                 resp_5xx = cw.get_metric_statistics(
-                    Namespace="AWS/ApplicationELB", MetricName="HTTPCode_ELB_5XX_Count",
+                    Namespace="AWS/ApplicationELB", MetricName="HTTPCode_Target_5XX_Count",
                     Dimensions=[{"Name": "LoadBalancer", "Value": alb_dim}],
                     StartTime=start_time, EndTime=end_time, Period=900, Statistics=["Sum"]
                 )
                 for dp in sorted(resp_5xx.get("Datapoints", []), key=lambda x: x["Timestamp"]):
                     res_alb["HTTPCode_5XX"].append({"timestamp": dp["Timestamp"].isoformat(), "value": dp["Sum"]})
+
+                # 3. Latency (TargetResponseTime) - Requires TargetGroup Dimension
+                tgs = elbv2.describe_target_groups(LoadBalancerArn=alb_arn)
+                if tgs['TargetGroups']:
+                    # Try to find the backend TG specifically, default to first one
+                    tg_arn = tgs['TargetGroups'][0]['TargetGroupArn']
+                    for tg in tgs['TargetGroups']:
+                        if f"{settings.ENVIRONMENT}-tg" in tg['TargetGroupName']:
+                            tg_arn = tg['TargetGroupArn']
+                            break
                     
-                # TargetResponseTime
-                resp_lt = cw.get_metric_statistics(
-                    Namespace="AWS/ApplicationELB", MetricName="TargetResponseTime",
-                    Dimensions=[{"Name": "LoadBalancer", "Value": alb_dim}, {"Name": "TargetGroup", "Value": tg_dim}],
-                    StartTime=start_time, EndTime=end_time, Period=900, Statistics=["Average"]
-                )
-                for dp in sorted(resp_lt.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                    res_alb["TargetResponseTime"].append({"timestamp": dp["Timestamp"].isoformat(), "value": round(dp["Average"] * 1000, 2)}) # ms
+                    tg_dim = "/".join(tg_arn.split("/")[-3:])
+                    tg_dim = f"targetgroup/{tg_dim}" if not tg_dim.startswith("targetgroup") else tg_dim
+
+                    resp_lt = cw.get_metric_statistics(
+                        Namespace="AWS/ApplicationELB", MetricName="TargetResponseTime",
+                        Dimensions=[
+                            {"Name": "LoadBalancer", "Value": alb_dim},
+                            {"Name": "TargetGroup", "Value": tg_dim}
+                        ],
+                        StartTime=start_time, EndTime=end_time, Period=900, Statistics=["Average"]
+                    )
+                    for dp in sorted(resp_lt.get("Datapoints", []), key=lambda x: x["Timestamp"]):
+                        res_alb["TargetResponseTime"].append({"timestamp": dp["Timestamp"].isoformat(), "value": round(dp["Average"] * 1000, 2)})
             except Exception as e:
-                logger.error(f"Failed to fetch ALB metrics: {e}")
+                logger.error("Failed to fetch ALB metrics: %s", e)
             return res_alb
 
         def fetch_metrics():
@@ -170,8 +183,8 @@ async def get_recent_error_logs() -> dict:
     end_time = int(datetime.now(timezone.utc).timestamp())
     start_time = end_time - 86400  # Past 24 hours
     
-    # Query for ERROR logs
-    query = "fields @timestamp, @message | filter @message like /ERROR/ | sort @timestamp desc | limit 50"
+    # Query for ERROR logs and custom tracebacks
+    query = "fields @timestamp, @id, @message | filter @message like /ERROR/ or @message like /Unhandled error/ or @message like /Traceback/ | sort @timestamp desc | limit 50"
 
     try:
         def fetch_logs():
@@ -199,18 +212,17 @@ async def get_recent_error_logs() -> dict:
                     if key != 'ptr':
                         item[key] = field['value']
                 
-                # Attempt to extract a short "summary" if it's a python traceback
                 message = item.get("message", "")
-                summary = message.split("\n")[-1] if "\n" in message else message
+                summary = message.strip().split("\n")[-1] if "\n" in message else message
                 
-                # If we have our custom log format, extract the useful part
-                if "Unhandled error on" in message:
+                # Further refine if it follows the "Unhandled error on /path: Exception" format
+                if "Unhandled error on" in summary and ":" in summary:
                     try:
-                        summary = message.split(": ")[-1].split("\n")[0]
+                        summary = summary.split(": ", 1)[-1]
                     except:
                         pass
                 
-                item["summary"] = summary[:200] # Cap length
+                item["summary"] = summary[:200]
                 parsed_results.append(item)
                 
             return {
