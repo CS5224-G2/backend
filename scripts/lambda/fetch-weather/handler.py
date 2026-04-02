@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
 
@@ -21,6 +21,8 @@ READING_UNITS = {
     "relative_humidity": "%",
     "rainfall": "mm",
 }
+
+SG_TZ = timezone(timedelta(hours=8))
 
 
 def _fetch_json(url: str) -> dict:
@@ -107,7 +109,7 @@ def fetch_all_weather() -> tuple[dict, dict]:
                 }
 
     processed = {
-        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "fetched_at": datetime.now(SG_TZ).isoformat(),
         "stations": merged_stations,
     }
 
@@ -119,7 +121,7 @@ def upload_to_s3(data: dict, bucket_name: str) -> str:
     Upload processed weather data to S3.
     Key format: weather/YYYY-MM-DD/HH-MM/processed.json
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(SG_TZ)
     date_path = now.strftime('%Y-%m-%d')
     time_path = now.strftime('%H-%M')
     s3_key = f"weather/{date_path}/{time_path}/processed.json"
@@ -141,7 +143,7 @@ def upload_raw_responses(raw_responses: dict, bucket_name: str):
     Upload raw API responses for each metric.
     Key format: weather/YYYY-MM-DD/HH-MM/raw/metric.json
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(SG_TZ)
     date_path = now.strftime('%Y-%m-%d')
     time_path = now.strftime('%H-%M')
     
