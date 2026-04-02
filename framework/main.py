@@ -11,7 +11,7 @@ from .clients.http import service_client
 from .config import settings
 from .database import close_engines, init_engines
 from .routers import hawker, historic_sites, parks, tourist_attractions, route_suggestion, routes, weather
-from .routers import auth, user, admin
+from .routers import auth, user, admin, rides
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -23,10 +23,42 @@ logger = logging.getLogger(__name__)
 async def lifespan(_app: FastAPI):
     # Startup
     init_engines()
+    _load_osm_data()
     yield
     # Shutdown
     await close_engines()
     await service_client.aclose()
+
+
+def _load_osm_data():
+    """Load the pre-downloaded OSM graph and tree index into memory at startup."""
+    try:
+        from bike_route import graph_manager
+    except ImportError:
+        logger.warning("bike_route package not available — OSM graph and tree data not loaded")
+        return
+
+    # Graph
+    try:
+        if settings.OSM_GRAPH_LOCAL_PATH:
+            graph_manager.load_graph_from_file(settings.OSM_GRAPH_LOCAL_PATH)
+        elif settings.S3_BUCKET_NAME:
+            graph_manager.load_graph_from_s3(settings.S3_BUCKET_NAME, settings.OSM_GRAPH_S3_KEY or None)
+        else:
+            logger.warning("No OSM graph configured — routing will fall back to live Overpass API (slow)")
+    except Exception as exc:
+        logger.warning("Failed to load OSM graph: %s — routing will fall back to live Overpass API (slow)", exc)
+
+    # Tree index
+    try:
+        if settings.OSM_TREES_LOCAL_PATH:
+            graph_manager.load_trees_from_file(settings.OSM_TREES_LOCAL_PATH)
+        elif settings.S3_BUCKET_NAME:
+            graph_manager.load_trees_from_s3(settings.S3_BUCKET_NAME, settings.OSM_TREES_S3_KEY or None)
+        else:
+            logger.warning("No OSM tree data configured — shade scoring will return 0 for all routes")
+    except Exception as exc:
+        logger.warning("Failed to load OSM tree data: %s — shade scoring will return 0 for all routes", exc)
 
 
 _limiter = Limiter(key_func=get_remote_address)
@@ -109,3 +141,4 @@ app.include_router(weather.router, prefix=_V1)
 app.include_router(auth.router, prefix=_V1)
 app.include_router(user.router, prefix=_V1)
 app.include_router(admin.router, prefix=_V1)
+app.include_router(rides.router, prefix=_V1)

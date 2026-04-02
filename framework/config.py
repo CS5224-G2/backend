@@ -69,6 +69,8 @@ class Settings(BaseSettings):
     # --- Pre-downloaded OSM Graph ---
     OSM_GRAPH_S3_KEY: str = "osm-graphs/singapore_bike_graph.graphml"
     OSM_GRAPH_LOCAL_PATH: str = ""  # Set for local dev (overrides S3)
+    OSM_TREES_S3_KEY: str = "osm-graphs/singapore_trees.json"
+    OSM_TREES_LOCAL_PATH: str = ""  # Set for local dev (overrides S3)
 
     # --- GPX export ---
     SAVE_GPX: bool = False

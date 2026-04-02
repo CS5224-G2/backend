@@ -181,3 +181,16 @@ CREATE TABLE refresh_tokens (
 
 CREATE INDEX refresh_tokens_user_id_idx    ON refresh_tokens(user_id);
 CREATE INDEX refresh_tokens_token_hash_idx ON refresh_tokens(token_hash);
+
+CREATE TABLE user_route_ratings (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    route_id    TEXT NOT NULL,   -- MongoDB ObjectId string
+    rating      INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    review_text TEXT,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CONSTRAINT uq_user_route_rating UNIQUE (user_id, route_id)
+);
+
+CREATE INDEX user_route_ratings_route_id_idx ON user_route_ratings(route_id);

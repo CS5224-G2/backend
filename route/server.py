@@ -27,11 +27,27 @@ def _load_osm_graph():
         )
 
 
+def _load_trees():
+    """Load the pre-downloaded Singapore tree data into memory on startup."""
+    from bike_route.graph_manager import load_trees_from_s3, load_trees_from_file
+
+    if settings.OSM_TREES_LOCAL_PATH:
+        load_trees_from_file(settings.OSM_TREES_LOCAL_PATH)
+    elif settings.S3_BUCKET_NAME:
+        load_trees_from_s3(settings.S3_BUCKET_NAME)
+    else:
+        logger.warning(
+            "No tree data configured (set S3_BUCKET_NAME or OSM_TREES_LOCAL_PATH). "
+            "Shade scoring will return 0."
+        )
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # Startup
     init_engines()
     _load_osm_graph()
+    _load_trees()
     yield
     # Shutdown
     await close_engines()
