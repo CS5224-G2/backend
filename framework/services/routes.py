@@ -14,6 +14,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .route_suggestion import compute_shade_score
 from ..models import UserSavedRoute
 from ..schemas import (
     AirQualityPreference,
@@ -102,9 +103,9 @@ def _doc_to_route_summary(doc: dict) -> RouteSummary:
         description=doc.get("type") or doc.get("description"),
         distance=round(doc.get("distance_m", 0) / 1000, 2),
         estimated_time=round(doc.get("estimated_time_min", 0)),
-        elevation=ElevationPreference.DONT_CARE,
-        shade=ShadePreference.DONT_CARE,
-        air_quality=AirQualityPreference.DONT_CARE,
+        elevation=doc.get("elevation", ElevationPreference.DONT_CARE),
+        shade=doc.get("shade", ShadePreference.DONT_CARE),
+        air_quality=doc.get("air_quality", AirQualityPreference.DONT_CARE),
         cyclist_type=doc.get("cyclist_type", CyclistType.GENERAL),
         review_count=doc.get("review_count", 0),
         rating=doc.get("rating", 0.0),
@@ -211,6 +212,17 @@ def _score_elevation(total_ascent_m: float, elevation_preference) -> float:
     return 0.0
 
 
+def _score_shade(shade_score: float, shade_preference) -> float:
+    """Score [0, 1] based on how well the route's tree density matches the shade preference.
+
+    reduce-shade: prefer routes with higher tree coverage (higher shade_score).
+    dont-care: neutral (0).
+    """
+    if shade_preference == ShadePreference.REDUCE_SHADE:
+        return shade_score
+    return 0.0
+
+
 def _score_air_quality(air_quality_preference, poi_waypoints: list, start_point, weather: dict | None) -> float:
     """Score [0, 1] based on air quality preference.
 
@@ -255,12 +267,14 @@ def _get_weather() -> dict | None:
         return None
 
 
-def _score_route(distance_km: float, total_ascent_m: float, preferences, poi_waypoints: list, start_point, weather: dict | None) -> float:
+def _score_route(distance_km: float, total_ascent_m: float, preferences, poi_waypoints: list, start_point, weather: dict | None, community_rating: float = 0.0, shade_score: float = 0.0) -> float:
     cyclist_score = _score_cyclist_type(distance_km, preferences.cyclist_type)
     elevation_score = _score_elevation(total_ascent_m, preferences.elevation_preference)
     air_quality_score = _score_air_quality(preferences.air_quality_preference, poi_waypoints, start_point, weather)
-    logger.info("Route scoring — distance: %.2f km, ascent: %.1f m | cyclist_type score: %.3f | elevation score: %.3f | air_quality score: %.3f", distance_km, total_ascent_m, cyclist_score, elevation_score, air_quality_score)
-    return cyclist_score + elevation_score + air_quality_score
+    shade_score_val = _score_shade(shade_score, preferences.shade_preference)
+    rating_score = community_rating / 5.0  # normalise 0–5 → 0–1
+    logger.info("Route scoring — distance: %.2f km, ascent: %.1f m | cyclist_type score: %.3f | elevation score: %.3f | air_quality score: %.3f | shade score: %.3f | rating score: %.3f", distance_km, total_ascent_m, cyclist_score, elevation_score, air_quality_score, shade_score_val, rating_score)
+    return cyclist_score + elevation_score + air_quality_score + shade_score_val + rating_score
 
 
 async def get_recommendations(
@@ -287,6 +301,7 @@ async def get_recommendations(
     results = []
     poi_waypoints_per_result = []
     ascents_per_result = []
+    shade_scores_per_result = []
 
     for combo in _POI_COMBOS[:req.limit]:
         route_req = RouteRequest(
@@ -340,9 +355,10 @@ async def get_recommendations(
         }
 
         inserted = await mongo[_GENERATED_COLLECTION].insert_one(doc)
+        route_id_str = str(inserted.inserted_id)
 
         results.append(RecommendationResult(
-            route_id=str(inserted.inserted_id),
+            route_id=route_id_str,
             name=doc["name"],
             description=doc["description"],
             distance=route.distance,
@@ -358,16 +374,18 @@ async def get_recommendations(
                 for p in pois
             ],
         ))
+        shade_score = compute_shade_score(route.path)
         poi_waypoints_per_result.append(route.poi_waypoints)
         ascents_per_result.append(route.total_ascent_m)
+        shade_scores_per_result.append(shade_score)
 
     # 3. Rank results by score (highest first)
     ranked = sorted(
-        zip(results, poi_waypoints_per_result, ascents_per_result),
-        key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather),
+        zip(results, poi_waypoints_per_result, ascents_per_result, shade_scores_per_result),
+        key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather, shade_score=pair[3]),
         reverse=True,
     )
-    results = [r for r, _, _ in ranked]
+    results = [r for r, _, _, _ in ranked]
 
     # 4. Cache the results for 30 minutes
     try:

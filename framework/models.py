@@ -126,14 +126,6 @@ class UserRouteRating(Base):
     )
 
 
-class OsmTree(Base):
-    __tablename__ = "osm_trees"
-
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    osm_id: Mapped[int | None] = mapped_column(BigInteger)
-    geom = mapped_column(Geography(geometry_type="POINT", srid=4326), nullable=False)
-
-
 class HawkerCentre(Base):
     __tablename__ = "hawker_centres"
 

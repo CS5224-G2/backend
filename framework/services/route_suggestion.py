@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import logging
 import math
 import os
 import tempfile
@@ -15,6 +16,8 @@ from . import hawker as hawker_service
 from . import historic_sites as historic_sites_service
 from . import parks as park_service
 from . import tourist_attractions as tourist_attractions_service
+
+logger = logging.getLogger(__name__)
 
 _METRES_PER_DEGREE_LAT = 111_320
 _AVG_CYCLING_SPEED_KMH = 15.0
@@ -178,6 +181,32 @@ async def _compute_route_in_process(
         )
 
     return _parse_gpx_points(output_path)
+
+def compute_shade_score(path: list[Point]) -> float:
+    """
+    Compute a shade score [0, 1] for a route based on OSM tree density within 15m of the path.
+
+    Queries the in-memory KD-tree built at startup from the pre-downloaded tree dataset.
+    Score is normalised so that 2 trees per 100m of route equals 1.0 — a density
+    consistent with well-shaded Singapore streets.
+
+    Returns 0.0 if the tree index is not loaded or the path is too short.
+    """
+    if len(path) < 2:
+        return 0.0
+
+    from bike_route import graph_manager
+
+    total_dist_m = _compute_path_distance_m(path)
+    path_tuples = [(p.lat, p.lng) for p in path]
+    count = graph_manager.count_trees_near_path(path_tuples, radius_m=15.0)
+
+    # 2 trees per 100m → score 1.0
+    trees_per_100m = (count / total_dist_m) * 100 if total_dist_m > 0 else 0.0
+    score = min(1.0, trees_per_100m / 2.0)
+    logger.info("Shade score: %.3f (%d trees, %.0f m route, %.2f trees/100m)", score, count, total_dist_m, trees_per_100m)
+    return score
+
 
 async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     '''
