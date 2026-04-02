@@ -110,7 +110,7 @@ variable "task_memory" {
 variable "bike_route_task_cpu" {
   type        = string
   description = "Fargate task CPU units for the bike-route service"
-  default     = "512"
+  default     = "1024"
 }
 
 variable "bike_route_task_memory" {
