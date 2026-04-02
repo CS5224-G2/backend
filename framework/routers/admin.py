@@ -33,7 +33,7 @@ async def get_infrastructure_metrics(admin: AdminUser) -> dict:
 
 
 @router.get("/infrastructure-logs")
-async def get_infrastructure_logs(admin: AdminUser) -> list[dict]:
+async def get_infrastructure_logs(admin: AdminUser) -> dict:
     return await cw_service.get_recent_error_logs()
 
 

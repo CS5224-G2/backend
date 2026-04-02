@@ -4,6 +4,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from pymongo.asynchronous.database import AsyncDatabase
 import asyncio
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
 
 from ..config import settings
 from ..clients.http import service_client
@@ -63,5 +65,35 @@ async def get_system_health(places_db: AsyncSession, mongo_db: AsyncDatabase) ->
             logger.error(f"Microservice '{service_name}' health check failed: {e}")
             health["microservices"][service_name] = "down"
             health["status"] = "degraded"
+
+    # Ping ECS
+    try:
+        def check_ecs():
+            ecs = boto3.client("ecs", region_name=settings.AWS_REGION)
+            cluster = f"cyclelink-{settings.ENVIRONMENT}-cluster"
+            services = [
+                f"cyclelink-{settings.ENVIRONMENT}-backend",
+                f"cyclelink-{settings.ENVIRONMENT}-bike-route"
+            ]
+            health["infrastructure"] = {}
+            res = ecs.describe_services(cluster=cluster, services=services)
+            for svc in res.get("services", []):
+                name = svc["serviceName"]
+                # A service is fully up if it is ACTIVE and running count >= desired count
+                is_up = svc["status"] == "ACTIVE" and svc.get("runningCount", 0) >= svc.get("desiredCount", 1)
+                health["infrastructure"][name] = "up" if is_up else "degraded"
+                if not is_up:
+                    health["status"] = "degraded"
+            # If services array was empty or failed
+            if not res.get("services"):
+                health["infrastructure"]["ecs"] = "down"
+                health["status"] = "degraded"
+
+        await asyncio.to_thread(check_ecs)
+    except (BotoCoreError, ClientError, Exception) as e:
+        logger.error(f"ECS health check failed: {e}")
+        health["infrastructure"] = health.get("infrastructure", {})
+        health["infrastructure"]["ecs"] = "down"
+        health["status"] = "degraded"
 
     return health

@@ -101,12 +101,13 @@ resource "aws_iam_role_policy" "ecs_cloudwatch_read" {
     Statement = [
       {
         Effect   = "Allow"
-        Action   = [
           "cloudwatch:GetMetricData",
           "cloudwatch:GetMetricStatistics",
           "logs:StartQuery",
           "logs:GetQueryResults",
-          "logs:DescribeLogGroups"
+          "logs:DescribeLogGroups",
+          "ecs:DescribeServices",
+          "elasticloadbalancing:DescribeLoadBalancers"
         ]
         Resource = "*"
       }
