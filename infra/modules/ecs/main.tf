@@ -169,6 +169,7 @@ resource "aws_lb" "backend" {
   load_balancer_type = "application"
   security_groups    = [var.security_group_id]
   subnets            = var.subnet_ids
+  idle_timeout       = 120 
 }
 
 resource "aws_lb_target_group" "backend" {

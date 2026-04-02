@@ -32,8 +32,9 @@ def init_engines() -> None:
         return
     _engines["places"] = create_async_engine(
         settings.PLACES_DB_URL,
-        pool_size=10,
-        max_overflow=20,
+        pool_size=40,
+        max_overflow=60,
+        pool_timeout=60.0,
         # Detects dropped connections before handing them to a handler
         pool_pre_ping=True,
         # Proactively recycle connections before RDS's idle timeout

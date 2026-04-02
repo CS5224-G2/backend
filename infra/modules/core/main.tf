@@ -66,7 +66,7 @@ resource "aws_db_instance" "cyclelink_db" {
   
   engine              = "postgres"
   engine_version      = "18.3"
-  instance_class      = "db.t4g.micro" # Free tier eligible
+  instance_class      = "db.t4g.medium" # Upgraded from micro for production-grade performance
   allocated_storage   = 20 # Free tier eligible
   
   db_name             = "cyclelink"

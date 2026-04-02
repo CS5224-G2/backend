@@ -116,7 +116,7 @@ variable "bike_route_task_cpu" {
 variable "bike_route_task_memory" {
   type        = string
   description = "Fargate task memory in MiB for the bike-route service (needs more for in-memory OSM graph)"
-  default     = "1024"
+  default     = "2048"
 }
 
 variable "desired_count" {
