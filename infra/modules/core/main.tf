@@ -79,6 +79,7 @@ resource "aws_db_instance" "cyclelink_db" {
   
   publicly_accessible    = var.resource_publicly_accessible
   vpc_security_group_ids = [aws_security_group.cyclelink_sg.id]
+  apply_immediately      = true
 }
 
 # ElastiCache Valkey Serverless

@@ -32,8 +32,8 @@ def init_engines() -> None:
         return
     _engines["places"] = create_async_engine(
         settings.PLACES_DB_URL,
-        pool_size=40,
-        max_overflow=60,
+        pool_size=20,
+        max_overflow=40,
         pool_timeout=60.0,
         # Detects dropped connections before handing them to a handler
         pool_pre_ping=True,
