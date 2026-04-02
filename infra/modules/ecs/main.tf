@@ -91,6 +91,29 @@ resource "aws_iam_role_policy" "ecs_s3_read" {
   })
 }
 
+# Grant read access to CloudWatch metrics and logs for the admin dashboard
+resource "aws_iam_role_policy" "ecs_cloudwatch_read" {
+  name = "cyclelink-${var.environment}-ecs-cw-read"
+  role = aws_iam_role.ecs_task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "cloudwatch:GetMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "logs:StartQuery",
+          "logs:GetQueryResults",
+          "logs:DescribeLogGroups"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 ############################################################
 # Security Group Rules (Attaching to Core SG)
 ############################################################

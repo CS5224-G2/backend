@@ -1,9 +1,11 @@
 from fastapi import APIRouter
 
-from ..database import PlacesDB
+from ..database import PlacesDB, MongoDB
 from ..dependencies import AdminUser
 from ..schemas import AdminUserListItem
 from ..services import admin as admin_service
+from ..services import cloudwatch as cw_service
+from ..services import health as health_service
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -23,3 +25,18 @@ async def get_stats(admin: AdminUser, db: PlacesDB) -> dict:
         "revenue_formatted": "$0",
         "open_reports": 0,
     }
+
+
+@router.get("/infrastructure-metrics")
+async def get_infrastructure_metrics(admin: AdminUser) -> dict:
+    return await cw_service.get_infrastructure_metrics()
+
+
+@router.get("/infrastructure-logs")
+async def get_infrastructure_logs(admin: AdminUser) -> list[dict]:
+    return await cw_service.get_recent_error_logs()
+
+
+@router.get("/infrastructure-health")
+async def get_infrastructure_health(admin: AdminUser, places_db: PlacesDB, mongo_db: MongoDB) -> dict:
+    return await health_service.get_system_health(places_db, mongo_db)
