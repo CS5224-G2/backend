@@ -38,20 +38,26 @@ def _load_osm_data():
         return
 
     # Graph
-    if settings.OSM_GRAPH_LOCAL_PATH:
-        graph_manager.load_graph_from_file(settings.OSM_GRAPH_LOCAL_PATH)
-    elif settings.S3_BUCKET_NAME:
-        graph_manager.load_graph_from_s3(settings.S3_BUCKET_NAME, settings.OSM_GRAPH_S3_KEY or None)
-    else:
-        logger.warning("No OSM graph configured — routing will fall back to live Overpass API (slow)")
+    try:
+        if settings.OSM_GRAPH_LOCAL_PATH:
+            graph_manager.load_graph_from_file(settings.OSM_GRAPH_LOCAL_PATH)
+        elif settings.S3_BUCKET_NAME:
+            graph_manager.load_graph_from_s3(settings.S3_BUCKET_NAME, settings.OSM_GRAPH_S3_KEY or None)
+        else:
+            logger.warning("No OSM graph configured — routing will fall back to live Overpass API (slow)")
+    except Exception as exc:
+        logger.warning("Failed to load OSM graph: %s — routing will fall back to live Overpass API (slow)", exc)
 
     # Tree index
-    if settings.OSM_TREES_LOCAL_PATH:
-        graph_manager.load_trees_from_file(settings.OSM_TREES_LOCAL_PATH)
-    elif settings.S3_BUCKET_NAME:
-        graph_manager.load_trees_from_s3(settings.S3_BUCKET_NAME, settings.OSM_TREES_S3_KEY or None)
-    else:
-        logger.warning("No OSM tree data configured — shade scoring will return 0 for all routes")
+    try:
+        if settings.OSM_TREES_LOCAL_PATH:
+            graph_manager.load_trees_from_file(settings.OSM_TREES_LOCAL_PATH)
+        elif settings.S3_BUCKET_NAME:
+            graph_manager.load_trees_from_s3(settings.S3_BUCKET_NAME, settings.OSM_TREES_S3_KEY or None)
+        else:
+            logger.warning("No OSM tree data configured — shade scoring will return 0 for all routes")
+    except Exception as exc:
+        logger.warning("Failed to load OSM tree data: %s — shade scoring will return 0 for all routes", exc)
 
 
 _limiter = Limiter(key_func=get_remote_address)
