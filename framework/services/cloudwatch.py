@@ -43,11 +43,10 @@ async def get_infrastructure_metrics() -> dict:
     start_time = end_time - timedelta(hours=24)
 
     try:
-        # Run Boto3 synchronously in a thread threadpool to avoid blocking event loop
         def _fetch_ecs_metrics(cw, cluster_name: str, services: list[str], start_time: datetime, end_time: datetime) -> dict:
-            res = {}
+            res_ecs = {} # Initialize uniquely for ecs
             for service in services:
-                res[service] = {"CPUUtilization": [], "MemoryUtilization": [], "RunningTaskCount": []}
+                res_ecs[service] = {"CPUUtilization": [], "MemoryUtilization": [], "RunningTaskCount": []}
                 for metric_name in ["CPUUtilization", "MemoryUtilization"]:
                     response = cw.get_metric_statistics(
                         Namespace="AWS/ECS",
@@ -62,30 +61,33 @@ async def get_infrastructure_metrics() -> dict:
                         Statistics=["Average"]
                     )
                     for dp in sorted(response.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                        res[service][metric_name].append({
+                        res_ecs[service][metric_name].append({
                             "timestamp": dp["Timestamp"].isoformat(),
                             "value": round(dp["Average"], 2)
                         })
                 
-                # Autoscaling History Check
-                response_tc = cw.get_metric_statistics(
-                    Namespace="ECS/ContainerInsights",
-                    MetricName="RunningTaskCount",
-                    Dimensions=[
-                        {"Name": "ClusterName", "Value": cluster_name},
-                        {"Name": "ServiceName", "Value": service},
-                    ],
-                    StartTime=start_time,
-                    EndTime=end_time,
-                    Period=900,
-                    Statistics=["Average"]
-                )
-                for dp in sorted(response_tc.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                    res[service]["RunningTaskCount"].append({
-                        "timestamp": dp["Timestamp"].isoformat(),
-                        "value": round(dp["Average"])
-                    })
-            return res
+                # Autoscaling Task Count Check
+                try:
+                    response_tc = cw.get_metric_statistics(
+                        Namespace="ECS/ContainerInsights",
+                        MetricName="RunningTaskCount",
+                        Dimensions=[
+                            {"Name": "ClusterName", "Value": cluster_name},
+                            {"Name": "ServiceName", "Value": service},
+                        ],
+                        StartTime=start_time,
+                        EndTime=end_time,
+                        Period=900,
+                        Statistics=["Average"]
+                    )
+                    for dp in sorted(response_tc.get("Datapoints", []), key=lambda x: x["Timestamp"]):
+                        res_ecs[service]["RunningTaskCount"].append({
+                            "timestamp": dp["Timestamp"].isoformat(),
+                            "value": round(dp["Average"])
+                        })
+                except Exception as e:
+                    logger.warning(f"Failed to fetch TaskCount for {service}: {e}")
+            return res_ecs
 
         def _fetch_alb_metrics(cw, start_time: datetime, end_time: datetime) -> dict:
             res_alb = {"RequestCount": [], "TargetResponseTime": [], "HTTPCode_5XX": []}
@@ -130,9 +132,9 @@ async def get_infrastructure_metrics() -> dict:
 
         def fetch_metrics():
             cw = _get_cloudwatch_client()
-            res = _fetch_ecs_metrics(cw, cluster_name, services, start_time, end_time)
-            res["alb"] = _fetch_alb_metrics(cw, start_time, end_time)
-            return res
+            final_res = _fetch_ecs_metrics(cw, cluster_name, services, start_time, end_time)
+            final_res["alb"] = _fetch_alb_metrics(cw, start_time, end_time)
+            return final_res
 
         metrics = await asyncio.to_thread(fetch_metrics)
         
@@ -196,6 +198,19 @@ async def get_recent_error_logs() -> dict:
                     key = field['field'].lstrip('@')
                     if key != 'ptr':
                         item[key] = field['value']
+                
+                # Attempt to extract a short "summary" if it's a python traceback
+                message = item.get("message", "")
+                summary = message.split("\n")[-1] if "\n" in message else message
+                
+                # If we have our custom log format, extract the useful part
+                if "Unhandled error on" in message:
+                    try:
+                        summary = message.split(": ")[-1].split("\n")[0]
+                    except:
+                        pass
+                
+                item["summary"] = summary[:200] # Cap length
                 parsed_results.append(item)
                 
             return {
