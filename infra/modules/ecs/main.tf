@@ -101,6 +101,7 @@ resource "aws_iam_role_policy" "ecs_cloudwatch_read" {
     Statement = [
       {
         Effect   = "Allow"
+        Action   = [
           "cloudwatch:GetMetricData",
           "cloudwatch:GetMetricStatistics",
           "logs:StartQuery",
@@ -350,6 +351,10 @@ resource "aws_ecs_service" "backend" {
     container_port   = 8000
   }
 
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+
   depends_on = [aws_lb_listener.http]
 }
 
@@ -415,5 +420,65 @@ resource "aws_ecs_service" "bike_route" {
     container_port   = 8000
   }
 
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+
   depends_on = [aws_lb_listener_rule.bike_route]
+}
+
+############################################################
+# Auto Scaling
+############################################################
+
+# Backend Auto Scaling (CPU)
+resource "aws_appautoscaling_target" "backend" {
+  max_capacity       = 4
+  min_capacity       = var.desired_count
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.backend.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "backend_cpu" {
+  name               = "cyclelink-${var.environment}-backend-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.backend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value       = 70.0
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
+}
+
+# Bike Route Auto Scaling (CPU)
+resource "aws_appautoscaling_target" "bike_route" {
+  max_capacity       = 4
+  min_capacity       = var.desired_count
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.bike_route.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "bike_route_cpu" {
+  name               = "cyclelink-${var.environment}-bike-route-cpu"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.bike_route.resource_id
+  scalable_dimension = aws_appautoscaling_target.bike_route.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.bike_route.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+    target_value       = 70.0
+    scale_in_cooldown  = 300
+    scale_out_cooldown = 60
+  }
 }

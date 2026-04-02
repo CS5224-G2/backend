@@ -44,11 +44,10 @@ async def get_infrastructure_metrics() -> dict:
 
     try:
         # Run Boto3 synchronously in a thread threadpool to avoid blocking event loop
-        def fetch_metrics():
-            cw = _get_cloudwatch_client()
-            # --- 1. ECS CPU/Memory ---
+        def _fetch_ecs_metrics(cw, cluster_name: str, services: list[str], start_time: datetime, end_time: datetime) -> dict:
+            res = {}
             for service in services:
-                res[service] = {"CPUUtilization": [], "MemoryUtilization": []}
+                res[service] = {"CPUUtilization": [], "MemoryUtilization": [], "RunningTaskCount": []}
                 for metric_name in ["CPUUtilization", "MemoryUtilization"]:
                     response = cw.get_metric_statistics(
                         Namespace="AWS/ECS",
@@ -59,21 +58,37 @@ async def get_infrastructure_metrics() -> dict:
                         ],
                         StartTime=start_time,
                         EndTime=end_time,
-                        Period=900, # 15 min intervals for 24h
+                        Period=900,
                         Statistics=["Average"]
                     )
-                    
-                    datapoints = response.get("Datapoints", [])
-                    datapoints.sort(key=lambda x: x["Timestamp"])
-                    
-                    for dp in datapoints:
+                    for dp in sorted(response.get("Datapoints", []), key=lambda x: x["Timestamp"]):
                         res[service][metric_name].append({
                             "timestamp": dp["Timestamp"].isoformat(),
                             "value": round(dp["Average"], 2)
                         })
-            
-            # --- 2. ELB Metrics ---
-            res["alb"] = {"RequestCount": [], "TargetResponseTime": [], "HTTPCode_5XX": []}
+                
+                # Autoscaling History Check
+                response_tc = cw.get_metric_statistics(
+                    Namespace="ECS/ContainerInsights",
+                    MetricName="RunningTaskCount",
+                    Dimensions=[
+                        {"Name": "ClusterName", "Value": cluster_name},
+                        {"Name": "ServiceName", "Value": service},
+                    ],
+                    StartTime=start_time,
+                    EndTime=end_time,
+                    Period=900,
+                    Statistics=["Average"]
+                )
+                for dp in sorted(response_tc.get("Datapoints", []), key=lambda x: x["Timestamp"]):
+                    res[service]["RunningTaskCount"].append({
+                        "timestamp": dp["Timestamp"].isoformat(),
+                        "value": round(dp["Average"])
+                    })
+            return res
+
+        def _fetch_alb_metrics(cw, start_time: datetime, end_time: datetime) -> dict:
+            res_alb = {"RequestCount": [], "TargetResponseTime": [], "HTTPCode_5XX": []}
             try:
                 elbv2 = boto3.client('elbv2', region_name=settings.AWS_REGION)
                 albs = elbv2.describe_load_balancers(Names=[f"cyclelink-{settings.ENVIRONMENT}-alb"])
@@ -81,7 +96,6 @@ async def get_infrastructure_metrics() -> dict:
                 alb_dim = alb_arn.split("loadbalancer/")[1]
                 
                 tgs = elbv2.describe_target_groups(LoadBalancerArn=alb_arn)
-                # Filter for the backend tg (port 8000) or just take the first
                 tg_dim = tgs['TargetGroups'][0]['TargetGroupArn'].split(":")[-1]
                 
                 # RequestCount
@@ -91,7 +105,7 @@ async def get_infrastructure_metrics() -> dict:
                     StartTime=start_time, EndTime=end_time, Period=900, Statistics=["Sum"]
                 )
                 for dp in sorted(resp_rc.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                    res["alb"]["RequestCount"].append({"timestamp": dp["Timestamp"].isoformat(), "value": dp["Sum"]})
+                    res_alb["RequestCount"].append({"timestamp": dp["Timestamp"].isoformat(), "value": dp["Sum"]})
                 
                 # ELB 5xx Errors
                 resp_5xx = cw.get_metric_statistics(
@@ -100,7 +114,7 @@ async def get_infrastructure_metrics() -> dict:
                     StartTime=start_time, EndTime=end_time, Period=900, Statistics=["Sum"]
                 )
                 for dp in sorted(resp_5xx.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                    res["alb"]["HTTPCode_5XX"].append({"timestamp": dp["Timestamp"].isoformat(), "value": dp["Sum"]})
+                    res_alb["HTTPCode_5XX"].append({"timestamp": dp["Timestamp"].isoformat(), "value": dp["Sum"]})
                     
                 # TargetResponseTime
                 resp_lt = cw.get_metric_statistics(
@@ -109,10 +123,15 @@ async def get_infrastructure_metrics() -> dict:
                     StartTime=start_time, EndTime=end_time, Period=900, Statistics=["Average"]
                 )
                 for dp in sorted(resp_lt.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                    res["alb"]["TargetResponseTime"].append({"timestamp": dp["Timestamp"].isoformat(), "value": round(dp["Average"] * 1000, 2)}) # ms
+                    res_alb["TargetResponseTime"].append({"timestamp": dp["Timestamp"].isoformat(), "value": round(dp["Average"] * 1000, 2)}) # ms
             except Exception as e:
                 logger.error(f"Failed to fetch ALB metrics: {e}")
-                
+            return res_alb
+
+        def fetch_metrics():
+            cw = _get_cloudwatch_client()
+            res = _fetch_ecs_metrics(cw, cluster_name, services, start_time, end_time)
+            res["alb"] = _fetch_alb_metrics(cw, start_time, end_time)
             return res
 
         metrics = await asyncio.to_thread(fetch_metrics)
