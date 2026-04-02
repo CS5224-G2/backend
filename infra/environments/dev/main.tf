@@ -72,3 +72,10 @@ module "cdn" {
   s3_bucket_name           = module.core.s3_bucket_name
   s3_bucket_domain_name    = module.core.s3_bucket_domain_name
 }
+
+module "waf" {
+  source      = "../../modules/waf"
+  environment = "dev"
+
+  resource_arn = module.ecs.alb_arn
+}

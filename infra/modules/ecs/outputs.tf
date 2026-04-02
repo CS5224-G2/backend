@@ -31,5 +31,10 @@ output "alb_zone_id" {
   description = "Route53 zone ID of the ALB (for alias records)"
 }
 
+output "alb_arn" {
+  value       = aws_lb.backend.arn
+  description = "The ARN of the Application Load Balancer"
+}
+
 
 
