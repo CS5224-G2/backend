@@ -98,25 +98,25 @@ variable "s3_bucket_name" {
 variable "task_cpu" {
   type        = string
   description = "Fargate task CPU units (256 = 0.25 vCPU)"
-  default     = "1024"
+  default     = "512"
 }
 
 variable "task_memory" {
   type        = string
   description = "Fargate task memory in MiB"
-  default     = "2048"
+  default     = "1024"
 }
 
 variable "bike_route_task_cpu" {
   type        = string
   description = "Fargate task CPU units for the bike-route service"
-  default     = "1024"
+  default     = "512"
 }
 
 variable "bike_route_task_memory" {
   type        = string
   description = "Fargate task memory in MiB for the bike-route service (needs more for in-memory OSM graph)"
-  default     = "2048"
+  default     = "1024"
 }
 
 variable "desired_count" {

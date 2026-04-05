@@ -266,8 +266,6 @@ resource "aws_lb_listener_rule" "bike_route" {
 }
 
 
-
-
 ############################################################
 # ECS Cluster
 ############################################################
@@ -437,7 +435,7 @@ resource "aws_ecs_service" "bike_route" {
 
 # Backend Auto Scaling (CPU)
 resource "aws_appautoscaling_target" "backend" {
-  max_capacity       = 4
+  max_capacity       = 2
   min_capacity       = var.desired_count
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.backend.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -461,7 +459,7 @@ resource "aws_appautoscaling_policy" "backend_cpu" {
   }
 }
 
-# Bike Route Auto Scaling (CPU)
+# Bike Route Auto Scaling (Memory)
 resource "aws_appautoscaling_target" "bike_route" {
   max_capacity       = 4
   min_capacity       = var.desired_count
@@ -470,8 +468,8 @@ resource "aws_appautoscaling_target" "bike_route" {
   service_namespace  = "ecs"
 }
 
-resource "aws_appautoscaling_policy" "bike_route_cpu" {
-  name               = "cyclelink-${var.environment}-bike-route-cpu"
+resource "aws_appautoscaling_policy" "bike_route_memory" {
+  name               = "cyclelink-${var.environment}-bike-route-memory"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.bike_route.resource_id
   scalable_dimension = aws_appautoscaling_target.bike_route.scalable_dimension
@@ -479,10 +477,71 @@ resource "aws_appautoscaling_policy" "bike_route_cpu" {
 
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
-      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
     }
-    target_value       = 70.0
+    target_value       = 60.0
     scale_in_cooldown  = 300
     scale_out_cooldown = 60
   }
 }
+
+############################################################
+# Scheduled Scaling (Off-peak cost optimization)
+############################################################
+
+# Backend - Scale down at 2 AM SGT (18:00 UTC)
+resource "aws_appautoscaling_scheduled_action" "backend_offpeak_down" {
+  name               = "cyclelink-${var.environment}-backend-offpeak-down"
+  service_namespace  = aws_appautoscaling_target.backend.service_namespace
+  resource_id        = aws_appautoscaling_target.backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.backend.scalable_dimension
+  schedule           = "cron(0 18 * * ? *)"
+
+  scalable_target_action {
+    min_capacity = 1
+    max_capacity = 2
+  }
+}
+
+# Backend - Scale up at 8 AM SGT (00:00 UTC)
+resource "aws_appautoscaling_scheduled_action" "backend_offpeak_up" {
+  name               = "cyclelink-${var.environment}-backend-offpeak-up"
+  service_namespace  = aws_appautoscaling_target.backend.service_namespace
+  resource_id        = aws_appautoscaling_target.backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.backend.scalable_dimension
+  schedule           = "cron(0 0 * * ? *)"
+
+  scalable_target_action {
+    min_capacity = var.desired_count
+    max_capacity = 4
+  }
+}
+
+# Bike Route - Scale down at 2 AM SGT (18:00 UTC)
+resource "aws_appautoscaling_scheduled_action" "bike_route_offpeak_down" {
+  name               = "cyclelink-${var.environment}-bike-route-offpeak-down"
+  service_namespace  = aws_appautoscaling_target.bike_route.service_namespace
+  resource_id        = aws_appautoscaling_target.bike_route.resource_id
+  scalable_dimension = aws_appautoscaling_target.bike_route.scalable_dimension
+  schedule           = "cron(0 18 * * ? *)"
+
+  scalable_target_action {
+    min_capacity = 1
+    max_capacity = 2
+  }
+}
+
+# Bike Route - Scale up at 8 AM SGT (00:00 UTC)
+resource "aws_appautoscaling_scheduled_action" "bike_route_offpeak_up" {
+  name               = "cyclelink-${var.environment}-bike-route-offpeak-up"
+  service_namespace  = aws_appautoscaling_target.bike_route.service_namespace
+  resource_id        = aws_appautoscaling_target.bike_route.resource_id
+  scalable_dimension = aws_appautoscaling_target.bike_route.scalable_dimension
+  schedule           = "cron(0 0 * * ? *)"
+
+  scalable_target_action {
+    min_capacity = var.desired_count
+    max_capacity = 4
+  }
+}
+
