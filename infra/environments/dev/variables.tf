@@ -60,3 +60,7 @@ variable "cdn_base_url" {
   default     = ""
 }
 
+variable "alert_email" {
+  type        = string
+  description = "Email address to receive critical error alerts via SNS"
+}

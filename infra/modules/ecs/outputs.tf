@@ -36,5 +36,13 @@ output "alb_arn" {
   description = "The ARN of the Application Load Balancer"
 }
 
+#### Log Group Outputs ####
+output "backend_log_group_name" {
+  value       = aws_cloudwatch_log_group.ecs_backend.name
+  description = "CloudWatch Log Group name for the backend service"
+}
 
-
+output "bike_route_log_group_name" {
+  value       = aws_cloudwatch_log_group.ecs_bike_route.name
+  description = "CloudWatch Log Group name for the bike-route service"
+}

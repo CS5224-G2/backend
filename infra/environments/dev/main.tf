@@ -79,3 +79,13 @@ module "waf" {
 
   resource_arn = module.ecs.alb_arn
 }
+
+module "monitoring" {
+  source      = "../../modules/monitoring"
+  environment = "dev"
+
+  alert_email = var.alert_email
+
+  backend_log_group_name    = module.ecs.backend_log_group_name
+  bike_route_log_group_name = module.ecs.bike_route_log_group_name
+}

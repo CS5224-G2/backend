@@ -60,3 +60,8 @@ output "cloudfront_domain_name" {
 output "cloudfront_distribution_id" {
   value = module.cdn.cloudfront_distribution_id
 }
+
+output "sns_critical_errors_topic_arn" {
+  value       = module.monitoring.sns_topic_arn
+  description = "ARN of the critical-errors SNS topic"
+}

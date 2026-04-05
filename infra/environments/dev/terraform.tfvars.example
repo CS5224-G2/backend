@@ -20,3 +20,6 @@ swagger_password = "changeme"
 ##### CloudFront ######
 cloudfront_header_secret = "YOUR_CLOUDFRONT_HEADER_SECRET"
 cdn_base_url = "https://link.cloudfront.net"
+
+##### Monitoring / Alerts ######
+alert_email = "your-email@example.com"
