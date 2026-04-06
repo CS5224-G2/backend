@@ -173,14 +173,13 @@ async def request_password_reset(db: AsyncSession, email: str) -> None:
     await db.commit()
 
     from ..clients.http import sendgrid_client
-    reset_link = f"https://app.cyclelink.com/reset-password?token={raw}"
     await sendgrid_client.post(
         "/v3/mail/send",
         json={
             "personalizations": [{"to": [{"email": user.email}]}],
             "from": {"email": settings.SENDGRID_FROM_EMAIL},
             "subject": "Reset your CycleLink password",
-            "content": [{"type": "text/plain", "value": f"Click the link below to reset your password. It expires in {settings.PASSWORD_RESET_EXPIRE_MINUTES} minutes.\n\n{reset_link}"}],
+            "content": [{"type": "text/plain", "value": f"Your CycleLink password reset token is:\n\n{raw}\n\nEnter this token in the app to reset your password. It expires in {settings.PASSWORD_RESET_EXPIRE_MINUTES} minutes."}],
         },
     )
 
