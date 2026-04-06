@@ -1,8 +1,8 @@
+from datetime import datetime
 from enum import StrEnum
-from typing import Generic, TypeVar
+from typing import Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
-from typing import Literal
 
 
 class _ORMBase(BaseModel):
@@ -492,6 +492,81 @@ class FeedbackRequest(BaseModel):
         if not (1 <= v <= 5):
             raise ValueError("rating must be between 1 and 5")
         return v
+
+
+class CreateRideRequest(BaseModel):
+    route_id: str
+    start_time: datetime
+    end_time: datetime
+    distance: float                            # km
+    avg_speed: float                           # km/h
+    checkpoints_visited: list[Checkpoint] = []
+    points_of_interest_visited: list[POIVisited] = []
+
+    @field_validator("end_time")
+    @classmethod
+    def end_after_start(cls, v: datetime, info) -> datetime:
+        if "start_time" in info.data and v <= info.data["start_time"]:
+            raise ValueError("end_time must be after start_time")
+        return v
+
+
+class CreateRideResponse(BaseModel):
+    ride_id: str
+    route_id: str
+    route_name: str
+    completion_date: str   # e.g. "March 28, 2026"
+    completion_time: str   # e.g. "10:30 AM"
+    start_time: str        # ISO 8601
+    end_time: str          # ISO 8601
+    total_time: int        # minutes
+    distance: float
+    avg_speed: float
+    checkpoints_visited: int   # count
+    status: str = "completed"
+
+
+class RideHistoryItem(BaseModel):
+    ride_id: str
+    route_id: str
+    route_name: str
+    completion_date: str
+    completion_time: str
+    start_time: str        # formatted time, e.g. "9:42 AM"
+    end_time: str          # formatted time, e.g. "10:30 AM"
+    total_time: int
+    distance: float
+    avg_speed: float
+    checkpoints_visited: int
+    checkpoints: list[Checkpoint] = []
+    points_of_interest_visited: list[POIVisited] = []
+    rating: int | None = None
+    review: str | None = None
+
+
+class RideDetailResponse(BaseModel):
+    ride_id: str
+    route_id: str
+    route_name: str
+    completion_date: str
+    completion_time: str
+    start_time: str
+    end_time: str
+    total_time: int
+    distance: float
+    avg_speed: float
+    checkpoints_visited: int
+    checkpoints: list[Checkpoint] = []
+    points_of_interest_visited: list[POIVisited] = []
+    rating: int | None = None
+    review: str | None = None
+    route_details: "RouteDetail | None" = None
+
+
+class DistanceStat(BaseModel):
+    period_id: str
+    label: str
+    distance: float
 
 
 # ------------------------------------------------------------------
