@@ -51,6 +51,8 @@ module "ecs" {
   mongodb_url     = var.mongodb_url
   swagger_username = var.swagger_username
   swagger_password = var.swagger_password
+  sendgrid_api_key = var.sendgrid_api_key
+  sendgrid_from_email = var.sendgrid_from_email
 
   # Redis / ElastiCache
   redis_host = module.core.elasticache_endpoint

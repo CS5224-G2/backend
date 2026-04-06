@@ -47,6 +47,17 @@ variable "swagger_password" {
   sensitive   = true
 }
 
+variable "sendgrid_api_key" {
+  type        = string
+  description = "SendGrid API Key"
+  sensitive   = true
+}
+
+variable "sendgrid_from_email" {
+  type        = string
+  description = "SendGrid From Email"
+}
+
 variable "cloudfront_header_secret" {
   type        = string
   description = "Secret header value to ensure ALB only accepts traffic from CloudFront"

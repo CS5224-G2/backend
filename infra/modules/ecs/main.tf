@@ -389,6 +389,8 @@ resource "aws_ecs_task_definition" "bike_route" {
       { name = "S3_BUCKET_NAME",  value = var.s3_bucket_name },
       { name = "AWS_REGION",      value = var.aws_region },
       { name = "CDN_BASE_URL",    value = var.cdn_base_url },
+      { name = "SENDGRID_API_KEY", value = var.sendgrid_api_key },
+      { name = "SENDGRID_FROM_EMAIL", value = var.sendgrid_from_email },
     ]
 
     logConfiguration = {

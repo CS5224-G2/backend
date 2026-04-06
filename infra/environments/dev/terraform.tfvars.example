@@ -23,3 +23,7 @@ cdn_base_url = "https://link.cloudfront.net"
 
 ##### Monitoring / Alerts ######
 alert_email = "your-email@example.com"
+
+##### SendGrid #####
+sendgrid_api_key = "YOUR_SENDGRID_API_KEY"
+sendgrid_from_email = "[EMAIL_ADDRESS]"

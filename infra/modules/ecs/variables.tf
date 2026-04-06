@@ -94,6 +94,17 @@ variable "s3_bucket_name" {
   description = "Name of the S3 bucket used by the app"
 }
 
+variable "sendgrid_api_key" {
+  type        = string
+  description = "SendGrid API Key"
+  sensitive   = true
+}
+
+variable "sendgrid_from_email" {
+  type        = string
+  description = "SendGrid From Email"
+}
+
 # ── Task Sizing ─────────────────────────────────────────────────────
 variable "task_cpu" {
   type        = string
