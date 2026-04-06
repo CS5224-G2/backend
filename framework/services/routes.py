@@ -314,6 +314,7 @@ async def get_recommendations(
         eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
 
     logger.info("Eligible combos (%d): %s", len(eligible_combos), eligible_combos)
+    seen_fingerprints: list[tuple] = []
 
     for combo in eligible_combos[:req.limit]:
         route_req = RouteRequest(
@@ -333,6 +334,16 @@ async def get_recommendations(
         if req.preferences.max_distance is not None and route.distance > req.preferences.max_distance:
             logger.info("Route exceeds max_distance (%.2f km > %.2f km), skipping", route.distance, req.preferences.max_distance)
             continue
+
+        path = route.path
+        fingerprint = tuple(
+            (round(p.lat, 4), round(p.lng, 4))
+            for p in [path[0], path[len(path) // 2], path[-1]]
+        )
+        if fingerprint in seen_fingerprints:
+            logger.info("Skipping duplicate route (fingerprint: %s)", fingerprint)
+            continue
+        seen_fingerprints.append(fingerprint)
 
         start_name = req.start_point.name or f"{req.start_point.lat:.4f}, {req.start_point.lng:.4f}"
         end_name = req.end_point.name or f"{req.end_point.lat:.4f}, {req.end_point.lng:.4f}"

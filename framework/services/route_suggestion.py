@@ -140,7 +140,10 @@ async def _get_poi_waypoints(db: AsyncSession, req: RouteRequest) -> list[POIWay
         segment_point = _interpolate_point(req.origin, req.destination, t)
         poi = await _find_nearest_poi(db, category, segment_point.lat, segment_point.lng, segment_radius)
         if poi:
+            logger.info("POI selected: %s (%s) at (%.6f, %.6f)", poi.name, category.value, poi.point.lat, poi.point.lng)
             poi_waypoints.append(poi)
+        else:
+            logger.info("No POI found for category %s within %.0fm of (%.6f, %.6f)", category.value, segment_radius, segment_point.lat, segment_point.lng)
 
     return poi_waypoints
 
