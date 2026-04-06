@@ -15,7 +15,6 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .route_suggestion import compute_shade_score
 from ..models import UserSavedRoute
 from ..schemas import (
     AirQualityPreference,
@@ -283,7 +282,6 @@ class _ComboResult:
     result: RecommendationResult
     poi_waypoints: list
     ascent_m: float
-    shade_score: float
 
 
 async def _try_combo(
@@ -379,12 +377,12 @@ async def _try_combo(
             POIVisited(name=p["name"], description=p["description"], lat=p["lat"], lng=p["lng"])
             for p in pois
         ],
+        shade_score=route.shade_score,
     )
     return _ComboResult(
         result=recommendation,
         poi_waypoints=route.poi_waypoints,
         ascent_m=route.total_ascent_m,
-        shade_score=compute_shade_score(route.path),
     )
 
 
@@ -410,7 +408,6 @@ async def get_recommendations(
     results = []
     poi_waypoints_per_result = []
     ascents_per_result = []
-    shade_scores_per_result = []
 
     eligible_combos = [
         c for c in _POI_COMBOS
@@ -430,7 +427,6 @@ async def get_recommendations(
             results.append(combo_result.result)
             poi_waypoints_per_result.append(combo_result.poi_waypoints)
             ascents_per_result.append(combo_result.ascent_m)
-            shade_scores_per_result.append(combo_result.shade_score)
 
     # Fallback: if all combos failed or were filtered, try a no-POI route
     if not results:
@@ -440,15 +436,14 @@ async def get_recommendations(
             results.append(combo_result.result)
             poi_waypoints_per_result.append(combo_result.poi_waypoints)
             ascents_per_result.append(combo_result.ascent_m)
-            shade_scores_per_result.append(combo_result.shade_score)
 
     # 3. Rank results by score (highest first)
     ranked = sorted(
-        zip(results, poi_waypoints_per_result, ascents_per_result, shade_scores_per_result),
-        key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather, shade_score=pair[3]),
+        zip(results, poi_waypoints_per_result, ascents_per_result),
+        key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather, shade_score=pair[0].shade_score),
         reverse=True,
     )
-    results = [r for r, _, _, _ in ranked]
+    results = [r for r, _, _ in ranked]
 
     # 4. Cache the results for 30 minutes
     try:

@@ -123,6 +123,7 @@ class RouteResponse(BaseModel):
     distance: float
     duration: float
     total_ascent_m: float = 0.0
+    shade_score: float = 0.0
 
 
 # ------------------------------------------------------------------
@@ -228,6 +229,7 @@ class RecommendationResult(BaseModel):
     review_count: int = 0
     rating: float = 0.0
     points_of_interest_visited: list[POIVisited] = []
+    shade_score: float = 0.0
 
 
 # ------------------------------------------------------------------

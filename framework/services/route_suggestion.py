@@ -154,6 +154,7 @@ async def _compute_route_in_process(
     """
     Call compute_route directly in-process instead of spawning a subprocess.
     This reuses the graph already loaded in memory — no re-download needed.
+    Used by the route service (bike-route container) which owns the graph data.
     """
     from bike_route.main import compute_route
     from bike_route.utils import init_elevation_cache
@@ -211,20 +212,56 @@ def compute_shade_score(path: list[Point]) -> float:
     return score
 
 
-async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
-    '''
-    Set SAVE_GPX=true to persist generated GPX files to the saved_gpx/ folder.
-    Each request gets a unique filename (route_<uuid>.gpx) to avoid collisions.
+async def _recommend_via_service(
+    req: RouteRequest, poi_waypoints: list, extra_points: list[Point]
+) -> RouteResponse:
+    """
+    Delegate route computation to the bike-route service via HTTP.
+    Used by the framework (main backend) service to avoid loading graph data in-process.
+    POI waypoints are already resolved from the DB; they are passed as plain waypoints
+    so the route service treats them as routing stops (no second DB lookup needed).
+    """
+    from ..clients.http import service_client
 
-    Otherwise, GPX files are written to a temporary folder and destroyed immediately.
+    # Build a request with all POI prefs disabled — POIs are already resolved as waypoints
+    delegated_req = RouteRequest(
+        origin=req.origin,
+        destination=req.destination,
+        waypoints=req.waypoints + extra_points,
+    )
 
-    To visualize a gpx, you can use https://gpx.studio/app.
-    '''
-    _validate_route_request(req)
+    try:
+        resp = await service_client.post(
+            "bike-route",
+            "/v1/route-suggestion/recommend",
+            json=delegated_req.model_dump(),
+        )
+        resp.raise_for_status()
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Route service call failed: {type(e).__name__}: {repr(e)}",
+        ) from e
 
-    poi_waypoints = await _get_poi_waypoints(db, req)
-    extra_points = [p.point for p in poi_waypoints]
+    data = resp.json()
+    path = [Point(**p) for p in data["path"]]
+    return RouteResponse(
+        path=path,
+        poi_waypoints=poi_waypoints,
+        distance=data["distance"],
+        duration=data["duration"],
+        total_ascent_m=data.get("total_ascent_m", 0.0),
+        shade_score=data.get("shade_score", 0.0),
+    )
 
+
+async def _recommend_in_process(
+    req: RouteRequest, poi_waypoints: list, extra_points: list[Point]
+) -> RouteResponse:
+    """
+    Compute route in-process using the graph already loaded in memory.
+    Used by the bike-route service which owns the graph and tree data.
+    """
     if settings.SAVE_GPX:
         os.makedirs(_GPX_DIR, exist_ok=True)
         output_path = os.path.join(_GPX_DIR, f"route_{uuid.uuid4().hex}.gpx")
@@ -244,11 +281,24 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
         for i in range(len(elevations) - 1)
     )
 
+    shade_score = compute_shade_score(path)
+
     return RouteResponse(
         path=path,
         poi_waypoints=poi_waypoints,
         distance=round(distance_m / 1000, 2),
         duration=round(duration_min),
         total_ascent_m=round(total_ascent_m, 1),
+        shade_score=shade_score,
     )
+
+
+async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
+    _validate_route_request(req)
+    poi_waypoints = await _get_poi_waypoints(db, req)
+    extra_points = [p.point for p in poi_waypoints]
+
+    if "bike-route" in settings.SERVICE_URLS:
+        return await _recommend_via_service(req, poi_waypoints, extra_points)
+    return await _recommend_in_process(req, poi_waypoints, extra_points)
 
