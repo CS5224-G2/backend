@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import settings
-from ..models import RefreshToken, User
+from ..models import PasswordResetToken, RefreshToken, User
 
 # ============================================================
 # Password helpers
@@ -151,6 +151,71 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> User
             detail="Account is inactive",
         )
     return user
+
+
+async def request_password_reset(db: AsyncSession, email: str) -> None:
+    """
+    Generates a password reset token and sends it via SendGrid.
+    Always returns silently even if the email is not registered (prevents user enumeration).
+    """
+    result = await db.execute(select(User).where(User.email == email.lower()))
+    user = result.scalar_one_or_none()
+    if user is None or not user.is_active:
+        return
+
+    raw = secrets.token_urlsafe(64)
+    record = PasswordResetToken(
+        user_id=user.id,
+        token_hash=_hash_token(raw),
+        expires_at=datetime.now(timezone.utc) + timedelta(minutes=settings.PASSWORD_RESET_EXPIRE_MINUTES),
+    )
+    db.add(record)
+    await db.commit()
+
+    from ..clients.http import sendgrid_client
+    reset_link = f"https://app.cyclelink.com/reset-password?token={raw}"
+    await sendgrid_client.post(
+        "/v3/mail/send",
+        json={
+            "personalizations": [{"to": [{"email": user.email}]}],
+            "from": {"email": settings.SENDGRID_FROM_EMAIL},
+            "subject": "Reset your CycleLink password",
+            "content": [{"type": "text/plain", "value": f"Click the link below to reset your password. It expires in {settings.PASSWORD_RESET_EXPIRE_MINUTES} minutes.\n\n{reset_link}"}],
+        },
+    )
+
+
+async def reset_password(db: AsyncSession, token: str, new_password: str) -> None:
+    """
+    Validates a password reset token, updates the user's password, and marks the token as used.
+    Raises HTTP 400 if the token is invalid, already used, or expired.
+    """
+    _invalid = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Invalid or expired reset token",
+    )
+
+    token_hash = _hash_token(token)
+    result = await db.execute(
+        select(PasswordResetToken).where(PasswordResetToken.token_hash == token_hash)
+    )
+    record = result.scalar_one_or_none()
+
+    if record is None or record.used_at is not None:
+        raise _invalid
+    if record.expires_at < datetime.now(timezone.utc):
+        raise _invalid
+
+    user_result = await db.execute(select(User).where(User.id == record.user_id))
+    user = user_result.scalar_one_or_none()
+    if user is None or not user.is_active:
+        raise _invalid
+
+    now = datetime.now(timezone.utc)
+    record.used_at = now
+    user.hashed_password = hash_password(new_password)
+    user.updated_at = now
+    await db.commit()
 
 
 async def register_user(
