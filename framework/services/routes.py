@@ -3,6 +3,7 @@ import json
 import logging
 import uuid
 import math
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from ..clients.redis import redis_client
@@ -277,13 +278,121 @@ def _score_route(distance_km: float, total_ascent_m: float, preferences, poi_way
     return cyclist_score + elevation_score + air_quality_score + shade_score_val + rating_score
 
 
+@dataclass
+class _ComboResult:
+    result: RecommendationResult
+    poi_waypoints: list
+    ascent_m: float
+    shade_score: float
+
+
+async def _try_combo(
+    combo: dict,
+    req: RecommendationsRequest,
+    places_db: AsyncSession,
+    mongo: AsyncDatabase,
+    seen_fingerprints: list[tuple],
+) -> "_ComboResult | None":
+    from .route_suggestion import recommend_route
+
+    poi_prefs = req.preferences.points_of_interest
+    route_req = RouteRequest(
+        origin=Point(lat=req.start_point.lat, lng=req.start_point.lng),
+        destination=Point(lat=req.end_point.lat, lng=req.end_point.lng),
+        waypoints=[Point(lat=cp.lat, lng=cp.lng) for cp in req.checkpoints],
+        preferences=RoutePreferences(
+            include_hawker_centres=combo["include_hawker_centres"] and poi_prefs.allow_hawker_center,
+            include_parks=combo["include_parks"] and poi_prefs.allow_park,
+            include_historic_sites=combo["include_historic_sites"] and poi_prefs.allow_historic_site,
+            include_tourist_attractions=combo["include_tourist_attractions"] and poi_prefs.allow_tourist_attraction,
+        ),
+    )
+
+    try:
+        route = await recommend_route(places_db, route_req)
+    except Exception as exc:
+        logger.warning("Route computation failed for combo %s, skipping: %s", combo, exc)
+        return None
+
+    if req.preferences.max_distance is not None and route.distance > req.preferences.max_distance:
+        logger.info("Route exceeds max_distance (%.2f km > %.2f km), skipping", route.distance, req.preferences.max_distance)
+        return None
+
+    path = route.path
+    fingerprint = tuple(
+        (round(p.lat, 4), round(p.lng, 4))
+        for p in [path[0], path[len(path) // 2], path[-1]]
+    )
+    if fingerprint in seen_fingerprints:
+        logger.info("Skipping duplicate route (fingerprint: %s)", fingerprint)
+        return None
+    seen_fingerprints.append(fingerprint)
+
+    start_name = req.start_point.name or f"{req.start_point.lat:.4f}, {req.start_point.lng:.4f}"
+    end_name = req.end_point.name or f"{req.end_point.lat:.4f}, {req.end_point.lng:.4f}"
+
+    pois = [
+        {"name": p.name, "description": p.category.value, "lat": p.point.lat, "lng": p.point.lng}
+        for p in route.poi_waypoints
+    ]
+    checkpoints = [
+        {"checkpoint_id": f"cp_{i + 1:03d}", "checkpoint_name": p["name"], "description": p["description"], "lat": p["lat"], "lng": p["lng"]}
+        for i, p in enumerate(pois)
+    ]
+
+    doc = {
+        "source": "generated",
+        "name": f"{start_name} → {end_name}",
+        "description": None,
+        "coordinates": [[p.lng, p.lat] for p in route.path],
+        "distance_m": round(route.distance * 1000, 1),
+        "estimated_time_min": round(route.duration),
+        "start_point": {"lat": req.start_point.lat, "lng": req.start_point.lng, "name": req.start_point.name},
+        "end_point": {"lat": req.end_point.lat, "lng": req.end_point.lng, "name": req.end_point.name},
+        "cyclist_type": req.preferences.cyclist_type.value,
+        "elevation": req.preferences.elevation_preference.value,
+        "shade": req.preferences.shade_preference.value,
+        "air_quality": req.preferences.air_quality_preference.value,
+        "checkpoints": checkpoints,
+        "points_of_interest_visited": pois,
+        "review_count": 0,
+        "rating": 0.0,
+        "created_at": datetime.now(timezone.utc),
+    }
+
+    inserted = await mongo[_GENERATED_COLLECTION].insert_one(doc)
+    route_id_str = str(inserted.inserted_id)
+
+    recommendation = RecommendationResult(
+        route_id=route_id_str,
+        name=doc["name"],
+        description=doc["description"],
+        distance=route.distance,
+        estimated_time=round(route.duration),
+        elevation=req.preferences.elevation_preference,
+        shade=req.preferences.shade_preference,
+        air_quality=req.preferences.air_quality_preference,
+        cyclist_type=req.preferences.cyclist_type,
+        review_count=0,
+        rating=0.0,
+        points_of_interest_visited=[
+            POIVisited(name=p["name"], description=p["description"], lat=p["lat"], lng=p["lng"])
+            for p in pois
+        ],
+    )
+    return _ComboResult(
+        result=recommendation,
+        poi_waypoints=route.poi_waypoints,
+        ascent_m=route.total_ascent_m,
+        shade_score=compute_shade_score(route.path),
+    )
+
+
 async def get_recommendations(
     mongo: AsyncDatabase,
     places_db: AsyncSession,
     req: RecommendationsRequest,
 ) -> list[RecommendationResult]:
-    from .route_suggestion import recommend_route
-
     # 1. Check Redis Cache
     request_dump = req.model_dump_json()
     cache_key = f"routes:recommendations:{hashlib.md5(request_dump.encode()).hexdigest()}"
@@ -313,94 +422,25 @@ async def get_recommendations(
     if not eligible_combos:
         eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
 
-    logger.info("Eligible combos (%d): %s", len(eligible_combos), eligible_combos)
     seen_fingerprints: list[tuple] = []
 
     for combo in eligible_combos[:req.limit]:
-        route_req = RouteRequest(
-            origin=Point(lat=req.start_point.lat, lng=req.start_point.lng),
-            destination=Point(lat=req.end_point.lat, lng=req.end_point.lng),
-            waypoints=[Point(lat=cp.lat, lng=cp.lng) for cp in req.checkpoints],
-            preferences=RoutePreferences(
-                include_hawker_centres=combo["include_hawker_centres"] and poi_prefs.allow_hawker_center,
-                include_parks=combo["include_parks"] and poi_prefs.allow_park,
-                include_historic_sites=combo["include_historic_sites"] and poi_prefs.allow_historic_site,
-                include_tourist_attractions=combo["include_tourist_attractions"] and poi_prefs.allow_tourist_attraction,
-            ),
-        )
+        combo_result = await _try_combo(combo, req, places_db, mongo, seen_fingerprints)
+        if combo_result:
+            results.append(combo_result.result)
+            poi_waypoints_per_result.append(combo_result.poi_waypoints)
+            ascents_per_result.append(combo_result.ascent_m)
+            shade_scores_per_result.append(combo_result.shade_score)
 
-        route = await recommend_route(places_db, route_req)
-
-        if req.preferences.max_distance is not None and route.distance > req.preferences.max_distance:
-            logger.info("Route exceeds max_distance (%.2f km > %.2f km), skipping", route.distance, req.preferences.max_distance)
-            continue
-
-        path = route.path
-        fingerprint = tuple(
-            (round(p.lat, 4), round(p.lng, 4))
-            for p in [path[0], path[len(path) // 2], path[-1]]
-        )
-        if fingerprint in seen_fingerprints:
-            logger.info("Skipping duplicate route (fingerprint: %s)", fingerprint)
-            continue
-        seen_fingerprints.append(fingerprint)
-
-        start_name = req.start_point.name or f"{req.start_point.lat:.4f}, {req.start_point.lng:.4f}"
-        end_name = req.end_point.name or f"{req.end_point.lat:.4f}, {req.end_point.lng:.4f}"
-
-        pois = [
-            {"name": p.name, "description": p.category.value, "lat": p.point.lat, "lng": p.point.lng}
-            for p in route.poi_waypoints
-        ]
-        checkpoints = [
-            {"checkpoint_id": f"cp_{i + 1:03d}", "checkpoint_name": p["name"], "description": p["description"], "lat": p["lat"], "lng": p["lng"]}
-            for i, p in enumerate(pois)
-        ]
-
-        doc = {
-            "source": "generated",
-            "name": f"{start_name} → {end_name}",
-            "description": None,
-            "coordinates": [[p.lng, p.lat] for p in route.path],
-            "distance_m": round(route.distance * 1000, 1),
-            "estimated_time_min": round(route.duration),
-            "start_point": {"lat": req.start_point.lat, "lng": req.start_point.lng, "name": req.start_point.name},
-            "end_point": {"lat": req.end_point.lat, "lng": req.end_point.lng, "name": req.end_point.name},
-            "cyclist_type": req.preferences.cyclist_type.value,
-            "elevation": req.preferences.elevation_preference.value,
-            "shade": req.preferences.shade_preference.value,
-            "air_quality": req.preferences.air_quality_preference.value,
-            "checkpoints": checkpoints,
-            "points_of_interest_visited": pois,
-            "review_count": 0,
-            "rating": 0.0,
-            "created_at": datetime.now(timezone.utc),
-        }
-
-        inserted = await mongo[_GENERATED_COLLECTION].insert_one(doc)
-        route_id_str = str(inserted.inserted_id)
-
-        results.append(RecommendationResult(
-            route_id=route_id_str,
-            name=doc["name"],
-            description=doc["description"],
-            distance=route.distance,
-            estimated_time=round(route.duration),
-            elevation=req.preferences.elevation_preference,
-            shade=req.preferences.shade_preference,
-            air_quality=req.preferences.air_quality_preference,
-            cyclist_type=req.preferences.cyclist_type,
-            review_count=0,
-            rating=0.0,
-            points_of_interest_visited=[
-                POIVisited(name=p["name"], description=p["description"], lat=p["lat"], lng=p["lng"])
-                for p in pois
-            ],
-        ))
-        shade_score = compute_shade_score(route.path)
-        poi_waypoints_per_result.append(route.poi_waypoints)
-        ascents_per_result.append(route.total_ascent_m)
-        shade_scores_per_result.append(shade_score)
+    # Fallback: if all combos failed or were filtered, try a no-POI route
+    if not results:
+        no_poi_combo = {k: False for k in _POI_COMBOS[0]}
+        combo_result = await _try_combo(no_poi_combo, req, places_db, mongo, seen_fingerprints)
+        if combo_result:
+            results.append(combo_result.result)
+            poi_waypoints_per_result.append(combo_result.poi_waypoints)
+            ascents_per_result.append(combo_result.ascent_m)
+            shade_scores_per_result.append(combo_result.shade_score)
 
     # 3. Rank results by score (highest first)
     ranked = sorted(
