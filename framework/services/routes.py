@@ -303,7 +303,19 @@ async def get_recommendations(
     ascents_per_result = []
     shade_scores_per_result = []
 
-    for combo in _POI_COMBOS[:req.limit]:
+    eligible_combos = [
+        c for c in _POI_COMBOS
+        if (c["include_hawker_centres"] and poi_prefs.allow_hawker_center)
+        or (c["include_parks"] and poi_prefs.allow_park)
+        or (c["include_historic_sites"] and poi_prefs.allow_historic_site)
+        or (c["include_tourist_attractions"] and poi_prefs.allow_tourist_attraction)
+    ]
+    if not eligible_combos:
+        eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
+
+    logger.info("Eligible combos (%d): %s", len(eligible_combos), eligible_combos)
+
+    for combo in eligible_combos[:req.limit]:
         route_req = RouteRequest(
             origin=Point(lat=req.start_point.lat, lng=req.start_point.lng),
             destination=Point(lat=req.end_point.lat, lng=req.end_point.lng),
