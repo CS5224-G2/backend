@@ -446,6 +446,19 @@ class ChangePasswordResponse(BaseModel):
     updated_at: str
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
 class PrivacyControls(BaseModel):
     third_party_ads_opt_out: bool
     data_improvement_opt_out: bool

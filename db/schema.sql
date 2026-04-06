@@ -194,3 +194,14 @@ CREATE TABLE user_route_ratings (
 );
 
 CREATE INDEX user_route_ratings_route_id_idx ON user_route_ratings(route_id);
+
+CREATE TABLE password_reset_tokens (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash  TEXT NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    used_at     TIMESTAMPTZ   -- NULL = unused; set when consumed
+);
+
+CREATE INDEX password_reset_tokens_token_hash_idx ON password_reset_tokens(token_hash);
