@@ -5,7 +5,7 @@ from slowapi.util import get_remote_address
 from ..config import settings
 from ..database import PlacesDB
 from ..models import User
-from ..schemas import AuthResponse, AuthUserResponse, LoginRequest, RegisterRequest, TokenRefreshRequest
+from ..schemas import AuthResponse, AuthUserResponse, ForgotPasswordRequest, LoginRequest, MessageResponse, RegisterRequest, ResetPasswordRequest, TokenRefreshRequest
 from ..services import auth as auth_service
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -62,3 +62,15 @@ async def refresh_token(body: TokenRefreshRequest, db: PlacesDB) -> AuthResponse
     )
     access_token, expires_in = auth_service.create_access_token(str(user.id), user.role.value)
     return _build_auth_response(user, access_token, new_refresh_token, expires_in)
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+async def forgot_password(body: ForgotPasswordRequest, db: PlacesDB) -> MessageResponse:
+    await auth_service.request_password_reset(db, body.email)
+    return MessageResponse(message=f"If an account exists, a reset link has been sent. The link will expire in {settings.PASSWORD_RESET_EXPIRE_MINUTES} minutes.")
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+async def reset_password(body: ResetPasswordRequest, db: PlacesDB) -> MessageResponse:
+    await auth_service.reset_password(db, body.token, body.new_password)
+    return MessageResponse(message="Password reset successful")
