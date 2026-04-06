@@ -83,3 +83,12 @@ class ExternalClient:
 
 # Singleton for internal calls — import this wherever needed
 service_client = ServiceClient()
+
+# Singleton for SendGrid email delivery
+sendgrid_client = ExternalClient(
+    base_url="https://api.sendgrid.com",
+    headers={
+        "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+        "Content-Type": "application/json",
+    },
+)

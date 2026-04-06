@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
-from .clients.http import service_client
+from .clients.http import service_client, sendgrid_client
 from .config import settings
 from .database import close_engines, init_engines
 from .routers import hawker, historic_sites, parks, tourist_attractions, route_suggestion, routes, weather
@@ -28,6 +28,7 @@ async def lifespan(_app: FastAPI):
     # Shutdown
     await close_engines()
     await service_client.aclose()
+    await sendgrid_client.aclose()
 
 
 def _load_osm_data():
