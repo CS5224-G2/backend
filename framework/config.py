@@ -61,6 +61,11 @@ class Settings(BaseSettings):
             return json.loads(v)
         return v
 
+    # --- Email (SendGrid) ---
+    SENDGRID_API_KEY: str = ""
+    SENDGRID_FROM_EMAIL: str = "cyclelink.noreply@gmail.com"
+    PASSWORD_RESET_EXPIRE_MINUTES: int = 15
+
     # --- AWS ---
     AWS_REGION: str = "ap-southeast-1"
     S3_BUCKET_NAME: str = ""
