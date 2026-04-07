@@ -109,19 +109,19 @@ variable "sendgrid_from_email" {
 variable "task_cpu" {
   type        = string
   description = "Fargate task CPU units (256 = 0.25 vCPU)"
-  default     = "512"
+  default     = "256"
 }
 
 variable "task_memory" {
   type        = string
   description = "Fargate task memory in MiB"
-  default     = "1024"
+  default     = "512"
 }
 
 variable "bike_route_task_cpu" {
   type        = string
   description = "Fargate task CPU units for the bike-route service"
-  default     = "512"
+  default     = "256"
 }
 
 variable "bike_route_task_memory" {
