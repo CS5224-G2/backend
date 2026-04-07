@@ -279,6 +279,37 @@ resource "aws_ecs_cluster" "main" {
 }
 
 ############################################################
+# Service Discovery (Cloud Map)
+############################################################
+resource "aws_service_discovery_private_dns_namespace" "main" {
+  name        = "cyclelink.local"
+  vpc         = var.vpc_id
+  description = "Internal service discovery for CycleLink"
+}
+
+resource "aws_service_discovery_service" "backend" {
+  name = "backend"
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+}
+
+resource "aws_service_discovery_service" "bike_route" {
+  name = "bike-route"
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.main.id
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+  }
+}
+
+############################################################
 # ECS Task Definition
 ############################################################
 resource "aws_ecs_task_definition" "backend" {
@@ -306,7 +337,7 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "PLACES_DB_URL",   value = var.places_db_url },
       { name = "SECRET_KEY",      value = var.secret_key },
       { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
-      { name = "SERVICE_URLS",    value = var.service_urls },
+      { name = "SERVICE_URLS",    value = jsonencode({ "bike-route" = "http://bike-route.cyclelink.local:8000" }) },
       { name = "MONGODB_URL",     value = var.mongodb_url },
       { name = "REDIS_HOST",      value = var.redis_host },
       { name = "REDIS_PORT",      value = tostring(var.redis_port) },
@@ -316,6 +347,8 @@ resource "aws_ecs_task_definition" "backend" {
       { name = "AWS_REGION",       value = var.aws_region },
       { name = "S3_BUCKET_NAME",   value = var.s3_bucket_name },
       { name = "CDN_BASE_URL",     value = var.cdn_base_url },
+      { name = "SENDGRID_API_KEY", value = var.sendgrid_api_key },
+      { name = "SENDGRID_FROM_EMAIL", value = var.sendgrid_from_email },
     ]
 
     logConfiguration = {
@@ -344,6 +377,10 @@ resource "aws_ecs_service" "backend" {
     subnets          = var.subnet_ids
     security_groups  = [var.security_group_id]
     assign_public_ip = true
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.backend.arn
   }
 
   load_balancer {
@@ -384,13 +421,12 @@ resource "aws_ecs_task_definition" "bike_route" {
       { name = "PLACES_DB_URL",   value = var.places_db_url },
       { name = "SECRET_KEY",      value = var.secret_key },
       { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
-      { name = "SERVICE_URLS",    value = var.service_urls },
+      { name = "SERVICE_URLS",    value = jsonencode({ "bike-route" = "http://bike-route.cyclelink.local:8000" }) },
       { name = "MONGODB_URL",     value = var.mongodb_url },
       { name = "S3_BUCKET_NAME",  value = var.s3_bucket_name },
       { name = "AWS_REGION",      value = var.aws_region },
-      { name = "CDN_BASE_URL",    value = var.cdn_base_url },
-      { name = "SENDGRID_API_KEY", value = var.sendgrid_api_key },
-      { name = "SENDGRID_FROM_EMAIL", value = var.sendgrid_from_email },
+      { name = "CDN_BASE_URL",    value = var.cdn_base_url }
+      
     ]
 
     logConfiguration = {
@@ -416,6 +452,10 @@ resource "aws_ecs_service" "bike_route" {
     subnets          = var.subnet_ids
     security_groups  = [var.security_group_id]
     assign_public_ip = true
+  }
+
+  service_registries {
+    registry_arn = aws_service_discovery_service.bike_route.arn
   }
 
   load_balancer {
