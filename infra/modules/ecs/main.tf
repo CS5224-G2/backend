@@ -521,7 +521,7 @@ resource "aws_appautoscaling_policy" "bike_route_memory" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageMemoryUtilization"
     }
-    target_value       = 60.0
+    target_value       = 80.0
     scale_in_cooldown  = 300
     scale_out_cooldown = 60
   }
