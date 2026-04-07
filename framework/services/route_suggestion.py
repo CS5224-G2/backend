@@ -1,9 +1,11 @@
 import asyncio
+import boto3
 import functools
 import logging
 import math
 import os
 import tempfile
+import time
 import uuid
 import xml.etree.ElementTree as ET
 
@@ -255,6 +257,22 @@ async def _recommend_via_service(
     )
 
 
+def _emit_route_computation_time(elapsed_ms: float) -> None:
+    """Emit RouteComputationTime custom metric to CloudWatch (best-effort, non-blocking)."""
+    try:
+        cw = boto3.client("cloudwatch", region_name=settings.AWS_REGION)
+        cw.put_metric_data(
+            Namespace="CycleLink/RouteService",
+            MetricData=[{
+                "MetricName": "RouteComputationTime",
+                "Value": elapsed_ms,
+                "Unit": "Milliseconds",
+            }],
+        )
+    except Exception as e:
+        logger.warning("Failed to emit RouteComputationTime metric: %s", e)
+
+
 async def _recommend_in_process(
     req: RouteRequest, poi_waypoints: list, extra_points: list[Point]
 ) -> RouteResponse:
@@ -262,6 +280,8 @@ async def _recommend_in_process(
     Compute route in-process using the graph already loaded in memory.
     Used by the bike-route service which owns the graph and tree data.
     """
+    t_start = time.monotonic()
+
     if settings.SAVE_GPX:
         os.makedirs(_GPX_DIR, exist_ok=True)
         output_path = os.path.join(_GPX_DIR, f"route_{uuid.uuid4().hex}.gpx")
@@ -270,6 +290,10 @@ async def _recommend_in_process(
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "route.gpx")
             path = await _compute_route_in_process(req, output_path, extra_points)
+
+    elapsed_ms = (time.monotonic() - t_start) * 1000
+    logger.info("Route computation completed in %.0f ms", elapsed_ms)
+    asyncio.get_event_loop().run_in_executor(None, _emit_route_computation_time, elapsed_ms)
 
     distance_m = _compute_path_distance_m(path)
     duration_min = (distance_m / 1000) / _AVG_CYCLING_SPEED_KMH * 60
