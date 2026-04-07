@@ -40,3 +40,8 @@ async def get_infrastructure_logs(admin: AdminUser) -> dict:
 @router.get("/infrastructure-health")
 async def get_infrastructure_health(admin: AdminUser, places_db: PlacesDB, mongo_db: MongoDB) -> dict:
     return await health_service.get_system_health(places_db, mongo_db)
+
+
+@router.get("/routing-quality-metrics")
+async def get_routing_quality_metrics(admin: AdminUser, db: PlacesDB, mongo_db: MongoDB) -> dict:
+    return await admin_service.get_routing_quality_metrics(db, mongo_db)
