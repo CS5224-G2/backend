@@ -27,7 +27,7 @@ FORBIDDEN_HIGHWAYS = {"motorway", "motorway_link", "trunk", "trunk_link", "path"
 # allow these surfaces when looking for shortest path
 ALLOWED_SURFACES = ["asphalt", "paved", "concrete", "gravel", "compacted", "ground"]
 # filename of the local sqlite file for storing elevation data
-CACHE_DB = Path("elevation_cache.sqlite")
+CACHE_DB = Path("/tmp/elevation_cache.sqlite")
 # improves quality of the routing. If the output looks strange, try to set this to False
 use_virtual_waypoints = True
 # grow map region by `buffer` degrees in order to improve routing capabilities

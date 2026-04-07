@@ -421,7 +421,6 @@ resource "aws_ecs_task_definition" "bike_route" {
       { name = "PLACES_DB_URL",   value = var.places_db_url },
       { name = "SECRET_KEY",      value = var.secret_key },
       { name = "ALLOWED_ORIGINS", value = jsonencode([for o in split(",", var.allowed_origins) : trimspace(o) if trimspace(o) != ""]) },
-      { name = "SERVICE_URLS",    value = jsonencode({ "bike-route" = "http://bike-route.cyclelink.local:8000" }) },
       { name = "MONGODB_URL",     value = var.mongodb_url },
       { name = "S3_BUCKET_NAME",  value = var.s3_bucket_name },
       { name = "AWS_REGION",      value = var.aws_region },
