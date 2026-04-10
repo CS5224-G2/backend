@@ -442,6 +442,7 @@ async def _try_combo(
         "review_count": 0,
         "rating": 0.0,
         "created_at": datetime.now(timezone.utc),
+        **({"computation_time_ms": route.computation_time_ms} if route.computation_time_ms is not None else {}),
     }
 
     inserted = await mongo[_GENERATED_COLLECTION].insert_one(doc)

@@ -254,6 +254,7 @@ async def _recommend_via_service(
         duration=data["duration"],
         total_ascent_m=data.get("total_ascent_m", 0.0),
         shade_score=data.get("shade_score", 0.0),
+        computation_time_ms=data.get("computation_time_ms"),
     )
 
 
@@ -314,6 +315,7 @@ async def _recommend_in_process(
         duration=round(duration_min),
         total_ascent_m=round(total_ascent_m, 1),
         shade_score=shade_score,
+        computation_time_ms=round(elapsed_ms, 1),
     )
 
 

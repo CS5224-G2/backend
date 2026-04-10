@@ -124,6 +124,7 @@ class RouteResponse(BaseModel):
     duration: float
     total_ascent_m: float = 0.0
     shade_score: float = 0.0
+    computation_time_ms: float | None = None
 
 
 # ------------------------------------------------------------------
