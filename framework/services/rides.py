@@ -25,6 +25,8 @@ _PRECOMPUTED_COLLECTION = "precomputed-routes"
 _GENERATED_COLLECTION = "generated-routes"
 _RIDES_COLLECTION = "user-rides"
 
+_SGT = timezone(timedelta(hours=8))
+
 _WEEK_DAYS = [
     ("mon", "Mon"),
     ("tue", "Tue"),
@@ -94,16 +96,16 @@ async def create_ride(
     }
     result = await mongo[_RIDES_COLLECTION].insert_one(doc)
 
-    end_utc = body.end_time.astimezone(timezone.utc)
+    end_sgt = body.end_time.astimezone(_SGT)
 
     return CreateRideResponse(
         ride_id=str(result.inserted_id),
         route_id=body.route_id,
         route_name=route_name,
-        completion_date=_fmt_date(end_utc),
-        completion_time=_fmt_time(end_utc),
-        start_time=body.start_time.isoformat(),
-        end_time=body.end_time.isoformat(),
+        completion_date=_fmt_date(end_sgt),
+        completion_time=_fmt_time(end_sgt),
+        start_time=body.start_time.astimezone(timezone.utc).isoformat(),
+        end_time=body.end_time.astimezone(timezone.utc).isoformat(),
         total_time=total_time,
         distance=body.distance,
         avg_speed=body.avg_speed,
@@ -138,16 +140,16 @@ async def get_ride_history(
     items = []
     for ride in rides:
         rating_entry = rating_map.get(ride["route_id"])
-        end_utc = ride["end_time"].replace(tzinfo=timezone.utc)
-        start_utc = ride["start_time"].replace(tzinfo=timezone.utc)
+        end_sgt = ride["end_time"].replace(tzinfo=timezone.utc).astimezone(_SGT)
+        start_sgt = ride["start_time"].replace(tzinfo=timezone.utc).astimezone(_SGT)
         items.append(RideHistoryItem(
             ride_id=str(ride["_id"]),
             route_id=ride["route_id"],
             route_name=ride["route_name"],
-            completion_date=_fmt_date(end_utc),
-            completion_time=_fmt_time(end_utc),
-            start_time=_fmt_time(start_utc),
-            end_time=_fmt_time(end_utc),
+            completion_date=_fmt_date(end_sgt),
+            completion_time=_fmt_time(end_sgt),
+            start_time=_fmt_time(start_sgt),
+            end_time=_fmt_time(end_sgt),
             total_time=ride["total_time"],
             distance=ride["distance"],
             avg_speed=ride["avg_speed"],
@@ -187,17 +189,17 @@ async def get_ride_by_id(
 
     route_detail = await get_route_by_id(mongo, ride["route_id"])
 
-    end_utc = ride["end_time"].replace(tzinfo=timezone.utc)
-    start_utc = ride["start_time"].replace(tzinfo=timezone.utc)
+    end_sgt = ride["end_time"].replace(tzinfo=timezone.utc).astimezone(_SGT)
+    start_sgt = ride["start_time"].replace(tzinfo=timezone.utc).astimezone(_SGT)
 
     return RideDetailResponse(
         ride_id=str(ride["_id"]),
         route_id=ride["route_id"],
         route_name=ride["route_name"],
-        completion_date=_fmt_date(end_utc),
-        completion_time=_fmt_time(end_utc),
-        start_time=_fmt_time(start_utc),
-        end_time=_fmt_time(end_utc),
+        completion_date=_fmt_date(end_sgt),
+        completion_time=_fmt_time(end_sgt),
+        start_time=_fmt_time(start_sgt),
+        end_time=_fmt_time(end_sgt),
         total_time=ride["total_time"],
         distance=ride["distance"],
         avg_speed=ride["avg_speed"],
@@ -215,15 +217,17 @@ async def get_distance_stats(
     user_id: uuid.UUID,
     period: str,
 ) -> list[DistanceStat]:
-    now = datetime.now(timezone.utc)
+    now_sgt = datetime.now(_SGT)
 
     if period == "week":
-        monday = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
-        sunday = monday + timedelta(days=7)
-        window_start, window_end = monday, sunday
+        monday_sgt = (now_sgt - timedelta(days=now_sgt.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+        sunday_sgt = monday_sgt + timedelta(days=7)
+        window_start = monday_sgt.astimezone(timezone.utc)
+        window_end = sunday_sgt.astimezone(timezone.utc)
     else:  # month
-        window_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        window_end = now + timedelta(days=1)
+        month_start_sgt = now_sgt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        window_start = month_start_sgt.astimezone(timezone.utc)
+        window_end = (now_sgt + timedelta(days=1)).astimezone(timezone.utc)
 
     cursor = mongo[_RIDES_COLLECTION].find({
         "user_id": str(user_id),
@@ -234,7 +238,7 @@ async def get_distance_stats(
     if period == "week":
         buckets: dict[int, float] = {i: 0.0 for i in range(7)}
         for ride in rides:
-            day_idx = ride["end_time"].replace(tzinfo=timezone.utc).weekday()
+            day_idx = ride["end_time"].replace(tzinfo=timezone.utc).astimezone(_SGT).weekday()
             buckets[day_idx] = round(buckets[day_idx] + ride["distance"], 2)
         return [
             DistanceStat(period_id=pid, label=label, distance=buckets[i])
@@ -243,7 +247,7 @@ async def get_distance_stats(
     else:
         buckets_month: dict[int, float] = {1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0}
         for ride in rides:
-            day = ride["end_time"].replace(tzinfo=timezone.utc).day
+            day = ride["end_time"].replace(tzinfo=timezone.utc).astimezone(_SGT).day
             week_num = min(4, (day - 1) // 7 + 1)
             buckets_month[week_num] = round(buckets_month[week_num] + ride["distance"], 2)
         return [

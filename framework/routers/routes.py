@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Path, Query, Depends, status
 
 from ..database import MongoDB, PlacesDB
 from ..dependencies import CurrentUser
-from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary, SaveRouteRequest, SaveRouteResponse
+from ..schemas import CyclistType, RecommendationResult, RecommendationsRequest, RouteDetail, RouteSummary, SaveRouteRequest, SaveRouteResponse, SavedRoutesResponse
 from ..services import routes as routes_service
 from ..utils.cache import cdn_cache
 
@@ -39,6 +39,25 @@ async def save_route(
         route_id=record.route_id,
         saved_at=record.saved_at.isoformat(),
     )
+
+
+@router.get("/saved", response_model=SavedRoutesResponse)
+async def get_saved_routes(
+    current_user: CurrentUser,
+    db: PlacesDB,
+    mongo: MongoDB,
+):
+    return await routes_service.get_saved_routes(db, mongo, current_user.id)
+
+
+@router.delete("/saved/{saved_route_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_saved_route(
+    saved_route_id: str,
+    current_user: CurrentUser,
+    db: PlacesDB,
+    mongo: MongoDB,
+):
+    await routes_service.delete_saved_route(db, mongo, current_user.id, saved_route_id)
 
 
 @router.post("/recommendations", response_model=list[RecommendationResult])

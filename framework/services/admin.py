@@ -75,10 +75,36 @@ async def get_routing_quality_metrics(db: AsyncSession, mongo: AsyncDatabase) ->
     # MongoDB: total completed rides
     total_rides = await mongo["user-rides"].count_documents({})
 
+    # MongoDB: route computation time stats from generated routes
+    pipeline = [
+        {"$match": {"computation_time_ms": {"$exists": True}}},
+        {"$group": {
+            "_id": None,
+            "avg": {"$avg": "$computation_time_ms"},
+            "min": {"$min": "$computation_time_ms"},
+            "max": {"$max": "$computation_time_ms"},
+            "count": {"$sum": 1},
+        }},
+    ]
+    stats_result = await mongo["generated-routes"].aggregate(pipeline).to_list(length=1)
+    if stats_result:
+        s = stats_result[0]
+        avg_computation_ms = round(s["avg"], 1)
+        min_computation_ms = round(s["min"], 1)
+        max_computation_ms = round(s["max"], 1)
+        total_generated_routes = s["count"]
+    else:
+        avg_computation_ms = min_computation_ms = max_computation_ms = None
+        total_generated_routes = 0
+
     return {
         "total_reviews": total_reviews,
         "overall_avg_rating": overall_avg_rating,
         "total_rides_logged": total_rides,
         "top_rated_routes": top_rated,
         "most_reviewed_routes": most_reviewed,
+        "avg_route_computation_ms": avg_computation_ms,
+        "min_route_computation_ms": min_computation_ms,
+        "max_route_computation_ms": max_computation_ms,
+        "total_generated_routes": total_generated_routes,
     }
