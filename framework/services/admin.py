@@ -76,19 +76,23 @@ async def get_routing_quality_metrics(db: AsyncSession, mongo: AsyncDatabase) ->
     total_rides = await mongo["user-rides"].count_documents({})
 
     # MongoDB: route computation time stats from generated routes
+    _ct_field = "$computation_time_ms"
     pipeline = [
         {"$match": {"computation_time_ms": {"$exists": True}}},
         {"$group": {
             "_id": None,
-            "avg": {"$avg": "$computation_time_ms"},
-            "min": {"$min": "$computation_time_ms"},
-            "max": {"$max": "$computation_time_ms"},
+            "avg": {"$avg": _ct_field},
+            "min": {"$min": _ct_field},
+            "max": {"$max": _ct_field},
             "count": {"$sum": 1},
         }},
     ]
-    stats_result = await mongo["generated-routes"].aggregate(pipeline).to_list(length=1)
+    stats_result = None
+    async for doc in await mongo["generated-routes"].aggregate(pipeline):
+        stats_result = doc
+        break
     if stats_result:
-        s = stats_result[0]
+        s = stats_result
         avg_computation_ms = round(s["avg"], 1)
         min_computation_ms = round(s["min"], 1)
         max_computation_ms = round(s["max"], 1)
