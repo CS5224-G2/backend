@@ -330,6 +330,29 @@ class SaveRouteResponse(BaseModel):
     status: str = "saved"
 
 
+class SavedRouteItem(BaseModel):
+    """A single saved route as returned by GET /routes/saved."""
+    saved_route_id: str
+    route_id: str
+    name: str
+    description: str | None = None
+    saved_at: str                       # ISO 8601 timestamp
+    distance: float
+    estimated_time: int
+    elevation: ElevationPreference
+    shade: ShadePreference
+    air_quality: AirQualityPreference
+    cyclist_type: CyclistType
+    checkpoints: list[Checkpoint] = []
+    points_of_interest_visited: list[POIVisited] = []
+    route_path: list[LatLng] = []
+
+
+class SavedRoutesResponse(BaseModel):
+    saved_routes: list[SavedRouteItem]
+    total: int
+
+
 # ------------------------------------------------------------------
 # Auth schemas
 # ------------------------------------------------------------------

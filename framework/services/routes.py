@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models import UserSavedRoute
 from ..schemas import (
     AirQualityPreference,
+    Checkpoint,
     CyclistType,
     ElevationPreference,
     LatLng,
@@ -30,6 +31,8 @@ from ..schemas import (
     RouteRequest,
     RouteSummary,
     SaveRouteRequest,
+    SavedRouteItem,
+    SavedRoutesResponse,
     ShadePreference,
     Point,
 )
@@ -47,9 +50,19 @@ async def save_route(
     body: SaveRouteRequest,
 ) -> UserSavedRoute:
     """
-    Saves a route reference for a user. Raises 409 if already saved.
+    Saves a route reference for a user. Raises 409 if already saved or the 3-route cap is reached.
     The route data itself lives in MongoDB, this table stores the user → route_id link.
     """
+    # Enforce 3-route cap
+    count_result = await db.execute(
+        select(UserSavedRoute).where(UserSavedRoute.user_id == user_id)
+    )
+    if len(count_result.scalars().all()) >= 3:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Saved routes limit reached",
+        )
+
     record = UserSavedRoute(user_id=user_id, route_id=body.route_id)
     db.add(record)
     try:
@@ -89,6 +102,79 @@ async def get_saved_route_count(db: AsyncSession, user_id: uuid.UUID) -> int:
         select(UserSavedRoute).where(UserSavedRoute.user_id == user_id)
     )
     return len(result.scalars().all())
+
+
+async def delete_saved_route(
+    db: AsyncSession,
+    mongo: AsyncDatabase,
+    user_id: uuid.UUID,
+    saved_route_id: str,
+) -> None:
+    """Deletes a saved route belonging to the user. Raises 404 if not found or not owned by user."""
+    try:
+        record_id = uuid.UUID(saved_route_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Saved route not found")
+
+    result = await db.execute(
+        select(UserSavedRoute).where(
+            UserSavedRoute.id == record_id,
+            UserSavedRoute.user_id == user_id,
+        )
+    )
+    record = result.scalar_one_or_none()
+    if record is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Saved route not found")
+
+    await mongo["saved-routes"].delete_one({"_id": saved_route_id})
+    await db.delete(record)
+    await db.commit()
+
+
+async def get_saved_routes(
+    db: AsyncSession,
+    mongo: AsyncDatabase,
+    user_id: uuid.UUID,
+) -> SavedRoutesResponse:
+    """Returns all saved routes for a user (max 3), ordered by saved_at descending."""
+    rows = (await db.execute(
+        select(UserSavedRoute)
+        .where(UserSavedRoute.user_id == user_id)
+        .order_by(UserSavedRoute.saved_at.desc())
+    )).scalars().all()
+
+    if not rows:
+        return SavedRoutesResponse(saved_routes=[], total=0)
+
+    ids = [str(row.id) for row in rows]
+    docs = {
+        doc["_id"]: doc
+        async for doc in mongo["saved-routes"].find({"_id": {"$in": ids}})
+    }
+
+    items = []
+    for row in rows:
+        doc = docs.get(str(row.id))
+        if doc is None:
+            continue
+        items.append(SavedRouteItem(
+            saved_route_id=str(row.id),
+            route_id=doc["route_id"],
+            name=doc["name"],
+            description=doc.get("description"),
+            saved_at=doc["saved_at"],
+            distance=doc["distance"],
+            estimated_time=doc["estimated_time"],
+            elevation=doc["elevation"],
+            shade=doc["shade"],
+            air_quality=doc["air_quality"],
+            cyclist_type=doc["cyclist_type"],
+            checkpoints=[Checkpoint(**c) for c in doc.get("checkpoints", [])],
+            points_of_interest_visited=[POIVisited(**p) for p in doc.get("points_of_interest_visited", [])],
+            route_path=[LatLng(**pt) for pt in doc.get("route_path", [])],
+        ))
+
+    return SavedRoutesResponse(saved_routes=items, total=len(items))
 
 
 def _doc_to_route_summary(doc: dict) -> RouteSummary:
