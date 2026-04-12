@@ -66,7 +66,8 @@ def compute_route(start, end, waypoints, output_gpx):
             G = graph_manager.get_subgraph(n, s, e, w)
         else:
             logger.warning("No pre-loaded graph — downloading from Overpass API (slow)")
-            G = ox.graph_from_bbox((w, s, e, n), network_type="drive", simplify=True)
+            # we use a merged graph but we have no choice if no graph was loaded
+            G = ox.graph_from_bbox((w, s, e, n), network_type="bike", simplify=True)
         initial_edges = len(G.edges)
         
         rem = [(u, v, k) for u, v, k, d in G.edges(keys=True, data=True) if not is_allowed_road(d)]

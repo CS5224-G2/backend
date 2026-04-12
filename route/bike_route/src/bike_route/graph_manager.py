@@ -33,6 +33,12 @@ _node_ids_arr: np.ndarray | None = None  # shape (N,) — graph node IDs
 _node_lats: np.ndarray | None = None     # shape (N,), float64 — node latitudes  (d["y"])
 _node_lngs: np.ndarray | None = None     # shape (N,), float64 — node longitudes (d["x"])
 
+# Edge spatial index — avoids rebuilding a GeoDataFrame per request (set once on startup)
+# Stores edge midpoints so nearest_edge() is a single KDTree query instead of
+# graph_to_gdfs() + STRtree rebuild on every call.
+_edge_kdtree: KDTree | None = None
+_edge_records: list | None = None  # parallel list of (u, v, key) tuples
+
 S3_KEY_DEFAULT = "osm-graphs/singapore_bike_graph.graphml"
 TREES_S3_KEY_DEFAULT = "osm-graphs/singapore_trees.json"
 
@@ -50,6 +56,50 @@ def _build_node_index():
     _node_lats    = np.array([nd[1] for nd in node_data], dtype=np.float64)
     _node_lngs    = np.array([nd[2] for nd in node_data], dtype=np.float64)
     logger.info(f"Node spatial index built: {len(_node_ids_arr):,} nodes")
+
+
+def _build_edge_index():
+    """Build a KDTree over midpoints of *allowed* edges in the *main* component.
+
+    Only indexing the main weakly-connected component of the allowed subgraph
+    guarantees that nearest_edge_in_subgraph() never returns an edge that sits in
+    a small disconnected island — which was causing 'no path' regressions when
+    bike-graph path edges snapped into isolated fragments of large subgraphs.
+    """
+    global _edge_kdtree, _edge_records
+    from bike_route.utils import is_allowed_road  # avoid circular import at module level
+
+    node_coords = {n: (d["y"], d["x"]) for n, d in _graph.nodes(data=True)}
+
+    # Build set of allowed edges and their induced node set
+    allowed_edge_keys = [
+        (u, v, k)
+        for u, v, k, d in _graph.edges(keys=True, data=True)
+        if is_allowed_road(d)
+    ]
+    allowed_nodes = {n for u, v, _ in allowed_edge_keys for n in (u, v)}
+    allowed_subgraph = _graph.subgraph(allowed_nodes)
+
+    # Find the main weakly-connected component
+    main_comp = max(nx.weakly_connected_components(allowed_subgraph), key=len)
+    logger.info(
+        f"Allowed edge index: {len(allowed_edge_keys):,} allowed edges, "
+        f"main component has {len(main_comp):,} nodes"
+    )
+
+    records = []
+    midpoints = []
+    for u, v, k in allowed_edge_keys:
+        if u not in main_comp or v not in main_comp:
+            continue
+        u_lat, u_lng = node_coords[u]
+        v_lat, v_lng = node_coords[v]
+        midpoints.append(((u_lat + v_lat) / 2, (u_lng + v_lng) / 2))
+        records.append((u, v, k))
+
+    _edge_kdtree = KDTree(np.array(midpoints, dtype=np.float64))
+    _edge_records = records
+    logger.info(f"Edge spatial index built: {len(records):,} edges in main component")
 
 
 def load_graph_from_s3(bucket: str, key: str | None = None):
@@ -75,6 +125,7 @@ def load_graph_from_s3(bucket: str, key: str | None = None):
         f"Graph loaded: {len(_graph.nodes):,} nodes, {len(_graph.edges):,} edges"
     )
     _build_node_index()
+    _build_edge_index()
 
 
 def load_graph_from_file(path: str):
@@ -87,6 +138,7 @@ def load_graph_from_file(path: str):
         f"Graph loaded: {len(_graph.nodes):,} nodes, {len(_graph.edges):,} edges"
     )
     _build_node_index()
+    _build_edge_index()
 
 
 # ── Tree index ─────────────────────────────────────────────────────────
@@ -209,6 +261,18 @@ def get_elevations_for_path(path: list[tuple[float, float]]) -> list[float]:
         ele = _graph.nodes[node_id].get("elevation", 0.0)
         elevations.append(float(ele) if ele is not None else 0.0)
     return elevations
+
+
+def nearest_edge(lat: float, lng: float) -> tuple | None:
+    """Return the (u, v, key) of the nearest edge in the full graph to (lat, lng).
+
+    Uses the pre-built midpoint KDTree — O(log N) per query, no GeoDataFrame
+    allocation.  Returns None if the edge index has not been built.
+    """
+    if _edge_kdtree is None:
+        return None
+    _, idx = _edge_kdtree.query([lat, lng])
+    return _edge_records[idx]
 
 
 def is_loaded() -> bool:

@@ -1,7 +1,10 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+# Force in-process routing before settings are loaded.
+os.environ.setdefault("BIKE_ROUTE_API_STANDALONE", "true")
 from framework.config import settings
 from framework.database import close_engines, init_engines
 from framework.routers import route_suggestion, routes

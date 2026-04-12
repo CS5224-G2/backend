@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 # -------------
 ox.settings.log_console = True # logging
 # exclude these highways when looking for the shortest path
-FORBIDDEN_HIGHWAYS = {"motorway", "motorway_link", "trunk", "trunk_link", "path", "track", "footway", "steps"}
+FORBIDDEN_HIGHWAYS = {"motorway", "motorway_link", "trunk", "trunk_link", "footway", "steps"}
 # allow these surfaces when looking for shortest path
 ALLOWED_SURFACES = ["asphalt", "paved", "concrete", "gravel", "compacted", "ground"]
 # filename of the local sqlite file for storing elevation data
@@ -114,11 +114,30 @@ def add_waypoint_node(G, lat, lon):
     position of start, end or waypoint. It improves the precision
     of the final route.
     '''
-    u, v, key = ox.distance.nearest_edges(G, lon, lat)
+    from . import graph_manager
+    _ne = graph_manager.nearest_edge(lat, lon)
+    # Use pre-built full-graph edge index when available
+    # Fall back to osmnx per-subgraph lookup if the index isn't ready or the
+    # nearest full-graph edge doesn't appear in this subgraph.
+    if _ne is not None and G.has_edge(_ne[0], _ne[1], _ne[2]):
+        u, v, key = _ne
+    else:
+        u, v, key = ox.distance.nearest_edges(G, lon, lat)
     data = G.get_edge_data(u, v, key)
     geom = data.get("geometry", LineString([(G.nodes[u]['x'], G.nodes[u]['y']), (G.nodes[v]['x'], G.nodes[v]['y'])]))
     
     cut_dist = geom.project(Point(lon, lat))
+
+    # If the projected point falls at (or beyond) an endpoint, return that node
+    # directly to avoid creating a degenerate zero-length substring geometry.
+    _EPS = 1e-8
+    if cut_dist <= _EPS:
+        logger.debug(f"Waypoint ({lat}, {lon}) snaps to start node {u}, skipping virtual node")
+        return u
+    if cut_dist >= geom.length - _EPS:
+        logger.debug(f"Waypoint ({lat}, {lon}) snaps to end node {v}, skipping virtual node")
+        return v
+
     point_on_line = geom.interpolate(cut_dist)
     
     node_id = max(G.nodes) + random.randint(1000, 9999)

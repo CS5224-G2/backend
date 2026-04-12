@@ -37,12 +37,44 @@ S3_KEY_PREFIX = "osm-graphs"
 
 
 def download_singapore_graph(output_path: str, include_elevation: bool = False) -> str:
-    """Download the full Singapore drive-type road network and save as .graphml."""
+    """Download the Singapore road + cycling network and save as .graphml.
+
+    Composes the drive graph (roads cyclists share with cars) and the bike graph
+    (dedicated cycleways, Park Connector Network paths, etc.) so that both the
+    road backbone and cycling-specific infrastructure are present.
+    """
     logger.info("Downloading Singapore OSM graph via Overpass API …")
     logger.info("(This may take a few minutes on the first run.)")
 
-    G = ox.graph_from_place("Singapore", network_type="drive", simplify=True)
-    logger.info(f"Downloaded graph: {len(G.nodes):,} nodes, {len(G.edges):,} edges")
+    logger.info("Fetching drive network …")
+    G_drive = ox.graph_from_place("Singapore", network_type="drive", simplify=True)
+    logger.info(f"  drive: {len(G_drive.nodes):,} nodes, {len(G_drive.edges):,} edges")
+
+    logger.info("Fetching bike network …")
+    G_bike = ox.graph_from_place("Singapore", network_type="bike", simplify=True)
+    logger.info(f"  bike:  {len(G_bike.nodes):,} nodes, {len(G_bike.edges):,} edges")
+
+    # Only graft cycling-specific edges from the bike graph onto the drive graph.
+    # We want the infrastructure that is missing from the drive graph: dedicated cycleways, paths (PCN), and tracks.
+    _CYCLING_ONLY = {"cycleway", "path", "track"}
+
+    logger.info("Grafting cycling-specific edges from bike network onto drive graph …")
+    G = G_drive.copy()
+    added_edges = 0
+    for u, v, k, data in G_bike.edges(keys=True, data=True):
+        hw = data.get("highway", "")
+        if isinstance(hw, list):
+            hw = hw[0]
+        if hw not in _CYCLING_ONLY:
+            continue
+        # Copy endpoint nodes if not already present
+        for node in (u, v):
+            if node not in G:
+                G.add_node(node, **G_bike.nodes[node])
+        G.add_edge(u, v, key=k, **data)
+        added_edges += 1
+    logger.info(f"  grafted {added_edges:,} cycling-only edges")
+    logger.info(f"  combined: {len(G.nodes):,} nodes, {len(G.edges):,} edges")
 
     # Remove completely isolated nodes (no edges)
     isolated = list(nx.isolates(G))
