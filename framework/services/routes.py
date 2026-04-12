@@ -504,8 +504,14 @@ async def get_recommendations(
     if not eligible_combos:
         eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
 
+    _sem = asyncio.Semaphore(2)
+
+    async def _try_combo_limited(combo):
+        async with _sem:
+            return await _try_combo(combo, req, _session_factories["places"], mongo)
+
     raw = await asyncio.gather(*[
-        _try_combo(combo, req, _session_factories["places"], mongo)
+        _try_combo_limited(combo)
         for combo in eligible_combos[:req.limit]
     ])
 

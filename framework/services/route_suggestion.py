@@ -1,6 +1,7 @@
 import asyncio
 import boto3
 import functools
+import httpx
 import logging
 import math
 import os
@@ -239,6 +240,16 @@ async def _recommend_via_service(
             json=delegated_req.model_dump(),
         )
         resp.raise_for_status()
+    except httpx.TimeoutException as e:
+        raise HTTPException(
+            status_code=504,
+            detail=f"Route service timed out: {repr(e)}",
+        ) from e
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(
+            status_code=e.response.status_code,
+            detail=f"Route service returned {e.response.status_code}: {e.response.text[:200]}",
+        ) from e
     except Exception as e:
         raise HTTPException(
             status_code=502,
@@ -333,8 +344,8 @@ async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
             if "bike-route" in settings.SERVICE_URLS:
                 return await _recommend_via_service(req, current_pois, extra_points)
             return await _recommend_in_process(req, current_pois, extra_points)
-        except HTTPException:
-            if not current_pois:
+        except HTTPException as exc:
+            if exc.status_code != 500 or not current_pois:
                 raise
             dropped = current_pois.pop()
             logger.warning(
