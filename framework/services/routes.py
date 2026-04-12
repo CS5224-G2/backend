@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 import logging
@@ -368,6 +369,7 @@ class _ComboResult:
     result: RecommendationResult
     poi_waypoints: list
     ascent_m: float
+    fingerprint: tuple
 
 
 async def _try_combo(
@@ -375,7 +377,6 @@ async def _try_combo(
     req: RecommendationsRequest,
     places_db: AsyncSession,
     mongo: AsyncDatabase,
-    seen_fingerprints: list[tuple],
 ) -> "_ComboResult | None":
     from .route_suggestion import recommend_route
 
@@ -407,11 +408,6 @@ async def _try_combo(
         (round(p.lat, 4), round(p.lng, 4))
         for p in [path[0], path[len(path) // 2], path[-1]]
     )
-    if fingerprint in seen_fingerprints:
-        logger.info("Skipping duplicate route (fingerprint: %s)", fingerprint)
-        return None
-    seen_fingerprints.append(fingerprint)
-
     start_name = req.start_point.name or f"{req.start_point.lat:.4f}, {req.start_point.lng:.4f}"
     end_name = req.end_point.name or f"{req.end_point.lat:.4f}, {req.end_point.lng:.4f}"
 
@@ -470,6 +466,7 @@ async def _try_combo(
         result=recommendation,
         poi_waypoints=route.poi_waypoints,
         ascent_m=route.total_ascent_m,
+        fingerprint=fingerprint,
     )
 
 
@@ -506,19 +503,27 @@ async def get_recommendations(
     if not eligible_combos:
         eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
 
-    seen_fingerprints: list[tuple] = []
+    raw = await asyncio.gather(*[
+        _try_combo(combo, req, places_db, mongo)
+        for combo in eligible_combos[:req.limit]
+    ])
 
-    for combo in eligible_combos[:req.limit]:
-        combo_result = await _try_combo(combo, req, places_db, mongo, seen_fingerprints)
-        if combo_result:
-            results.append(combo_result.result)
-            poi_waypoints_per_result.append(combo_result.poi_waypoints)
-            ascents_per_result.append(combo_result.ascent_m)
+    seen_fingerprints: set[tuple] = set()
+    for combo_result in raw:
+        if combo_result is None:
+            continue
+        if combo_result.fingerprint in seen_fingerprints:
+            logger.info("Skipping duplicate route (fingerprint: %s)", combo_result.fingerprint)
+            continue
+        seen_fingerprints.add(combo_result.fingerprint)
+        results.append(combo_result.result)
+        poi_waypoints_per_result.append(combo_result.poi_waypoints)
+        ascents_per_result.append(combo_result.ascent_m)
 
     # Fallback: if all combos failed or were filtered, try a no-POI route
     if not results:
         no_poi_combo = {k: False for k in _POI_COMBOS[0]}
-        combo_result = await _try_combo(no_poi_combo, req, places_db, mongo, seen_fingerprints)
+        combo_result = await _try_combo(no_poi_combo, req, places_db, mongo)
         if combo_result:
             results.append(combo_result.result)
             poi_waypoints_per_result.append(combo_result.poi_waypoints)
