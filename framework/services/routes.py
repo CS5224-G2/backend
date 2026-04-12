@@ -16,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..database import _session_factories
 from ..models import UserSavedRoute
 from ..schemas import (
     AirQualityPreference,
@@ -375,7 +376,7 @@ class _ComboResult:
 async def _try_combo(
     combo: dict,
     req: RecommendationsRequest,
-    places_db: AsyncSession,
+    places_db_factory,
     mongo: AsyncDatabase,
 ) -> "_ComboResult | None":
     from .route_suggestion import recommend_route
@@ -394,7 +395,8 @@ async def _try_combo(
     )
 
     try:
-        route = await recommend_route(places_db, route_req)
+        async with places_db_factory() as places_db:
+            route = await recommend_route(places_db, route_req)
     except Exception as exc:
         logger.warning("Route computation failed for combo %s, skipping: %s", combo, exc)
         return None
@@ -472,7 +474,6 @@ async def _try_combo(
 
 async def get_recommendations(
     mongo: AsyncDatabase,
-    places_db: AsyncSession,
     req: RecommendationsRequest,
 ) -> list[RecommendationResult]:
     # 1. Check Redis Cache
@@ -504,7 +505,7 @@ async def get_recommendations(
         eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
 
     raw = await asyncio.gather(*[
-        _try_combo(combo, req, places_db, mongo)
+        _try_combo(combo, req, _session_factories["places"], mongo)
         for combo in eligible_combos[:req.limit]
     ])
 
@@ -523,7 +524,7 @@ async def get_recommendations(
     # Fallback: if all combos failed or were filtered, try a no-POI route
     if not results:
         no_poi_combo = {k: False for k in _POI_COMBOS[0]}
-        combo_result = await _try_combo(no_poi_combo, req, places_db, mongo)
+        combo_result = await _try_combo(no_poi_combo, req, _session_factories["places"], mongo)
         if combo_result:
             results.append(combo_result.result)
             poi_waypoints_per_result.append(combo_result.poi_waypoints)

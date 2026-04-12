@@ -28,6 +28,11 @@ _graph: nx.MultiDiGraph | None = None
 _tree_kdtree: KDTree | None = None
 _tree_coords: np.ndarray | None = None  # shape (N, 2): [[lat, lng], ...]
 
+# Node spatial index for fast bounding-box queries (set once on startup)
+_node_ids_arr: np.ndarray | None = None  # shape (N,) — graph node IDs
+_node_lats: np.ndarray | None = None     # shape (N,), float64 — node latitudes  (d["y"])
+_node_lngs: np.ndarray | None = None     # shape (N,), float64 — node longitudes (d["x"])
+
 S3_KEY_DEFAULT = "osm-graphs/singapore_bike_graph.graphml"
 TREES_S3_KEY_DEFAULT = "osm-graphs/singapore_trees.json"
 
@@ -36,6 +41,16 @@ _METRES_PER_DEGREE = 111_320
 
 
 # ── Loading ────────────────────────────────────────────────────────────
+
+def _build_node_index():
+    """Build numpy arrays of node coordinates for fast bounding-box filtering."""
+    global _node_ids_arr, _node_lats, _node_lngs
+    node_data = [(n, d["y"], d["x"]) for n, d in _graph.nodes(data=True)]
+    _node_ids_arr = np.array([nd[0] for nd in node_data])
+    _node_lats    = np.array([nd[1] for nd in node_data], dtype=np.float64)
+    _node_lngs    = np.array([nd[2] for nd in node_data], dtype=np.float64)
+    logger.info(f"Node spatial index built: {len(_node_ids_arr):,} nodes")
+
 
 def load_graph_from_s3(bucket: str, key: str | None = None):
     """Download the graph from S3 and load it into memory."""
@@ -59,6 +74,7 @@ def load_graph_from_s3(bucket: str, key: str | None = None):
     logger.info(
         f"Graph loaded: {len(_graph.nodes):,} nodes, {len(_graph.edges):,} edges"
     )
+    _build_node_index()
 
 
 def load_graph_from_file(path: str):
@@ -70,6 +86,7 @@ def load_graph_from_file(path: str):
     logger.info(
         f"Graph loaded: {len(_graph.nodes):,} nodes, {len(_graph.edges):,} edges"
     )
+    _build_node_index()
 
 
 # ── Tree index ─────────────────────────────────────────────────────────
@@ -150,11 +167,15 @@ def get_subgraph(
             "Call load_graph_from_s3() or load_graph_from_file() first."
         )
 
-    nodes_in_bbox = [
-        n
-        for n, d in _graph.nodes(data=True)
-        if south <= d["y"] <= north and west <= d["x"] <= east
-    ]
+    if _node_ids_arr is not None:
+        mask = (south <= _node_lats) & (_node_lats <= north) & (west <= _node_lngs) & (_node_lngs <= east)
+        nodes_in_bbox = _node_ids_arr[mask].tolist()
+    else:
+        nodes_in_bbox = [
+            n
+            for n, d in _graph.nodes(data=True)
+            if south <= d["y"] <= north and west <= d["x"] <= east
+        ]
 
     if not nodes_in_bbox:
         raise ValueError(

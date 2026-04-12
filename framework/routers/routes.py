@@ -61,8 +61,8 @@ async def delete_saved_route(
 
 
 @router.post("/recommendations", response_model=list[RecommendationResult])
-async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB, places_db: PlacesDB):
-    return await routes_service.get_recommendations(mongo, places_db, body)
+async def post_recommendations(body: RecommendationsRequest, mongo: MongoDB):
+    return await routes_service.get_recommendations(mongo, body)
 
 
 @router.get("/{route_id}", response_model=RouteDetail, dependencies=[Depends(cdn_cache(300))])

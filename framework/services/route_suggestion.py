@@ -296,6 +296,9 @@ async def _recommend_in_process(
     logger.info("Route computation completed in %.0f ms", elapsed_ms)
     asyncio.get_event_loop().run_in_executor(None, _emit_route_computation_time, elapsed_ms)
 
+    if not path:
+        raise HTTPException(status_code=500, detail="Route computation produced an empty path")
+
     distance_m = _compute_path_distance_m(path)
     duration_min = (distance_m / 1000) / _AVG_CYCLING_SPEED_KMH * 60
 
@@ -322,9 +325,20 @@ async def _recommend_in_process(
 async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
     _validate_route_request(req)
     poi_waypoints = await _get_poi_waypoints(db, req)
-    extra_points = [p.point for p in poi_waypoints]
 
-    if "bike-route" in settings.SERVICE_URLS:
-        return await _recommend_via_service(req, poi_waypoints, extra_points)
-    return await _recommend_in_process(req, poi_waypoints, extra_points)
+    current_pois = list(poi_waypoints)
+    while True:
+        extra_points = [p.point for p in current_pois]
+        try:
+            if "bike-route" in settings.SERVICE_URLS:
+                return await _recommend_via_service(req, current_pois, extra_points)
+            return await _recommend_in_process(req, current_pois, extra_points)
+        except HTTPException:
+            if not current_pois:
+                raise
+            dropped = current_pois.pop()
+            logger.warning(
+                "Route failed with %d POI(s), dropping '%s' and retrying with %d",
+                len(current_pois) + 1, dropped.name, len(current_pois),
+            )
 

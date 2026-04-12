@@ -86,6 +86,7 @@ def compute_route(start, end, waypoints, output_gpx):
             all_coords.extend(coords if i == 0 else coords[1:])
         except nx.NetworkXNoPath:
             logger.error(f"  No path found for leg {i+1}! Check forbidden highway settings or buffer size.")
+            raise
 
     gpx = gpxpy.gpx.GPX()
     track = gpxpy.gpx.GPXTrack()
