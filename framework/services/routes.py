@@ -504,16 +504,38 @@ async def get_recommendations(
     if not eligible_combos:
         eligible_combos = [{"include_hawker_centres": False, "include_parks": False, "include_historic_sites": False, "include_tourist_attractions": False}]
 
-    _sem = asyncio.Semaphore(2)
+    no_poi_combo = {k: False for k in _POI_COMBOS[0]}
+    combos_to_run = eligible_combos[:req.limit]
+    if no_poi_combo not in combos_to_run:
+        combos_to_run = combos_to_run + [no_poi_combo]
 
-    async def _try_combo_limited(combo):
-        async with _sem:
+    # Always compute no-POI baseline first in list order, then other combos (no duplicates).
+    task_combos = [no_poi_combo] + [c for c in combos_to_run if c != no_poi_combo]
+    _max_workers = min(
+        settings.ROUTE_RECOMMENDATION_MAX_CONCURRENT,
+        max(1, len(task_combos)),
+    )
+    _route_sem = asyncio.Semaphore(_max_workers)
+
+    async def _try_combo_limited(combo: dict) -> "_ComboResult | None":
+        async with _route_sem:
             return await _try_combo(combo, req, _session_factories["places"], mongo)
 
-    raw = await asyncio.gather(*[
-        _try_combo_limited(combo)
-        for combo in eligible_combos[:req.limit]
-    ])
+    async def _try_combo_timed(combo: dict) -> "_ComboResult | None":
+        try:
+            return await asyncio.wait_for(
+                _try_combo_limited(combo),
+                timeout=settings.ROUTE_COMBO_WAIT_TIMEOUT_SEC,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                "Combo %s timed out after %.0f s",
+                combo,
+                settings.ROUTE_COMBO_WAIT_TIMEOUT_SEC,
+            )
+            return None
+
+    raw = await asyncio.gather(*[_try_combo_timed(c) for c in task_combos])
 
     seen_fingerprints: set[tuple] = set()
     for combo_result in raw:
@@ -527,22 +549,13 @@ async def get_recommendations(
         poi_waypoints_per_result.append(combo_result.poi_waypoints)
         ascents_per_result.append(combo_result.ascent_m)
 
-    # Fallback: if all combos failed or were filtered, try a no-POI route
-    if not results:
-        no_poi_combo = {k: False for k in _POI_COMBOS[0]}
-        combo_result = await _try_combo(no_poi_combo, req, _session_factories["places"], mongo)
-        if combo_result:
-            results.append(combo_result.result)
-            poi_waypoints_per_result.append(combo_result.poi_waypoints)
-            ascents_per_result.append(combo_result.ascent_m)
-
     # 3. Rank results by score (highest first)
     ranked = sorted(
         zip(results, poi_waypoints_per_result, ascents_per_result),
         key=lambda pair: _score_route(pair[0].distance, pair[2], req.preferences, pair[1], req.start_point, weather, shade_score=pair[0].shade_score),
         reverse=True,
     )
-    results = [r for r, _, _ in ranked]
+    results = [r for r, _, _ in ranked][:req.limit]
 
     # 4. Cache the results for 30 minutes
     try:

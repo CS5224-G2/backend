@@ -51,6 +51,8 @@ class Settings(BaseSettings):
     # Populated as services come online. Format: {"service_name": "http://host:port"}
     # Example: {"route_recommender": "http://route-svc:8001", "weather": "http://weather-svc:8002"}
     SERVICE_URLS: dict[str, str] = {}
+    # When True, POST /v1/route-suggestion/recommend computes in-process (bike graph).
+    BIKE_ROUTE_API_STANDALONE: bool = False
 
     @field_validator("SERVICE_URLS", mode="before")
     @classmethod
@@ -79,6 +81,16 @@ class Settings(BaseSettings):
 
     # --- GPX export ---
     SAVE_GPX: bool = False
+
+    # --- Route delegation / latency (main app → bike-route HTTP) ---
+    # Read timeout for POST to bike-route (seconds); allow slight slack over per-combo wait.
+    ROUTE_SERVICE_HTTP_READ_TIMEOUT: float = 35.0
+    # asyncio.wait_for budget per recommendation combo (seconds).
+    ROUTE_COMBO_WAIT_TIMEOUT_SEC: float = 36.0
+    # Max concurrent route computations in POST /routes/recommendations (higher = lower wall time, more bike load).
+    ROUTE_RECOMMENDATION_MAX_CONCURRENT: int = 8
+    # Minimum spacing between path samples for shade scoring (metres); reduces KD-tree work on dense GPX.
+    SHADE_PATH_SAMPLE_SPACING_M: float = 25.0
 
 
 settings = Settings()

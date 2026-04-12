@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..schemas import POICategory, POIWaypoint, Point, RouteRequest, RouteResponse
+from ..schemas import POICategory, POIWaypoint, Point, RoutePreferences, RouteRequest, RouteResponse
 from ..config import settings
 from . import hawker as hawker_service
 from . import historic_sites as historic_sites_service
@@ -24,17 +24,13 @@ logger = logging.getLogger(__name__)
 
 _METRES_PER_DEGREE_LAT = 111_320
 _AVG_CYCLING_SPEED_KMH = 15.0
+_POI_RADIUS_MIN_M = 500.0    # always search at least 500 m per segment
+_POI_RADIUS_MAX_M = 3_000.0  # cap to avoid large detours
 
 # Set SAVE_GPX=true to persist generated GPX files to the saved_gpx/ folder.
 # Each request writes a unique file (route_<uuid>.gpx).
 _GPX_DIR = "saved_gpx"
 
-def _validate_route_request(req: RouteRequest):
-    if req.origin.lat == req.destination.lat and req.origin.lng == req.destination.lng:
-        raise HTTPException(
-            status_code=400,
-            detail="Origin and destination cannot be the same"
-        )
 
 def _parse_gpx_points(gpx_path: str) -> list[Point]:
     tree = ET.parse(gpx_path)   
@@ -69,6 +65,24 @@ def _straight_line_distance_m(a: Point, b: Point) -> float:
 def _compute_path_distance_m(path: list[Point]) -> float:
     """Sum of segment distances along the route path in metres."""
     return sum(_straight_line_distance_m(path[i], path[i + 1]) for i in range(len(path) - 1))
+
+
+def _downsample_path_for_shade(path: list[Point], min_spacing_m: float) -> list[Point]:
+    """Keep start/end and points spaced at least min_spacing_m apart (cheap equirectangular spacing)."""
+    if len(path) < 2 or min_spacing_m <= 0:
+        return path
+    out: list[Point] = [path[0]]
+    accumulated = 0.0
+    for i in range(1, len(path)):
+        accumulated += _straight_line_distance_m(path[i - 1], path[i])
+        if accumulated >= min_spacing_m:
+            out.append(path[i])
+            accumulated = 0.0
+    if out[-1] != path[-1]:
+        out.append(path[-1])
+    if len(out) < 2:
+        return [path[0], path[-1]]
+    return out
 
 
 def _interpolate_point(origin: Point, destination: Point, t: float) -> Point:
@@ -135,7 +149,7 @@ async def _get_poi_waypoints(db: AsyncSession, req: RouteRequest) -> list[POIWay
         return []
 
     total_dist = _straight_line_distance_m(req.origin, req.destination)
-    segment_radius = total_dist / (2 * (n + 1))
+    segment_radius = max(_POI_RADIUS_MIN_M, min(total_dist / (2 * (n + 1)), _POI_RADIUS_MAX_M))
 
     poi_waypoints = []
     for i, category in enumerate(categories, start=1):
@@ -176,6 +190,18 @@ async def _compute_route_in_process(
             functools.partial(compute_route, start, end, waypoints, output_path),
         )
     except Exception as e:
+        import networkx as nx
+
+        if isinstance(e, nx.NetworkXNoPath):
+            raise HTTPException(
+                status_code=422,
+                detail=f"No road path for the selected route: {e!s}",
+            ) from e
+        if isinstance(e, TypeError) and "geometry" in str(e).lower():
+            raise HTTPException(
+                status_code=422,
+                detail=f"Routing geometry error: {e!s}",
+            ) from e
         raise HTTPException(
             status_code=500,
             detail=f"Route computation failed: {type(e).__name__}: {repr(e)}",
@@ -204,8 +230,10 @@ def compute_shade_score(path: list[Point]) -> float:
 
     from bike_route import graph_manager
 
+    sample_spacing = settings.SHADE_PATH_SAMPLE_SPACING_M
+    sampled = _downsample_path_for_shade(path, sample_spacing)
     total_dist_m = _compute_path_distance_m(path)
-    path_tuples = [(p.lat, p.lng) for p in path]
+    path_tuples = [(p.lat, p.lng) for p in sampled]
     count = graph_manager.count_trees_near_path(path_tuples, radius_m=15.0)
 
     # 2 trees per 100m → score 1.0
@@ -227,17 +255,31 @@ async def _recommend_via_service(
     from ..clients.http import service_client
 
     # Build a request with all POI prefs disabled — POIs are already resolved as waypoints
+    _no_poi_prefs = RoutePreferences(
+        include_hawker_centres=False,
+        include_parks=False,
+        include_historic_sites=False,
+        include_tourist_attractions=False,
+    )
     delegated_req = RouteRequest(
         origin=req.origin,
         destination=req.destination,
         waypoints=req.waypoints + extra_points,
+        preferences=_no_poi_prefs,
     )
 
+    _route_http_timeout = httpx.Timeout(
+        connect=5.0,
+        read=settings.ROUTE_SERVICE_HTTP_READ_TIMEOUT,
+        write=10.0,
+        pool=5.0,
+    )
     try:
         resp = await service_client.post(
             "bike-route",
             "/v1/route-suggestion/recommend",
             json=delegated_req.model_dump(),
+            timeout=_route_http_timeout,
         )
         resp.raise_for_status()
     except httpx.TimeoutException as e:
@@ -334,22 +376,38 @@ async def _recommend_in_process(
 
 
 async def recommend_route(db: AsyncSession, req: RouteRequest) -> RouteResponse:
-    _validate_route_request(req)
     poi_waypoints = await _get_poi_waypoints(db, req)
 
-    current_pois = list(poi_waypoints)
-    while True:
-        extra_points = [p.point for p in current_pois]
-        try:
-            if "bike-route" in settings.SERVICE_URLS:
-                return await _recommend_via_service(req, current_pois, extra_points)
-            return await _recommend_in_process(req, current_pois, extra_points)
-        except HTTPException as exc:
-            if exc.status_code != 500 or not current_pois:
-                raise
-            dropped = current_pois.pop()
-            logger.warning(
-                "Route failed with %d POI(s), dropping '%s' and retrying with %d",
-                len(current_pois) + 1, dropped.name, len(current_pois),
-            )
+    async def _attempt(pois: list) -> RouteResponse:
+        extra_points = [p.point for p in pois]
+        if "bike-route" in settings.SERVICE_URLS and not settings.BIKE_ROUTE_API_STANDALONE:
+            return await _recommend_via_service(req, pois, extra_points)
+        return await _recommend_in_process(req, pois, extra_points)
+
+    try:
+        return await _attempt(poi_waypoints)
+    except HTTPException as exc:
+        if exc.status_code not in (422, 500):
+            raise
+        had_stops = bool(poi_waypoints or req.waypoints)
+        if not had_stops:
+            raise
+        logger.warning(
+            "Route with intermediate stops failed (HTTP %s); retrying origin→destination only",
+            exc.status_code,
+        )
+        plain = RouteRequest(
+            origin=req.origin,
+            destination=req.destination,
+            waypoints=[],
+            preferences=RoutePreferences(
+                include_hawker_centres=False,
+                include_parks=False,
+                include_historic_sites=False,
+                include_tourist_attractions=False,
+            ),
+        )
+        if "bike-route" in settings.SERVICE_URLS and not settings.BIKE_ROUTE_API_STANDALONE:
+            return await _recommend_via_service(plain, [], [])
+        return await _recommend_in_process(plain, [], [])
 
