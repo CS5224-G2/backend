@@ -74,6 +74,12 @@ def compute_route(start, end, waypoints, output_gpx):
         for edge in rem: G.remove_edge(*edge)
         logger.info(f"  Graph loaded: {len(G.nodes)} nodes, {len(G.edges)} edges ({initial_edges - len(G.edges)} filtered).")
 
+        # Restrict to the largest strongly-connected component
+        scc = list(nx.strongly_connected_components(G))
+        if len(scc) > 1:
+            main_scc_nodes = max(scc, key=len)
+            G = G.subgraph(main_scc_nodes).copy()
+            logger.info(f"  Restricted to main SCC: {len(G.nodes)} nodes, {len(G.edges)} edges ({len(scc) - 1} other component(s) removed).")
         src = add_waypoint_node(G, lat1, lon1) if use_virtual_waypoints else ox.distance.nearest_nodes(G, lon1, lat1)
         dst = add_waypoint_node(G, lat2, lon2) if use_virtual_waypoints else ox.distance.nearest_nodes(G, lon2, lat2)
         
