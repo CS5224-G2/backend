@@ -105,23 +105,34 @@ The interactive API docs (Swagger UI) are available at `http://localhost:8000/do
 
 ### Jamie
 - Set up the core FastAPI project structure: configuration, database session management, service/router pattern, and package setup with `uv`
-- Implemented JWT authentication, user registration, and route-saving endpoints
+- Implemented JWT authentication, user registration, token refresh, and route-saving endpoints
+- Built POI endpoints (hawker centres, historic sites, parks, tourist attractions)
+- Built user profile management: GET/PUT profile, avatar upload/delete (S3), privacy settings, account deletion
+- Built admin endpoints (user listing, platform stats)
+- Built route favourites save/retrieve endpoints
 - Built the user ride endpoints: ride creation, ride history, distance stats, and post-ride feedback
-- Added shade scoring as a route recommendation signal; implemented Redis caching for POIs and routes
-- Migrated route computation to the bike-route microservice and added route deduplication (favorites)
+- Added shade scoring as a route recommendation signal; implemented application-level Redis caching for POIs and routes
 - Implemented routing quality metrics in the admin dashboard (score-to-rating correlation, computation time tracking)
+- Extended the bike-route graph manager: upgraded OSM graph loading from S3, added node caching, and merged the graph index implementation for faster spatial lookups
+- Migrated route computation to the bike-route microservice
 - Performance improvements to the bike-route service: SCC graph restriction, concurrency caps, subgraph extraction optimisation, cycling path bug fixes
 
 ### Zhuo En
 - Initial project scaffolding, `.gitignore`, and database schema (`schema.sql`)
 - Built the PostGIS GeoJSON import pipeline for hawker centres, historic sites, parks, and tourist attractions
 - Implemented the initial bike-route generation API (OSMNx graph, subprocess integration) and migrated it into the framework
-- Added POI waypoint insertion to the route suggestion pipeline
+- Added POI waypoint insertion to the route suggestion pipeline and distance/duration estimation to route responses
+- Built the `GET /routes`, `GET /routes/popular`, and `GET /routes/:routeId` endpoints, including filtering by cyclist type and merging pre-computed and generated routes
+- Added the `POST /routes/recommendations` endpoint and the script for pre-computing routes offline
 - Built the route recommendation scoring system (elevation, weather/air-quality signals) and fingerprint-based route deduplication
 - Implemented forgot-password and reset-password endpoints with SendGrid email delivery
 
 ### Jared
 - Designed and maintained all AWS infrastructure using OpenTofu (IaC): VPC, RDS (PostgreSQL), ElastiCache (Redis), S3, ECS Fargate clusters, ALB, CloudFront CDN, WAF, and CloudMap service discovery
+- Containerised both services (Dockerfiles) and set up the CI/CD pipeline (GitHub Actions) for building and pushing images to ECR
+- Uploaded the Singapore OSM cycling graph to S3 and configured the bike-route service to download it on startup
+- Added Redis to the infrastructure (ElastiCache) and implemented application-level caching for weather data, route responses, and popular routes
+- Set up CloudFront CDN with cache-control headers for popular route endpoints; secured Swagger UI with HTTP Basic auth
 - Provisioned and maintained the AWS Lambda function for scheduled weather data fetching from NEA
 - Added CloudWatch metrics and log endpoints to the admin dashboard (ECS CPU/memory, ALB latency/error rates)
 - Configured ECS autoscaling, SNS alerting, and load testing (Locust)
