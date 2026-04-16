@@ -96,7 +96,7 @@ async def get_infrastructure_metrics() -> dict:
                 albs = elbv2.describe_load_balancers(Names=[f"cyclelink-{settings.ENVIRONMENT}-alb"])
                 alb_arn = albs['LoadBalancers'][0]['LoadBalancerArn']
                 # Correct dimension format: app/name/hexid
-                alb_dim = "/".join(alb_arn.split("/")[-3:])
+                alb_dim = alb_arn.split("loadbalancer/")[-1]
                 
                 # 1. Total ALB RequestCount (LB Dimension Only)
                 resp_rc = cw.get_metric_statistics(
@@ -126,8 +126,7 @@ async def get_infrastructure_metrics() -> dict:
                             tg_arn = tg['TargetGroupArn']
                             break
                     
-                    tg_dim = "/".join(tg_arn.split("/")[-3:])
-                    tg_dim = f"targetgroup/{tg_dim}" if not tg_dim.startswith("targetgroup") else tg_dim
+                    tg_dim = tg_arn.split(":")[-1]
 
                     resp_lt = cw.get_metric_statistics(
                         Namespace="AWS/ApplicationELB", MetricName="TargetResponseTime",
@@ -266,12 +265,18 @@ async def get_alb_response_metrics() -> dict:
     try:
         def fetch_metrics():
             cw = _get_cloudwatch_client()
-            res = {"Average": [], "p95": [], "p99": []}
+            res = {
+                "Average": 0.0,
+                "p95": 0.0,
+                "p99": 0.0,
+                "time_period": "Last 24 hours",
+                "timestamp": end_time.isoformat()
+            }
             try:
                 elbv2 = boto3.client('elbv2', region_name=settings.AWS_REGION)
                 albs = elbv2.describe_load_balancers(Names=[f"cyclelink-{settings.ENVIRONMENT}-alb"])
                 alb_arn = albs['LoadBalancers'][0]['LoadBalancerArn']
-                alb_dim = "/".join(alb_arn.split("/")[-3:])
+                alb_dim = alb_arn.split("loadbalancer/")[-1]
                 
                 tgs = elbv2.describe_target_groups(LoadBalancerArn=alb_arn)
                 if tgs['TargetGroups']:
@@ -281,8 +286,7 @@ async def get_alb_response_metrics() -> dict:
                             tg_arn = tg['TargetGroupArn']
                             break
                     
-                    tg_dim = "/".join(tg_arn.split("/")[-3:])
-                    tg_dim = f"targetgroup/{tg_dim}" if not tg_dim.startswith("targetgroup") else tg_dim
+                    tg_dim = tg_arn.split(":")[-1]
 
                     resp_lt = cw.get_metric_statistics(
                         Namespace="AWS/ApplicationELB", MetricName="TargetResponseTime",
@@ -290,20 +294,20 @@ async def get_alb_response_metrics() -> dict:
                             {"Name": "LoadBalancer", "Value": alb_dim},
                             {"Name": "TargetGroup", "Value": tg_dim}
                         ],
-                        StartTime=start_time, EndTime=end_time, Period=900, 
+                        StartTime=start_time, EndTime=end_time, Period=86400, 
                         Statistics=["Average"],
                         ExtendedStatistics=["p95", "p99"]
                     )
                     
-                    for dp in sorted(resp_lt.get("Datapoints", []), key=lambda x: x["Timestamp"]):
-                        ts = dp["Timestamp"].isoformat()
+                    if resp_lt.get("Datapoints"):
+                        dp = resp_lt["Datapoints"][0]
                         if "Average" in dp:
-                            res["Average"].append({"timestamp": ts, "value": round(dp["Average"] * 1000, 2)})
+                            res["Average"] = round(dp["Average"] * 1000, 2)
                         if "ExtendedStatistics" in dp:
                             if "p95" in dp["ExtendedStatistics"]:
-                                res["p95"].append({"timestamp": ts, "value": round(dp["ExtendedStatistics"]["p95"] * 1000, 2)})
+                                res["p95"] = round(dp["ExtendedStatistics"]["p95"] * 1000, 2)
                             if "p99" in dp["ExtendedStatistics"]:
-                                res["p99"].append({"timestamp": ts, "value": round(dp["ExtendedStatistics"]["p99"] * 1000, 2)})
+                                res["p99"] = round(dp["ExtendedStatistics"]["p99"] * 1000, 2)
             except Exception as e:
                 logger.error("Failed to fetch ALB latency metrics: %s", e)
             return res
@@ -319,4 +323,4 @@ async def get_alb_response_metrics() -> dict:
         
     except (BotoCoreError, ClientError) as e:
         logger.error(f"Failed to fetch CloudWatch metrics: {e}")
-        return {"Average": [], "p95": [], "p99": []}
+        return {"Average": 0.0, "p95": 0.0, "p99": 0.0, "time_period": "Last 24 hours"}
