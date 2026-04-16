@@ -45,3 +45,8 @@ async def get_infrastructure_health(admin: AdminUser, places_db: PlacesDB, mongo
 @router.get("/routing-quality-metrics")
 async def get_routing_quality_metrics(admin: AdminUser, db: PlacesDB, mongo_db: MongoDB) -> dict:
     return await admin_service.get_routing_quality_metrics(db, mongo_db)
+
+
+@router.get("/infrastructure-alb-response")
+async def get_infrastructure_alb_response(admin: AdminUser) -> dict:
+    return await cw_service.get_alb_response_metrics()

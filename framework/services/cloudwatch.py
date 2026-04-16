@@ -244,3 +244,79 @@ async def get_recent_error_logs() -> dict:
     except (BotoCoreError, ClientError) as e:
         logger.error(f"Failed to query CloudWatch logs: {e}")
         return {"total_errors": 0, "errors": [], "period_hours": 24, "limit_applied": 50}
+
+
+async def get_alb_response_metrics() -> dict:
+    """
+    Fetch Average, P95, and P99 Target Response Time for the ALB.
+    Cached in Redis for 1 minute.
+    """
+    cache_key = "infra:metrics:alb_response"
+    
+    try:
+        cached = await asyncio.to_thread(redis_client.get, cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning(f"Redis cache read failed: {e}")
+
+    end_time = datetime.now(timezone.utc)
+    start_time = end_time - timedelta(hours=24)
+
+    try:
+        def fetch_metrics():
+            cw = _get_cloudwatch_client()
+            res = {"Average": [], "p95": [], "p99": []}
+            try:
+                elbv2 = boto3.client('elbv2', region_name=settings.AWS_REGION)
+                albs = elbv2.describe_load_balancers(Names=[f"cyclelink-{settings.ENVIRONMENT}-alb"])
+                alb_arn = albs['LoadBalancers'][0]['LoadBalancerArn']
+                alb_dim = "/".join(alb_arn.split("/")[-3:])
+                
+                tgs = elbv2.describe_target_groups(LoadBalancerArn=alb_arn)
+                if tgs['TargetGroups']:
+                    tg_arn = tgs['TargetGroups'][0]['TargetGroupArn']
+                    for tg in tgs['TargetGroups']:
+                        if f"{settings.ENVIRONMENT}-tg" in tg['TargetGroupName']:
+                            tg_arn = tg['TargetGroupArn']
+                            break
+                    
+                    tg_dim = "/".join(tg_arn.split("/")[-3:])
+                    tg_dim = f"targetgroup/{tg_dim}" if not tg_dim.startswith("targetgroup") else tg_dim
+
+                    resp_lt = cw.get_metric_statistics(
+                        Namespace="AWS/ApplicationELB", MetricName="TargetResponseTime",
+                        Dimensions=[
+                            {"Name": "LoadBalancer", "Value": alb_dim},
+                            {"Name": "TargetGroup", "Value": tg_dim}
+                        ],
+                        StartTime=start_time, EndTime=end_time, Period=900, 
+                        Statistics=["Average"],
+                        ExtendedStatistics=["p95", "p99"]
+                    )
+                    
+                    for dp in sorted(resp_lt.get("Datapoints", []), key=lambda x: x["Timestamp"]):
+                        ts = dp["Timestamp"].isoformat()
+                        if "Average" in dp:
+                            res["Average"].append({"timestamp": ts, "value": round(dp["Average"] * 1000, 2)})
+                        if "ExtendedStatistics" in dp:
+                            if "p95" in dp["ExtendedStatistics"]:
+                                res["p95"].append({"timestamp": ts, "value": round(dp["ExtendedStatistics"]["p95"] * 1000, 2)})
+                            if "p99" in dp["ExtendedStatistics"]:
+                                res["p99"].append({"timestamp": ts, "value": round(dp["ExtendedStatistics"]["p99"] * 1000, 2)})
+            except Exception as e:
+                logger.error("Failed to fetch ALB latency metrics: %s", e)
+            return res
+
+        metrics = await asyncio.to_thread(fetch_metrics)
+        
+        try:
+            await asyncio.to_thread(redis_client.setex, cache_key, 60, json.dumps(metrics))
+        except Exception as e:
+            logger.warning(f"Redis cache write failed: {e}")
+            
+        return metrics
+        
+    except (BotoCoreError, ClientError) as e:
+        logger.error(f"Failed to fetch CloudWatch metrics: {e}")
+        return {"Average": [], "p95": [], "p99": []}
